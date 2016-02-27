@@ -14,6 +14,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import sun.security.ssl.Debug;
+
+import java.io.Console;
 
 
 public class Test implements ApplicationListener{
@@ -22,12 +25,21 @@ public class Test implements ApplicationListener{
     private ParticleEffect fireEffect;
     Sprite sprite;
     Texture img;
+    Texture img2;
     World world;
     Body body;
+
+    TestBridge testBridge;
+    TestVertex testVertex;
+    TestJoint testJoint;
+
     private float bodyLocation;
 
     @Override
     public void create(){
+
+
+
         //Makes a set of sprites
         batch = new SpriteBatch();
         //Makes a font
@@ -35,39 +47,23 @@ public class Test implements ApplicationListener{
         //Sets a font color
         font.setColor(Color.WHITE);
         //Sets texture to image in assets folder
-        img = new Texture("badlogic.jpg");
-        //Makes a sprite of that texture
-        sprite = new Sprite(img);
-
-        //sets the sprite position based on screen size
-        sprite.setPosition(Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2,
-                Gdx.graphics.getHeight() / 2);
-
+        img = new Texture("Wood.png");
+        img2 = new Texture("ball.png");
         //Makes a box2d physics environment that sets gravity
         world = new World(new Vector2(0, -98f), true);
 
-        //Makes a physics body
-        BodyDef bodyDef = new BodyDef();
-        //Defines the body to be able to have physics applied to it
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
 
-        //puts the body in a specific spot over the sprite
-        bodyDef.position.set(sprite.getX(), sprite.getY());
+        testBridge = new TestBridge();
+        testBridge.CreateTestBridge(img,world);
+        testVertex = new TestVertex();
+        testVertex.CreateVertex(img2,world);
+        testJoint = new TestJoint();
 
-        
-        body = world.createBody(bodyDef);
+        testJoint.CreateJoint(testBridge.getBody(), testVertex.getBody());
 
-        //Makes a shape for the body
-        PolygonShape shape = new PolygonShape();
-        //Sets the shape to a box
-        shape.setAsBox(sprite.getWidth()/2, sprite.getHeight()/2);
+        world.createJoint(testJoint.rJointDef);
 
-        //Describes the properties of the fixture
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-        //
-        Fixture fixture = body.createFixture(fixtureDef);
+
         //Makes the fire effect
         fireEffect = new ParticleEffect();
         //Loads the effect file from the assets directory
@@ -76,7 +72,6 @@ public class Test implements ApplicationListener{
         fireEffect.getEmitters().first().setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
         fireEffect.start();
 
-        shape.dispose();
 
     }
     @Override
@@ -90,7 +85,8 @@ public class Test implements ApplicationListener{
         //Makes the box2d world play at a given frame rate
         world.step(Gdx.graphics.getDeltaTime(), 6, 2);
         //Makes the sprite follow the body
-        sprite.setPosition(body.getPosition().x, body.getPosition().y);
+        testBridge.sprite.setPosition(testBridge.body.getPosition().x, testBridge.body.getPosition().y);
+        testVertex.sprite.setPosition(testVertex.body.getPosition().x, testVertex.body.getPosition().y);
 
         //sets the background color
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -99,8 +95,9 @@ public class Test implements ApplicationListener{
         fireEffect.update(Gdx.graphics.getDeltaTime());
         //draws the actual frame
         batch.begin();
-        batch.draw(sprite, sprite.getX(), sprite.getY());
-        font.draw(batch, Float.toString(sprite.getX()), 200,200);
+        batch.draw(testBridge.sprite, testBridge.sprite.getX(), testBridge.sprite.getY());
+        batch.draw(testVertex.sprite, testVertex.sprite.getX(), testVertex.sprite.getY());
+        font.draw(batch, Float.toString(testBridge.sprite.getY()), 200,200);
         fireEffect.draw(batch);
         batch.end();
 
