@@ -25,8 +25,8 @@ public class TestVertex {
         sprite = new Sprite(img);
 
         //sets the sprite position based on screen size
-        sprite.setPosition(Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2,
-                Gdx.graphics.getHeight() / 3);
+        sprite.setPosition(800 / 2 - sprite.getWidth() / 2,
+                480 / 3);
 
         //Makes a physics body
         BodyDef bodyDef = new BodyDef();

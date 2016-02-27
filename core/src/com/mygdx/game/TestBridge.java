@@ -22,8 +22,8 @@ public class TestBridge {
         sprite = new Sprite(img);
 
         //sets the sprite position based on screen size
-        sprite.setPosition(Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2,
-                Gdx.graphics.getHeight() / 2);
+        sprite.setPosition(800 / 2 - sprite.getWidth() / 2,
+                480 / 2);
 
         //Makes a physics body
         BodyDef bodyDef = new BodyDef();
