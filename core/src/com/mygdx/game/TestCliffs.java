@@ -12,17 +12,19 @@ public class TestCliffs {
 
     Body bodyLeft;
     Body bodyRight;
-    Texture img;
+    Texture img1;
+    Texture img2;
     Sprite spriteLeft;
     Sprite spriteRight;
 
-    public void CreateCliffs(Texture texture, World world) {
+    public void CreateCliffs(Texture texture1, Texture texture2, World world) {
         // Sets image to one in Texture folder
-        img = texture;
+        img1 = texture1;
+        img2 = texture2;
 
         //Creates two Sprites with this image
-        spriteLeft = new Sprite(img);
-        spriteRight = new Sprite(img);
+        spriteLeft = new Sprite(img1);
+        spriteRight = new Sprite(img2);
 
         //Places the cliffs on either end of the screen
         spriteLeft.setPosition(0, 0);

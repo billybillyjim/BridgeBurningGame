@@ -24,6 +24,7 @@ public class Test implements Screen{
     Texture img;
     Texture img2;
     Texture img3;
+    Texture img4;
     World world;
     Body body;
 
@@ -49,7 +50,8 @@ public class Test implements Screen{
         //Sets texture to image in assets folder
         img = new Texture("Wood.png");
         img2 = new Texture("ball.png");
-        img3 = new Texture("cliff.png");
+        img3 = new Texture("LeftCliff.png");
+        img4 = new Texture("RightCliff.png");
 
         
 
@@ -77,7 +79,7 @@ public class Test implements Screen{
         world.createJoint(testJoint.rJointDef);
 
         testCliffs = new TestCliffs();
-        testCliffs.CreateCliffs(img3, world);
+        testCliffs.CreateCliffs(img3, img4, world);
 
         //Makes the fire effect
         fireEffect = new ParticleEffect();
