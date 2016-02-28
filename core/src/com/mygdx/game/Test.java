@@ -49,7 +49,7 @@ public class Test implements Screen{
 
         //Sets texture to image in assets folder
         img = new Texture("Wood.png");
-        img2 = new Texture("ball.png");
+        img2 = new Texture("Pivot.png");
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
 
