@@ -23,12 +23,14 @@ public class Test implements Screen{
     Sprite sprite;
     Texture img;
     Texture img2;
+    Texture img3;
     World world;
     Body body;
 
     TestBridge testBridge;
     TestVertex testVertex;
     TestJoint testJoint;
+    TestCliffs testCliffs;
 
     private float bodyLocation;
 
@@ -41,17 +43,18 @@ public class Test implements Screen{
 
         this.game = game;
 
-
         //Sets a font color
         game.font.setColor(Color.WHITE);
+
         //Sets texture to image in assets folder
         img = new Texture("Wood.png");
         img2 = new Texture("ball.png");
+        img3 = new Texture("cliff.png");
 
         
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
-        // it creates a world that is 800 x 400 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
+        // it creates a world that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
         //the origin (0, 0) of this coordinate system is in the lower left corner by default. It is possible to change
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -64,14 +67,17 @@ public class Test implements Screen{
         
         testBridge = new TestBridge();
         testBridge.CreateTestBridge(img,world);
+
         testVertex = new TestVertex();
         testVertex.CreateVertex(img2,world);
-        testJoint = new TestJoint();
 
+        testJoint = new TestJoint();
         testJoint.CreateJoint(testBridge.getBody(), testVertex.getBody());
 
         world.createJoint(testJoint.rJointDef);
 
+        testCliffs = new TestCliffs();
+        testCliffs.CreateCliffs(img3, world);
 
         //Makes the fire effect
         fireEffect = new ParticleEffect();
@@ -97,6 +103,9 @@ public class Test implements Screen{
         testBridge.sprite.setPosition(testBridge.body.getPosition().x, testBridge.body.getPosition().y);
         testVertex.sprite.setPosition(testVertex.body.getPosition().x, testVertex.body.getPosition().y);
 
+        testCliffs.spriteLeft.setPosition(testCliffs.bodyLeft.getPosition().x, testCliffs.bodyLeft.getPosition().y);
+        testCliffs.spriteRight.setPosition(testCliffs.bodyRight.getPosition().x, testCliffs.bodyRight.getPosition().y);
+
         //sets the background color
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -109,6 +118,8 @@ public class Test implements Screen{
         game.batch.begin();
         game.batch.draw(testBridge.sprite, testBridge.sprite.getX(), testBridge.sprite.getY());
         game.batch.draw(testVertex.sprite, testVertex.sprite.getX(), testVertex.sprite.getY());
+        game.batch.draw(testCliffs.spriteLeft, testCliffs.spriteLeft.getX(), testCliffs.spriteLeft.getY());
+        game.batch.draw(testCliffs.spriteRight, testCliffs.spriteRight.getX(), testCliffs.spriteRight.getY());
         game.font.draw(game.batch, Float.toString(testBridge.sprite.getY()), 200,200);
         fireEffect.draw(game.batch);
         game.batch.end();

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 /**
- * Created by Elo· on 26/02/2016.
+ * Created by Elo√† on 26/02/2016.
  */
 public class MainMenuScreen implements Screen {
 
@@ -43,6 +43,7 @@ public class MainMenuScreen implements Screen {
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
+
         //uses BitmapFont and SpriteBatch that where created in the main class Drop;
         game.batch.begin();
         game.font.draw(game.batch, "Welcome to the Burn Bridge game!!", 100, 150);

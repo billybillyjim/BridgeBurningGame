@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
- * Created by Elo· on 26/02/2016.
+ * Created by Elo√† on 26/02/2016.
  */
 public class GameLauncher extends Game {
     // this is the main class that is called when the game is launched. DesktopLauncher, AndroidLauncher and IOSLauncher refer to this class
