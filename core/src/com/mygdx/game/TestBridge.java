@@ -5,11 +5,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 /**
  * Created by Luke on 2/22/2016.
  */
-public class TestBridge {
+public class TestBridge extends Actor{
 
     Body body;
     Texture img;
@@ -36,6 +38,8 @@ public class TestBridge {
 
         body = world.createBody(bodyDef);
 
+
+
         //Makes a shape for the body
         PolygonShape shape = new PolygonShape();
         //Sets the shape to a box
@@ -54,6 +58,7 @@ public class TestBridge {
 
         shape.dispose();
     }
+
 
     public Body getBody(){
         return this.body;
