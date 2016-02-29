@@ -10,9 +10,11 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
+import com.badlogic.gdx.utils.Array;
 
 
 public class Test implements Screen{
@@ -21,24 +23,23 @@ public class Test implements Screen{
 
 
     private ParticleEffect fireEffect;
-    Sprite sprite;
-    Texture img;
-    Texture img2;
-    Texture img3;
-    Texture img4;
-    World world;
-    Body body;
 
-    TestBridge testBridge;
-    TestVertex testVertex;
-    TestJoint testJoint;
-    TestCliffs testCliffs;
-    RevoluteJoint ourJoint;
+    private Texture img;
+    private Texture img2;
+    private Texture img3;
+    private Texture img4;
+    private World world;
+    private Body body;
+
+    private TestBridge testBridge;
+    private TestVertex testPivot;
+    private TestJoint testJoint;
+    private TestCliffs testCliffs;
+    private RevoluteJoint ourJoint;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
-
-    private float bodyLocation;
+    private Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
 
     //camera
     private OrthographicCamera camera;
@@ -48,6 +49,8 @@ public class Test implements Screen{
     public Test (GameLauncher game){
 
         this.game = game;
+
+        bodiesInTheWorld = new Array<Body>();
 
         //Sets a font color
         game.font.setColor(Color.WHITE);
@@ -76,14 +79,14 @@ public class Test implements Screen{
         box2DDebugRenderer = new Box2DDebugRenderer();
         
         testBridge = new TestBridge();
-        testBridge.CreateTestBridge(img,world);
+        testBridge.CreateTestBridge(img, world);
 
-        testVertex = new TestVertex();
-        testVertex.CreateVertex(img2,world);
+        testPivot = new TestVertex();
+        testPivot.CreateVertex(img2,world);
 
         // ALL JOINT STUFF
         testJoint = new TestJoint();
-        testJoint.CreateJoint(testBridge.getBody(), testVertex.getBody());
+        testJoint.CreateJoint(testBridge.getBody(), testPivot.getBody());
 
         ourJoint = (RevoluteJoint)world.createJoint(testJoint.rJointDef);
 
@@ -114,12 +117,10 @@ public class Test implements Screen{
         //Makes the box2d world play at a given frame rate
         world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 
-        testBridge.sprite.setPosition(testBridge.body.getPosition().x, testBridge.body.getPosition().y);
-        testVertex.sprite.setPosition(testVertex.body.getPosition().x, testVertex.body.getPosition().y);
 
 
         //sets the background color
-        Gdx.gl.glClearColor(0.52f, 0.80f , 1 , 1);
+        Gdx.gl.glClearColor(0.52f, 0.80f, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update(); // is generally a good practice to update the camera once per frame
@@ -134,15 +135,33 @@ public class Test implements Screen{
 
         //makes the fire effect change every frame
         fireEffect.update(Gdx.graphics.getDeltaTime());
+
+        world.getBodies(bodiesInTheWorld); //gets all the bodies in the world and adds then to the array bodiesInTheWorld
+
         //draws the actual frame
         game.batch.begin();
-        game.batch.draw(testBridge.sprite, testBridge.sprite.getX(), testBridge.sprite.getY());
-        game.batch.draw(testVertex.sprite, testVertex.sprite.getX(), testVertex.sprite.getY());
+
+
         game.batch.draw(testCliffs.spriteLeft, testCliffs.spriteLeft.getX(), testCliffs.spriteLeft.getY());
         game.batch.draw(testCliffs.spriteRight, testCliffs.spriteRight.getX(), testCliffs.spriteRight.getY());
         game.font.draw(game.batch, Float.toString(testBridge.body.getPosition().y), 200,200);
         game.font.draw(game.batch, "Bridge sprite width: " + Float.toString(testBridge.sprite.getWidth()) + "\n height: " + Float.toString(testBridge.sprite.getHeight()) , 250, 250);
         fireEffect.draw(game.batch);
+
+        //Used to draw all sprites in bodies in the world (As of now it is just drawing the Bridge sprite in its body)
+        for(Body body : bodiesInTheWorld){
+            if(body.getUserData() != null && body.getUserData() instanceof Sprite){
+                Sprite sprite = (Sprite) body.getUserData();
+                sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2); //sets position of sprite to the same as the body
+                sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
+                sprite.draw(game.batch);
+            }
+
+        }
+        game.batch.draw(testPivot.sprite, testPivot.sprite.getX(), testPivot.sprite.getY());
+
+
+
         game.batch.end();
 
 
