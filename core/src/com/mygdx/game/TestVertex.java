@@ -42,9 +42,11 @@ public class TestVertex {
 
 
         //Makes a shape for the body
-        PolygonShape shape = new PolygonShape();
+        CircleShape shape = new CircleShape();
+        shape.setRadius(10);
         //Sets the shape to a box
-        shape.setAsBox(sprite.getWidth()/4, sprite.getHeight()/4);
+
+
 
         //Describes the properties of the fixture
         FixtureDef fixtureDef = new FixtureDef();
@@ -52,7 +54,7 @@ public class TestVertex {
         fixtureDef.density = 1f;
 
 
-        Fixture fixture = body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef);
 
 
         shape.dispose();

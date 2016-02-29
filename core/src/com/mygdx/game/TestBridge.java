@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 /**
@@ -22,8 +23,7 @@ public class TestBridge {
         sprite = new Sprite(img);
 
         //sets the sprite position based on screen size
-        sprite.setPosition(800 / 2 - sprite.getWidth() / 2,
-                480 / 2);
+        sprite.setPosition(800 - sprite.getWidth() / 2, 480 / 2);
 
         //Makes a physics body
         BodyDef bodyDef = new BodyDef();
@@ -39,14 +39,17 @@ public class TestBridge {
         //Makes a shape for the body
         PolygonShape shape = new PolygonShape();
         //Sets the shape to a box
-        shape.setAsBox(sprite.getWidth()/2, sprite.getHeight()/2);
+        shape.setAsBox(100, 50);
 
         //Describes the properties of the fixture
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = .1f;
+        fixtureDef.friction = 0.3f; //0 = like ice, 1 = cannot slide over it at all
 
-        Fixture fixture = body.createFixture(fixtureDef);
+
+
+        body.createFixture(fixtureDef);
 
 
         shape.dispose();
