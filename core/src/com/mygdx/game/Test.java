@@ -82,7 +82,7 @@ public class Test implements Screen{
         //Makes a box2d physics environment that sets gravity
         world = new World(new Vector2(0, -981f), true);
         box2DDebugRenderer = new Box2DDebugRenderer();
-        
+        bodiesInTheWorld = new Array<Body>();
         testBridge = new TestBridge();
         /*
         testBridge.addListener(new ClickListener() {
