@@ -117,8 +117,8 @@ colors2: 0.047058824
 timelineCount: 1
 timeline0: 0.0
 - Transparency - 
-lowMin: 0.0
-lowMax: 0.0
+lowMin: 0.2
+lowMax: 0.4
 highMin: 1.0
 highMax: 1.0
 relative: false

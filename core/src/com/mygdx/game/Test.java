@@ -6,15 +6,19 @@ package com.mygdx.game;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 
 public class Test implements Screen{
@@ -39,6 +43,9 @@ public class Test implements Screen{
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
+    private boolean testOnClick = false;
+    private float bodyLocation;
+
     private Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
 
     //camera
@@ -49,8 +56,6 @@ public class Test implements Screen{
     public Test (GameLauncher game){
 
         this.game = game;
-
-        bodiesInTheWorld = new Array<Body>();
 
         //Sets a font color
         game.font.setColor(Color.WHITE);
@@ -79,7 +84,16 @@ public class Test implements Screen{
         box2DDebugRenderer = new Box2DDebugRenderer();
         
         testBridge = new TestBridge();
-        testBridge.CreateTestBridge(img, world);
+        /*
+        testBridge.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("DONE CLICKED IT YOU DID");
+                burnWood(x,y);
+            }
+        });
+        */
+        testBridge.CreateTestBridge(img,world);
 
         testPivot = new TestVertex();
         testPivot.CreateVertex(img2,world);
@@ -112,6 +126,14 @@ public class Test implements Screen{
     }
     @Override
     public void render(float delta){
+
+        if(Gdx.input.isTouched()){
+            Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
+            camera.unproject(pos);
+            fireEffect.getEmitters().first().setPosition(pos.x,pos.y);
+            fireEffect.start();
+        }
+
         box2DDebugRenderer.render(world, camera.combined);
 
         //Makes the box2d world play at a given frame rate
@@ -145,6 +167,7 @@ public class Test implements Screen{
         game.batch.draw(testCliffs.spriteLeft, testCliffs.spriteLeft.getX(), testCliffs.spriteLeft.getY());
         game.batch.draw(testCliffs.spriteRight, testCliffs.spriteRight.getX(), testCliffs.spriteRight.getY());
         game.font.draw(game.batch, Float.toString(testBridge.body.getPosition().y), 200,200);
+        game.font.draw(game.batch, Boolean.toString(testOnClick), 200, 100);
         game.font.draw(game.batch, "Bridge sprite width: " + Float.toString(testBridge.sprite.getWidth()) + "\n height: " + Float.toString(testBridge.sprite.getHeight()) , 250, 250);
         fireEffect.draw(game.batch);
 
@@ -189,6 +212,11 @@ public class Test implements Screen{
     @Override
     public void hide() {
 
+    }
+    public void burnWood(float x, float y){
+        testOnClick = true;
+        fireEffect.getEmitters().first().setPosition(x,y);
+        fireEffect.start();
     }
 
 }
