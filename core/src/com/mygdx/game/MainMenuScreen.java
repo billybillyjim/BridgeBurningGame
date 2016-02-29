@@ -33,9 +33,6 @@ public class MainMenuScreen implements Screen {
 
     }
 
-
-
-
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
@@ -46,8 +43,8 @@ public class MainMenuScreen implements Screen {
 
         //uses BitmapFont and SpriteBatch that where created in the main class Drop;
         game.batch.begin();
-        game.font.draw(game.batch, "Welcome to the Burn Bridge game!!", 100, 150);
-        game.font.draw(game.batch, "Tap Anywhere to begin", 100, 100);
+        game.font.draw(game.batch, "Welcome to the Burning Bridges Game!!", 100, 150);
+        game.font.draw(game.batch, "Tap Anywhere to Begin", 100, 100);
         game.batch.end();
 
         if(Gdx.input.isTouched()){

@@ -68,8 +68,6 @@ public class Test implements Screen{
 
 
 
-        
-
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a world that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
         //the origin (0, 0) of this coordinate system is in the lower left corner by default. It is possible to change
