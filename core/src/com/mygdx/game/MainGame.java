@@ -20,11 +20,15 @@ import com.mygdx.game.GraphicalObjects.BridgeUnit;
 import com.mygdx.game.PhysicalObjects.BridgeJoint;
 import com.mygdx.game.GraphicalObjects.BridgeUnitLink;
 
+import java.util.ArrayList;
+
 
 public class MainGame implements Screen{
 
     private final GameLauncher game;
     public final int METER_TO_PIXELS = 50; //50 pixels per each meter
+    private final int SCREEN_WIDTH = 800;
+    private final int SCREEN_HEIGHT = 480;
 
 
     private ParticleEffect fireEffect;
@@ -42,6 +46,12 @@ public class MainGame implements Screen{
     private BackgroundCliffs testCliffs;
 
     private Box2DDebugRenderer box2DDebugRenderer;
+
+
+    //array with bridge units
+
+
+
 
     private boolean testOnClick = false;
 
@@ -72,7 +82,7 @@ public class MainGame implements Screen{
         // it creates a world that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
         //the origin (0, 0) of this coordinate system is in the lower left corner by default. It is possible to change
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
 
@@ -93,56 +103,40 @@ public class MainGame implements Screen{
         });
         */
 
+        //initialize array of bridge units
 
-        bridgeUnit = new BridgeUnit();
-        bridgeUnit.CreateTestBridge(img,world, 800/2, 400);
-        testPivot = new BridgeUnitLink();
-        testPivot.CreateVertex(img2, world, 800/2, 400/2);
+
+
 
         // ALL JOINT STUFF
-        bridgeJoint = new BridgeJoint();
-        bridgeJoint.CreateJoint(bridgeUnit.getBody(), testPivot.getBody());
 
-        world.createJoint(bridgeJoint.getrJointDef());
 
 
         testCliffs = new BackgroundCliffs();
         testCliffs.CreateCliffs(img3, img4, world);
 
         //new bridge uni
-        BridgeUnit newUnit = new BridgeUnit();
-        newUnit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + testCliffs.getSpriteLeft().getWidth(), testCliffs.getSpriteLeft().getY() + testCliffs.getSpriteLeft().getHeight());
-        System.out.print("cliff height: " + testCliffs.getSpriteLeft().getHeight() + "\n cliff width: " + testCliffs.getSpriteLeft().getWidth());
+        buildBridge();
         //new joint connecting left cliff to bridge
         BridgeJoint leftCliffToUnitJoint = new BridgeJoint();
-        leftCliffToUnitJoint.CreateJoint(newUnit.getBody(), testCliffs.getBodyLeft());
-        leftCliffToUnitJoint.getrJointDef().localAnchorA.set(testCliffs.getSpriteLeft().getWidth(), testCliffs.getSpriteLeft().getHeight());
-        leftCliffToUnitJoint.getrJointDef().localAnchorB.set(-45, 20);
-        world.createJoint(leftCliffToUnitJoint.getrJointDef());
+      //  leftCliffToUnitJoint.CreateJoint(newUnit.getBody(), testCliffs.getBodyLeft());
+        //leftCliffToUnitJoint.getrJointDef().localAnchorA.set(testCliffs.getSpriteLeft().getWidth(), testCliffs.getSpriteLeft().getHeight());
+        //leftCliffToUnitJoint.getrJointDef().localAnchorB.set(-45, 20);
+        //world.createJoint(leftCliffToUnitJoint.getrJointDef());
 
         //create new link between two brigde pieces
-
+/*
         BridgeUnitLink link1 = new BridgeUnitLink();
-        link1.CreateVertex(img2, world, testCliffs.getSpriteLeft().getWidth() + newUnit.getSprite().getWidth(), testCliffs.getSpriteLeft().getHeight());
+        //link1.CreateVertex(img2, world, testCliffs.getSpriteLeft().getWidth() + newUnit.getSprite().getWidth(), testCliffs.getSpriteLeft().getHeight());
 
         //create joint between link1 and newUnit
         BridgeJoint unitToLink = new BridgeJoint();
-        unitToLink.CreateJoint(link1.getBody(), newUnit.getBody());
+     //   unitToLink.CreateJoint(link1.getBody(), newUnit.getBody());
         unitToLink.getrJointDef().localAnchorA.set(0, 0);
         unitToLink.getrJointDef().localAnchorB.set(0, -45);
         world.createJoint(unitToLink.getrJointDef());
+*/
 
-
-
-        //new joint connecting right cliff to bridge
-        BridgeUnit newRightUnit = new BridgeUnit();
-        newRightUnit.CreateTestBridge(img, world, testCliffs.getSpriteRight().getX() - testCliffs.getSpriteRight().getWidth(), testCliffs.getSpriteRight().getY() - testCliffs.getSpriteRight().getHeight());
-
-        BridgeJoint rightCliffToUnitJoint = new BridgeJoint();
-        rightCliffToUnitJoint.CreateJoint(newRightUnit.getBody(), testCliffs.getBodyRight());
-        rightCliffToUnitJoint.getrJointDef().localAnchorA.set(-testCliffs.getSpriteRight().getWidth(), testCliffs.getSpriteRight().getHeight());
-        rightCliffToUnitJoint.getrJointDef().localAnchorB.set(45,20);
-        world.createJoint(rightCliffToUnitJoint.getrJointDef());
 
 
 
@@ -205,9 +199,9 @@ public class MainGame implements Screen{
 
         game.batch.draw(testCliffs.getSpriteLeft(), testCliffs.getSpriteLeft().getX(), testCliffs.getSpriteLeft().getY());
         game.batch.draw(testCliffs.getSpriteRight(), testCliffs.getSpriteRight().getX(), testCliffs.getSpriteRight().getY());
-        game.font.draw(game.batch, Float.toString(bridgeUnit.getBody().getPosition().y), 200,200);
+
         game.font.draw(game.batch, Boolean.toString(testOnClick), 200, 100);
-        game.font.draw(game.batch, "Bridge sprite width: " + Float.toString(bridgeUnit.getSprite().getWidth()) + "\n height: " + Float.toString(bridgeUnit.getSprite().getHeight()) , 250, 250);
+
         fireEffect.draw(game.batch);
 
         //Used to draw all moving sprites in bodies in the world (As of now it is just drawing the Bridge sprite in its body)
@@ -230,10 +224,92 @@ public class MainGame implements Screen{
 
     }
 
+    /**
+     * method responsible for setting up the bridge
+     */
+
+    private void buildBridge() {
+        ArrayList<BridgeUnit> bridgeUnitsAcross = new ArrayList<BridgeUnit>();
+        float leftCliffWidth =  testCliffs.getSpriteLeft().getWidth();
+        float leftCliffHeight = testCliffs.getSpriteLeft().getHeight();
+        float rightCliffWidth = testCliffs.getSpriteRight().getWidth();
+        float rightCliffHeight = testCliffs.getSpriteRight().getHeight();
+        float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth);
+        System.out.print("predicted Number of units is: " + numberOfBridgeUnits);
+        for (int i = 0; i < numberOfBridgeUnits; i++) {
+            BridgeUnit newUnit = new BridgeUnit();
+            bridgeUnitsAcross.add(newUnit);
+        }
+        int i = 0;
+        for (BridgeUnit unit : bridgeUnitsAcross) {
+            unit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
+            i++;
+        }
+        ArrayList<BridgeUnitLink> linksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
+        createBridgeLinkJoint(bridgeUnitsAcross, linksAcross);
+    }
+
+    /**
+     * This calculates the number of bridge units necessary to connect both cliffs
+     * @param leftCliffWidth
+     * @param rightCliffWidth
+     * @return
+     */
+
+    private float getNumberOfBridgeUnits(float leftCliffWidth, float rightCliffWidth) {
+        float distanceBetweenCliffs = SCREEN_WIDTH - (leftCliffWidth + rightCliffWidth);
+        float numberOfBridgeUnits = distanceBetweenCliffs / BridgeUnit.WIDTH;
+        //This if statement checks if the number of bridge units calculated above is enough to cover the distance. If it is not it add one more board.
+        if((numberOfBridgeUnits * BridgeUnit.WIDTH) < distanceBetweenCliffs){
+            numberOfBridgeUnits += 1;
+        }
+        return numberOfBridgeUnits;
+    }
+
+    /**
+     * Takes an array of bridge units and creates a array of bridge unit links
+     * @param unitsAcross as array of Bridge units
+     * @return an array of bridge unit links
+     */
+    private ArrayList<BridgeUnitLink> createBridgeUnitLinks(ArrayList<BridgeUnit> unitsAcross){
+        ArrayList<BridgeUnitLink> linksAcross = new ArrayList<BridgeUnitLink>();
+        //for every unit in the array of Bridge units it creates a link and adds it to the array of links.
+        // It does not create a new link to the last  unit in the array of units.
+        for(int i = 0; i < unitsAcross.size() - 1; i++){
+            BridgeUnit unit = unitsAcross.get(i);
+            BridgeUnitLink link = new BridgeUnitLink();
+            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH/2, testCliffs.getSpriteLeft().getY() + testCliffs.getSpriteLeft().getHeight());
+            linksAcross.add(link);
+        }
+
+        return linksAcross;
+    }
+
+    /**
+     * Creates a joint between the links and the units. This still needs a lot of work.
+     * @param unitsAcross
+     * @param linksAcross
+     */
+    private void createBridgeLinkJoint(ArrayList<BridgeUnit> unitsAcross, ArrayList<BridgeUnitLink> linksAcross){
+        for(int i = 0; i < linksAcross.size(); i++){
+            BridgeJoint joint = new BridgeJoint();
+            BridgeJoint joint2 = new BridgeJoint();
+            joint.CreateJoint(unitsAcross.get(i).getBody(), linksAcross.get(i).getBody());
+            joint.getrJointDef().localAnchorB.set(1, 1);
+            world.createJoint(joint.getrJointDef());
+            joint2.CreateJoint(unitsAcross.get(i+1).getBody(), linksAcross.get(i).getBody());
+            joint2.getrJointDef().localAnchorB.set(1, 1);
+            world.createJoint(joint2.getrJointDef());
+        }
+    }
+
+
     @Override
     public void show() {
 
     }
+
+
 
     @Override
     public void resize(int width, int height){

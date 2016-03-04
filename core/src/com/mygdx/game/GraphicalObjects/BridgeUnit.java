@@ -11,9 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
  */
 public class BridgeUnit extends Actor{
 
-    Body body;
-    Texture img;
-    Sprite sprite;
+    private Body body;
+    private Texture img;
+    private Sprite sprite;
+    public final static int WIDTH = 100;
+    public final static int HEIGHT = 20;
 
     public void CreateTestBridge(Texture texture, World world, float xPosition, float yPosition){
 
@@ -39,7 +41,7 @@ public class BridgeUnit extends Actor{
         //Makes a shape for the body
         PolygonShape shape = new PolygonShape();
         //Sets the shape to a box
-        shape.setAsBox(50, 25);
+        shape.setAsBox(WIDTH/2, HEIGHT/2); //it has to be divided by 2 because setAsBo method takes half width and half height as input for some reason.
 
         //Describes the properties of the fixture
         FixtureDef fixtureDef = new FixtureDef();
@@ -50,7 +52,7 @@ public class BridgeUnit extends Actor{
 
         body.createFixture(fixtureDef);
 
-        sprite.setSize(50 * 2, 25 * 2); //set sprite size to the same size of the body
+        sprite.setSize(WIDTH, HEIGHT); //set sprite size to the same size of the body
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
         body.setUserData(sprite); //adds sprite to the user data (creates an association between the sprite and the body)
 

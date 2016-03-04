@@ -22,7 +22,7 @@ public class BridgeJoint {
         rJointDef.collideConnected = false;
 
         rJointDef.localAnchorA.set(0,0);
-        rJointDef.localAnchorB.set(45,20);
+        rJointDef.localAnchorB.set(27,20);
 
 
     }
