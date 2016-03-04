@@ -15,7 +15,7 @@ public class BridgeUnit extends Actor{
     Texture img;
     Sprite sprite;
 
-    public void CreateTestBridge(Texture texture, World world){
+    public void CreateTestBridge(Texture texture, World world, float xPosition, float yPosition){
 
         //Sets texture to image in assets folder
         img = texture;
@@ -23,7 +23,7 @@ public class BridgeUnit extends Actor{
         sprite = new Sprite(img);
 
         //sets the sprite position based on screen size
-        sprite.setPosition(800 / 2 - sprite.getWidth()/2, 480 / 2);
+        sprite.setPosition(xPosition, yPosition);
 
         //Makes a physics body
         BodyDef bodyDef = new BodyDef();
@@ -46,7 +46,6 @@ public class BridgeUnit extends Actor{
         fixtureDef.shape = shape;
         fixtureDef.density = .1f;
         fixtureDef.friction = 0.3f; //0 = like ice, 1 = cannot slide over it at all
-
 
 
         body.createFixture(fixtureDef);

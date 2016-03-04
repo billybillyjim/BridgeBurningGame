@@ -81,7 +81,7 @@ public class MainGame implements Screen{
         world = new World(new Vector2(0, -981f), true);
         box2DDebugRenderer = new Box2DDebugRenderer();
         bodiesInTheWorld = new Array<Body>();
-        bridgeUnit = new BridgeUnit();
+
 
         /*
         bridgeUnit.addListener(new ClickListener() {
@@ -92,12 +92,12 @@ public class MainGame implements Screen{
             }
         });
         */
-        bridgeUnit.CreateTestBridge(img,world);
 
 
-
+        bridgeUnit = new BridgeUnit();
+        bridgeUnit.CreateTestBridge(img,world, 800/2, 400);
         testPivot = new BridgeUnitLink();
-        testPivot.CreateVertex(img2, world);
+        testPivot.CreateVertex(img2, world, 800/2, 400/2);
 
         // ALL JOINT STUFF
         bridgeJoint = new BridgeJoint();
@@ -108,6 +108,42 @@ public class MainGame implements Screen{
 
         testCliffs = new BackgroundCliffs();
         testCliffs.CreateCliffs(img3, img4, world);
+
+        //new bridge uni
+        BridgeUnit newUnit = new BridgeUnit();
+        newUnit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + testCliffs.getSpriteLeft().getWidth(), testCliffs.getSpriteLeft().getY() + testCliffs.getSpriteLeft().getHeight());
+        System.out.print("cliff height: " + testCliffs.getSpriteLeft().getHeight() + "\n cliff width: " + testCliffs.getSpriteLeft().getWidth());
+        //new joint connecting left cliff to bridge
+        BridgeJoint leftCliffToUnitJoint = new BridgeJoint();
+        leftCliffToUnitJoint.CreateJoint(newUnit.getBody(), testCliffs.getBodyLeft());
+        leftCliffToUnitJoint.getrJointDef().localAnchorA.set(testCliffs.getSpriteLeft().getWidth(), testCliffs.getSpriteLeft().getHeight());
+        leftCliffToUnitJoint.getrJointDef().localAnchorB.set(-45, 20);
+        world.createJoint(leftCliffToUnitJoint.getrJointDef());
+
+        //create new link between two brigde pieces
+
+        BridgeUnitLink link1 = new BridgeUnitLink();
+        link1.CreateVertex(img2, world, testCliffs.getSpriteLeft().getWidth() + newUnit.getSprite().getWidth(), testCliffs.getSpriteLeft().getHeight());
+
+        //create joint between link1 and newUnit
+        BridgeJoint unitToLink = new BridgeJoint();
+        unitToLink.CreateJoint(link1.getBody(), newUnit.getBody());
+        unitToLink.getrJointDef().localAnchorA.set(0, 0);
+        unitToLink.getrJointDef().localAnchorB.set(0, -45);
+        world.createJoint(unitToLink.getrJointDef());
+
+
+
+        //new joint connecting right cliff to bridge
+        BridgeUnit newRightUnit = new BridgeUnit();
+        newRightUnit.CreateTestBridge(img, world, testCliffs.getSpriteRight().getX() - testCliffs.getSpriteRight().getWidth(), testCliffs.getSpriteRight().getY() - testCliffs.getSpriteRight().getHeight());
+
+        BridgeJoint rightCliffToUnitJoint = new BridgeJoint();
+        rightCliffToUnitJoint.CreateJoint(newRightUnit.getBody(), testCliffs.getBodyRight());
+        rightCliffToUnitJoint.getrJointDef().localAnchorA.set(-testCliffs.getSpriteRight().getWidth(), testCliffs.getSpriteRight().getHeight());
+        rightCliffToUnitJoint.getrJointDef().localAnchorB.set(45,20);
+        world.createJoint(rightCliffToUnitJoint.getrJointDef());
+
 
 
         //Makes the fire effect

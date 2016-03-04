@@ -16,7 +16,7 @@ public class BridgeUnitLink {
     Texture img;
     Sprite sprite;
 
-    public void CreateVertex(Texture texture, World world){
+    public void CreateVertex(Texture texture, World world, float xPosition, float yPosition){
 
 
         //Sets texture to image in assets folder
@@ -25,8 +25,8 @@ public class BridgeUnitLink {
         sprite = new Sprite(img);
 
         //sets the sprite position based on screen size
-        sprite.setPosition(800 / 2 - sprite.getWidth() / 2,
-                480 / 3);
+        sprite.setPosition(xPosition,
+                yPosition);
 
         //Makes a physics body
         BodyDef bodyDef = new BodyDef();
