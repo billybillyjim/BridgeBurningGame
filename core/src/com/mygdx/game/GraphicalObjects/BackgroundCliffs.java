@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.GraphicalObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.*;
  * Created by Eloise on 2/28/16.
  */
 
-public class TestCliffs {
+public class BackgroundCliffs {
 
     Body bodyLeft;
     Body bodyRight;
@@ -78,4 +78,11 @@ public class TestCliffs {
     public Body getBodyLeft(){return this.bodyLeft;}
     public Body getBodyRight(){return this.bodyRight;}
 
+    public Sprite getSpriteLeft() {
+        return spriteLeft;
+    }
+
+    public Sprite getSpriteRight() {
+        return spriteRight;
+    }
 }

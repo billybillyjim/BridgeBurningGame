@@ -6,7 +6,6 @@ package com.mygdx.game;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -15,15 +14,17 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mygdx.game.GraphicalObjects.BackgroundCliffs;
+import com.mygdx.game.GraphicalObjects.BridgeUnit;
+import com.mygdx.game.PhysicalObjects.BridgeJoint;
+import com.mygdx.game.GraphicalObjects.BridgeUnitLink;
 
 
-public class Test implements Screen{
+public class MainGame implements Screen{
 
-    final GameLauncher game;
+    private final GameLauncher game;
+    public final int METER_TO_PIXELS = 50; //50 pixels per each meter
 
 
     private ParticleEffect fireEffect;
@@ -33,19 +34,17 @@ public class Test implements Screen{
     private Texture img3;
     private Texture img4;
     private World world;
-    private Body body;
 
-    private TestBridge testBridge;
-    private TestVertex testPivot;
-    private TestJoint testJoint;
-    private TestCliffs testCliffs;
-    private TestJoint jointBetweenCliffAndWood;
-    private TestBridge woodPiece;
+
+    private BridgeUnit bridgeUnit;
+    private BridgeUnitLink testPivot;
+    private BridgeJoint bridgeJoint;
+    private BackgroundCliffs testCliffs;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
     private boolean testOnClick = false;
-    private float bodyLocation;
+
 
     private Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
 
@@ -54,7 +53,7 @@ public class Test implements Screen{
 
 
 
-    public Test (GameLauncher game){
+    public MainGame(GameLauncher game){
 
         this.game = game;
 
@@ -82,10 +81,10 @@ public class Test implements Screen{
         world = new World(new Vector2(0, -981f), true);
         box2DDebugRenderer = new Box2DDebugRenderer();
         bodiesInTheWorld = new Array<Body>();
-        testBridge = new TestBridge();
-        woodPiece = new TestBridge();
+        bridgeUnit = new BridgeUnit();
+
         /*
-        testBridge.addListener(new ClickListener() {
+        bridgeUnit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("DONE CLICKED IT YOU DID");
@@ -93,26 +92,23 @@ public class Test implements Screen{
             }
         });
         */
-        testBridge.CreateTestBridge(img,world);
-        woodPiece.CreateTestBridge(img, world);
+        bridgeUnit.CreateTestBridge(img,world);
 
 
-        testPivot = new TestVertex();
+
+        testPivot = new BridgeUnitLink();
         testPivot.CreateVertex(img2, world);
 
         // ALL JOINT STUFF
-        testJoint = new TestJoint();
-        testJoint.CreateJoint(testBridge.getBody(), testPivot.getBody());
+        bridgeJoint = new BridgeJoint();
+        bridgeJoint.CreateJoint(bridgeUnit.getBody(), testPivot.getBody());
+
+        world.createJoint(bridgeJoint.getrJointDef());
 
 
-
-
-
-        testCliffs = new TestCliffs();
+        testCliffs = new BackgroundCliffs();
         testCliffs.CreateCliffs(img3, img4, world);
-        jointBetweenCliffAndWood = new TestJoint();
-        woodPiece.setPosition(testCliffs.getBodyRight().getPosition().x, 100 );
-        testJoint.CreateJoint(woodPiece.getBody(), testCliffs.getBodyRight());
+
 
         //Makes the fire effect
         fireEffect = new ParticleEffect();
@@ -159,8 +155,7 @@ public class Test implements Screen{
 
 
 
-        //testCliffs.spriteLeft.setPosition(testCliffs.bodyLeft.getPosition().x, testCliffs.bodyLeft.getPosition().y);
-        //testCliffs.spriteRight.setPosition(testCliffs.bodyRight.getPosition().x, testCliffs.bodyRight.getPosition().y);
+
 
 
         //makes the fire effect change every frame
@@ -172,11 +167,11 @@ public class Test implements Screen{
         game.batch.begin();
 
 
-        game.batch.draw(testCliffs.spriteLeft, testCliffs.spriteLeft.getX(), testCliffs.spriteLeft.getY());
-        game.batch.draw(testCliffs.spriteRight, testCliffs.spriteRight.getX(), testCliffs.spriteRight.getY());
-        game.font.draw(game.batch, Float.toString(testBridge.body.getPosition().y), 200,200);
+        game.batch.draw(testCliffs.getSpriteLeft(), testCliffs.getSpriteLeft().getX(), testCliffs.getSpriteLeft().getY());
+        game.batch.draw(testCliffs.getSpriteRight(), testCliffs.getSpriteRight().getX(), testCliffs.getSpriteRight().getY());
+        game.font.draw(game.batch, Float.toString(bridgeUnit.getBody().getPosition().y), 200,200);
         game.font.draw(game.batch, Boolean.toString(testOnClick), 200, 100);
-        game.font.draw(game.batch, "Bridge sprite width: " + Float.toString(testBridge.sprite.getWidth()) + "\n height: " + Float.toString(testBridge.sprite.getHeight()) , 250, 250);
+        game.font.draw(game.batch, "Bridge sprite width: " + Float.toString(bridgeUnit.getSprite().getWidth()) + "\n height: " + Float.toString(bridgeUnit.getSprite().getHeight()) , 250, 250);
         fireEffect.draw(game.batch);
 
         //Used to draw all moving sprites in bodies in the world (As of now it is just drawing the Bridge sprite in its body)
@@ -189,7 +184,7 @@ public class Test implements Screen{
             }
 
         }
-        game.batch.draw(testPivot.sprite, testPivot.sprite.getX(), testPivot.sprite.getY());
+
 
 
 

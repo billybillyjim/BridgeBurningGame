@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.PhysicalObjects;
 
 
 
@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 /**
  * Created by Luke on 2/26/2016.
  */
-public class TestJoint{
+public class BridgeJoint {
 
     RevoluteJointDef rJointDef;
 
@@ -21,10 +21,13 @@ public class TestJoint{
 
         rJointDef.collideConnected = false;
 
-        rJointDef.localAnchorA.set(10,1);
-        rJointDef.localAnchorB.set(35,10);
+        rJointDef.localAnchorA.set(0,0);
+        rJointDef.localAnchorB.set(45,20);
 
 
     }
 
+    public RevoluteJointDef getrJointDef() {
+        return rJointDef;
+    }
 }

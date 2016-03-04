@@ -1,24 +1,23 @@
-package com.mygdx.game;
+package com.mygdx.game.GraphicalObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 /**
  * Created by Luke on 2/22/2016.
  */
-public class TestBridge extends Actor{
+public class BridgeUnitLink {
 
     Body body;
     Texture img;
     Sprite sprite;
 
-    public void CreateTestBridge(Texture texture, World world){
+    public void CreateVertex(Texture texture, World world){
+
 
         //Sets texture to image in assets folder
         img = texture;
@@ -26,12 +25,14 @@ public class TestBridge extends Actor{
         sprite = new Sprite(img);
 
         //sets the sprite position based on screen size
-        sprite.setPosition(800 - sprite.getWidth() / 2, 480 / 2);
+        sprite.setPosition(800 / 2 - sprite.getWidth() / 2,
+                480 / 3);
 
         //Makes a physics body
         BodyDef bodyDef = new BodyDef();
         //Defines the body to be able to have physics applied to it
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+
 
         //puts the body in a specific spot over the sprite
         bodyDef.position.set(sprite.getX(), sprite.getY());
@@ -39,24 +40,27 @@ public class TestBridge extends Actor{
 
         body = world.createBody(bodyDef);
 
+
+
         //Makes a shape for the body
-        PolygonShape shape = new PolygonShape();
+        CircleShape shape = new CircleShape();
+        shape.setRadius(10);
         //Sets the shape to a box
-        shape.setAsBox(50, 25);
+
+
 
         //Describes the properties of the fixture
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = .1f;
-        fixtureDef.friction = 0.3f; //0 = like ice, 1 = cannot slide over it at all
-
+        fixtureDef.density = 1f;
 
 
         body.createFixture(fixtureDef);
 
-        sprite.setSize(50 * 2, 25 * 2); //set sprite size to the same size of the body
-        sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
+        sprite.setSize(10 * 2, 10 * 2); //set sprite size to the same size of the body
+        sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);  //set the origin over which the sprites rotates to the center of the sprite
         body.setUserData(sprite); //adds sprite to the user data (creates an association between the sprite and the body)
+
 
         shape.dispose();
     }
@@ -64,5 +68,10 @@ public class TestBridge extends Actor{
     public Body getBody(){
         return this.body;
     }
+    public Sprite getSprite(){
+        return this.sprite;
+    }
 
 }
+
+
