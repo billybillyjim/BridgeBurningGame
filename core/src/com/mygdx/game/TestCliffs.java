@@ -40,7 +40,7 @@ public class TestCliffs {
 
         //puts the body in a specific spot over the sprite
         bodyDef1.position.set(spriteLeft.getX(), spriteLeft.getY());
-        bodyDef2.position.set(spriteRight.getX(), spriteRight.getY());
+        bodyDef2.position.set(spriteRight.getX() + spriteRight.getWidth(), spriteRight.getY());
 
 
         bodyLeft = world.createBody(bodyDef1);
@@ -49,9 +49,9 @@ public class TestCliffs {
 
         //Makes a shape for the body, Sets the shape to a box
         PolygonShape shape1 = new PolygonShape();
-        shape1.setAsBox(spriteLeft.getWidth()/4, spriteLeft.getHeight()/4);
+        shape1.setAsBox(spriteLeft.getWidth(), spriteLeft.getHeight());
         PolygonShape shape2 = new PolygonShape();
-        shape2.setAsBox(spriteLeft.getWidth()/4, spriteLeft.getHeight()/4);
+        shape2.setAsBox(spriteRight.getWidth(), spriteRight.getHeight());
 
         //Describes the properties of the fixture
         FixtureDef fixtureDef1 = new FixtureDef();
@@ -65,6 +65,8 @@ public class TestCliffs {
 
         Fixture fixture1 = bodyLeft.createFixture(fixtureDef1);
         Fixture fixture2 = bodyRight.createFixture(fixtureDef2);
+
+
 
 
         shape1.dispose();

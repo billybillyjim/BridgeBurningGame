@@ -39,7 +39,8 @@ public class Test implements Screen{
     private TestVertex testPivot;
     private TestJoint testJoint;
     private TestCliffs testCliffs;
-    private RevoluteJoint ourJoint;
+    private TestJoint jointBetweenCliffAndWood;
+    private TestBridge woodPiece;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
@@ -82,6 +83,7 @@ public class Test implements Screen{
         box2DDebugRenderer = new Box2DDebugRenderer();
         bodiesInTheWorld = new Array<Body>();
         testBridge = new TestBridge();
+        woodPiece = new TestBridge();
         /*
         testBridge.addListener(new ClickListener() {
             @Override
@@ -92,19 +94,25 @@ public class Test implements Screen{
         });
         */
         testBridge.CreateTestBridge(img,world);
+        woodPiece.CreateTestBridge(img, world);
+
 
         testPivot = new TestVertex();
-        testPivot.CreateVertex(img2,world);
+        testPivot.CreateVertex(img2, world);
 
         // ALL JOINT STUFF
         testJoint = new TestJoint();
         testJoint.CreateJoint(testBridge.getBody(), testPivot.getBody());
 
-        ourJoint = (RevoluteJoint)world.createJoint(testJoint.rJointDef);
+
+
 
 
         testCliffs = new TestCliffs();
         testCliffs.CreateCliffs(img3, img4, world);
+        jointBetweenCliffAndWood = new TestJoint();
+        woodPiece.setPosition(testCliffs.getBodyRight().getPosition().x, 100 );
+        testJoint.CreateJoint(woodPiece.getBody(), testCliffs.getBodyRight());
 
         //Makes the fire effect
         fireEffect = new ParticleEffect();
@@ -149,8 +157,10 @@ public class Test implements Screen{
         //Makes the sprite follow the body
 
 
-        testCliffs.spriteLeft.setPosition(testCliffs.bodyLeft.getPosition().x, testCliffs.bodyLeft.getPosition().y);
-        testCliffs.spriteRight.setPosition(testCliffs.bodyRight.getPosition().x, testCliffs.bodyRight.getPosition().y);
+
+
+        //testCliffs.spriteLeft.setPosition(testCliffs.bodyLeft.getPosition().x, testCliffs.bodyLeft.getPosition().y);
+        //testCliffs.spriteRight.setPosition(testCliffs.bodyRight.getPosition().x, testCliffs.bodyRight.getPosition().y);
 
 
         //makes the fire effect change every frame
@@ -169,7 +179,7 @@ public class Test implements Screen{
         game.font.draw(game.batch, "Bridge sprite width: " + Float.toString(testBridge.sprite.getWidth()) + "\n height: " + Float.toString(testBridge.sprite.getHeight()) , 250, 250);
         fireEffect.draw(game.batch);
 
-        //Used to draw all sprites in bodies in the world (As of now it is just drawing the Bridge sprite in its body)
+        //Used to draw all moving sprites in bodies in the world (As of now it is just drawing the Bridge sprite in its body)
         for(Body body : bodiesInTheWorld){
             if(body.getUserData() != null && body.getUserData() instanceof Sprite){
                 Sprite sprite = (Sprite) body.getUserData();

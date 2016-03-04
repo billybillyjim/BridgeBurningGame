@@ -21,8 +21,8 @@ public class TestJoint{
 
         rJointDef.collideConnected = false;
 
-        rJointDef.localAnchorA.set(0,0);
-        rJointDef.localAnchorB.set(1,1);
+        rJointDef.localAnchorA.set(10,1);
+        rJointDef.localAnchorB.set(35,10);
 
 
     }
