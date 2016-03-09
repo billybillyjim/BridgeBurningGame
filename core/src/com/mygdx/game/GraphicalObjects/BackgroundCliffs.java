@@ -16,8 +16,8 @@ public class BackgroundCliffs {
     private Texture img2;
     private Sprite spriteLeft;
     private Sprite spriteRight;
-    private final float cliffWidth = 64;
-    private final float cliffHeight = 172;
+    private final int cliffWidth = 164;
+    private final int cliffHeight = 172;
 
 
     public void CreateCliffs(Texture texture1, Texture texture2, World world) {
@@ -25,13 +25,16 @@ public class BackgroundCliffs {
         img1 = texture1;
         img2 = texture2;
 
+
         //Creates two Sprites with this image
-        spriteLeft = new Sprite(img1);
-        spriteRight = new Sprite(img2);
+        spriteLeft = new Sprite(img1, cliffWidth, cliffHeight);
+        spriteRight = new Sprite(img2, cliffWidth, cliffHeight);
+
 
         //Places the cliffs on either end of the screen
         spriteLeft.setPosition(0, 0);
         spriteRight.setPosition(800 - spriteRight.getWidth(), 0);
+
 
 
 
@@ -55,6 +58,7 @@ public class BackgroundCliffs {
         shape1.setAsBox(spriteLeft.getWidth(), spriteLeft.getHeight());
         PolygonShape shape2 = new PolygonShape();
         shape2.setAsBox(spriteRight.getWidth(), spriteRight.getHeight());
+
 
 
         //Describes the properties of the fixture
