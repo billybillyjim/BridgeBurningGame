@@ -14,7 +14,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.BackgroundCliffs;
 import com.mygdx.game.GraphicalObjects.BridgeUnit;
 import com.mygdx.game.PhysicalObjects.BridgeJoint;
@@ -23,7 +25,7 @@ import com.mygdx.game.GraphicalObjects.BridgeUnitLink;
 import java.util.ArrayList;
 
 
-public class MainGame implements Screen{
+public class MainGame extends Stage implements Screen{
 
     private final GameLauncher game;
     public final int METER_TO_PIXELS = 50; //50 pixels per each meter
@@ -61,6 +63,8 @@ public class MainGame implements Screen{
     //camera
     private OrthographicCamera camera;
 
+    private FitViewport viewport;
+
 
 
     public MainGame(GameLauncher game){
@@ -83,7 +87,7 @@ public class MainGame implements Screen{
         //the origin (0, 0) of this coordinate system is in the lower left corner by default. It is possible to change
         camera = new OrthographicCamera();
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
-
+        viewport = new FitViewport(SCREEN_WIDTH,SCREEN_HEIGHT,camera);
 
 
 
