@@ -143,7 +143,7 @@ public class MainGame implements Screen{
         //Makes the fire effect
         fireEffect = new ParticleEffect();
         //Loads the effect file from the assets directory
-        fireEffect.load(Gdx.files.internal("EffectAttempt2.p"),Gdx.files.internal("PixelParticle.png"));
+        fireEffect.load(Gdx.files.internal("ParticleEffect4.p"),Gdx.files.internal("PixelParticle2.png"));
         //puts the effect at the given point
         fireEffect.getEmitters().first().setPosition((float)(800.0 / 1.5) , (float) (480 / 1.5));
         fireEffect.start();
