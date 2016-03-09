@@ -10,12 +10,15 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public class BackgroundCliffs {
 
-    Body bodyLeft;
-    Body bodyRight;
-    Texture img1;
-    Texture img2;
-    Sprite spriteLeft;
-    Sprite spriteRight;
+    private Body bodyLeft;
+    private Body bodyRight;
+    private Texture img1;
+    private Texture img2;
+    private Sprite spriteLeft;
+    private Sprite spriteRight;
+    private final float cliffWidth = 64;
+    private final float cliffHeight = 172;
+
 
     public void CreateCliffs(Texture texture1, Texture texture2, World world) {
         // Sets image to one in Texture folder
@@ -52,6 +55,7 @@ public class BackgroundCliffs {
         shape1.setAsBox(spriteLeft.getWidth(), spriteLeft.getHeight());
         PolygonShape shape2 = new PolygonShape();
         shape2.setAsBox(spriteRight.getWidth(), spriteRight.getHeight());
+
 
         //Describes the properties of the fixture
         FixtureDef fixtureDef1 = new FixtureDef();

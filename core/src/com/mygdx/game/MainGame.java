@@ -48,8 +48,8 @@ public class MainGame implements Screen{
     private Box2DDebugRenderer box2DDebugRenderer;
 
 
-    //array with bridge units
-
+    //array with bridge units links
+    ArrayList<BridgeUnitLink> linksAcross;
 
 
 
@@ -214,6 +214,13 @@ public class MainGame implements Screen{
             }
 
         }
+        for(BridgeUnitLink link : linksAcross ){
+            Sprite sprite = link.getSprite();
+            Body body = link.getBody();
+            sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2); //sets position of sprite to the same as the body
+            sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
+            sprite.draw(game.batch);
+        }
 
 
 
@@ -235,7 +242,7 @@ public class MainGame implements Screen{
         float rightCliffWidth = testCliffs.getSpriteRight().getWidth();
         float rightCliffHeight = testCliffs.getSpriteRight().getHeight();
         float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth);
-        System.out.print("predicted Number of units is: " + numberOfBridgeUnits);
+        System.out.print("cliff width" + leftCliffWidth + " cliff Height " + leftCliffHeight);
         for (int i = 0; i < numberOfBridgeUnits; i++) {
             BridgeUnit newUnit = new BridgeUnit();
             bridgeUnitsAcross.add(newUnit);
@@ -245,7 +252,7 @@ public class MainGame implements Screen{
             unit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
             i++;
         }
-        ArrayList<BridgeUnitLink> linksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
+        linksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
         createBridgeLinkJoint(bridgeUnitsAcross, linksAcross);
     }
 
@@ -278,7 +285,7 @@ public class MainGame implements Screen{
         for(int i = 0; i < unitsAcross.size() - 1; i++){
             BridgeUnit unit = unitsAcross.get(i);
             BridgeUnitLink link = new BridgeUnitLink();
-            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH/2, testCliffs.getSpriteLeft().getY() + testCliffs.getSpriteLeft().getHeight());
+            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH/2, testCliffs.getSpriteLeft().getY() + testCliffs.getSpriteLeft().getHeight() + BridgeUnit.HEIGHT/2);
             linksAcross.add(link);
         }
 
@@ -295,10 +302,10 @@ public class MainGame implements Screen{
             BridgeJoint joint = new BridgeJoint();
             BridgeJoint joint2 = new BridgeJoint();
             joint.CreateJoint(unitsAcross.get(i).getBody(), linksAcross.get(i).getBody());
-            joint.getrJointDef().localAnchorB.set(1, 1);
+            joint.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
             world.createJoint(joint.getrJointDef());
-            joint2.CreateJoint(unitsAcross.get(i+1).getBody(), linksAcross.get(i).getBody());
-            joint2.getrJointDef().localAnchorB.set(1, 1);
+            joint2.CreateJoint(unitsAcross.get(i + 1).getBody(), linksAcross.get(i).getBody());
+            joint2.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
             world.createJoint(joint2.getrJointDef());
         }
     }

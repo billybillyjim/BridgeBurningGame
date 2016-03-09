@@ -16,13 +16,13 @@ public class BridgeJoint {
 
         rJointDef = new RevoluteJointDef();
 
-        rJointDef.bodyA = vertexBody;
-        rJointDef.bodyB = bridgeBody;
+        rJointDef.bodyA = bridgeBody;
+        rJointDef.bodyB = vertexBody;
 
         rJointDef.collideConnected = false;
 
         rJointDef.localAnchorA.set(0,0);
-        rJointDef.localAnchorB.set(27,20);
+        rJointDef.localAnchorB.set(0,0);
 
 
     }
