@@ -237,6 +237,12 @@ public class MainGame implements Screen{
 
     private void buildBridge() {
         ArrayList<BridgeUnit> bridgeUnitsAcross = new ArrayList<BridgeUnit>();
+        buildUnitsAcrossCliffs(bridgeUnitsAcross);
+        linksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
+        createBridgeLinkJoint(bridgeUnitsAcross, linksAcross);
+    }
+
+    private void buildUnitsAcrossCliffs(ArrayList<BridgeUnit> bridgeUnitsAcross) {
         float leftCliffWidth =  testCliffs.getSpriteLeft().getWidth();
         float leftCliffHeight = testCliffs.getSpriteLeft().getHeight();
         float rightCliffWidth = testCliffs.getSpriteRight().getWidth();
@@ -252,9 +258,10 @@ public class MainGame implements Screen{
             unit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
             i++;
         }
-        linksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
-        createBridgeLinkJoint(bridgeUnitsAcross, linksAcross);
     }
+
+
+
 
     /**
      * This calculates the number of bridge units necessary to connect both cliffs
