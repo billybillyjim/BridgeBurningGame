@@ -4,6 +4,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 
 /**
@@ -17,7 +21,7 @@ public class BridgeUnit extends Actor{
     public final static int WIDTH = 100;
     public final static int HEIGHT = 20;
 
-    public void CreateTestBridge(Texture texture, World world, float xPosition, float yPosition){
+    public BridgeUnit(Texture texture, World world, float xPosition, float yPosition){
 
         //Sets texture to image in assets folder
         img = texture;
@@ -48,6 +52,19 @@ public class BridgeUnit extends Actor{
         fixtureDef.shape = shape;
         fixtureDef.density = .1f;
         fixtureDef.friction = 0.3f; //0 = like ice, 1 = cannot slide over it at all
+
+        setWidth(sprite.getWidth());
+        setHeight(sprite.getHeight());
+        setBounds(0, 0, getWidth(), getHeight());
+
+        setTouchable(Touchable.enabled);
+        addListener( new InputListener() {
+        @Override
+        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            System.out.println("DONE CLICKED IT YOU DID");
+            return true;
+        }}
+        );
 
 
         body.createFixture(fixtureDef);
