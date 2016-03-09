@@ -143,7 +143,7 @@ public class MainGame implements Screen{
         //Makes the fire effect
         fireEffect = new ParticleEffect();
         //Loads the effect file from the assets directory
-        fireEffect.load(Gdx.files.internal("ParticleEffect4.p"),Gdx.files.internal("PixelParticle2.png"));
+        fireEffect.load(Gdx.files.internal("Effect5.p"),Gdx.files.internal("PixelParticle2.png"));
         //puts the effect at the given point
         fireEffect.getEmitters().first().setPosition((float)(800.0 / 1.5) , (float) (480 / 1.5));
         fireEffect.start();
@@ -162,8 +162,8 @@ public class MainGame implements Screen{
         if(Gdx.input.isTouched()){
             Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
             camera.unproject(pos);
-            fireEffect.getEmitters().first().setPosition(pos.x,pos.y);
-            fireEffect.start();
+            burnWood(pos.x,pos.y);
+            
         }
 
         box2DDebugRenderer.render(world, camera.combined);
@@ -337,7 +337,10 @@ public class MainGame implements Screen{
     }
     public void burnWood(float x, float y){
         testOnClick = true;
-        fireEffect.getEmitters().first().setPosition(x,y);
+        for(int i = 0; i < fireEffect.getEmitters().size; i++) {
+            fireEffect.getEmitters().get(i).setPosition(x,y);
+        }
+        //fireEffect.getEmitters().first().setPosition(x,y);
         fireEffect.start();
     }
 
