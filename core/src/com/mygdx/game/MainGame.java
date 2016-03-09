@@ -128,7 +128,7 @@ public class MainGame extends Stage implements Screen{
         if(Gdx.input.isTouched()){
             Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
             camera.unproject(pos);
-            //burnWood(pos.x, pos.y);
+            burnWood(pos.x, pos.y);
             
         }
 
@@ -149,13 +149,6 @@ public class MainGame extends Stage implements Screen{
         camera.update(); // is generally a good practice to update the camera once per frame
         box2DDebugRenderer.render(world, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
         game.batch.setProjectionMatrix(camera.combined); //tells spriteBatch to use coordinate system set by camera
-        //Makes the sprite follow the body
-
-
-
-
-
-
 
         //makes the fire effect change every frame
         fireEffect.update(Gdx.graphics.getDeltaTime());
