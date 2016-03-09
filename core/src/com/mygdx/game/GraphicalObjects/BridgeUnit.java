@@ -1,7 +1,9 @@
 package com.mygdx.game.GraphicalObjects;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -62,13 +64,12 @@ public class BridgeUnit extends Actor{
         setBounds(0, 0, getWidth(), getHeight());
 
         setTouchable(Touchable.enabled);
-        addListener( new InputListener() {
-        @Override
-        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-            System.out.println("DONE CLICKED IT YOU DID");
-            return true;
-        }}
-        );
+        addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("DONE CLICKED IT YOU DID");
+            }
+        });
 
 
         body.createFixture(fixtureDef);
@@ -112,18 +113,14 @@ public class BridgeUnit extends Actor{
         fixtureDef.density = .1f;
         fixtureDef.friction = 0.3f; //0 = like ice, 1 = cannot slide over it at all
 
-        setWidth(sprite.getWidth());
-        setHeight(sprite.getHeight());
-        setBounds(0, 0, getWidth(), getHeight());
-
         setTouchable(Touchable.enabled);
-        addListener( new InputListener() {
+        addListener(new ClickListener() {
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            public void clicked(InputEvent event, float x, float y) {
+
                 System.out.println("DONE CLICKED IT YOU DID");
-                return true;
-            }}
-        );
+            }
+        });
 
 
         body.createFixture(fixtureDef);
@@ -132,7 +129,19 @@ public class BridgeUnit extends Actor{
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
         body.setUserData(sprite); //adds sprite to the user data (creates an association between the sprite and the body)
 
+        setWidth(sprite.getWidth());
+        setHeight(sprite.getHeight());
+
+
         shape.dispose();
+    }
+
+    @Override
+    public void draw(Batch batch, float ParentAlpha){
+        sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2); //sets position of sprite to the same as the body
+        sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
+        setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
+        sprite.draw(batch);
     }
 
     public Body getBody(){

@@ -2,15 +2,19 @@ package com.mygdx.game.GraphicalObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
 /**
  * Created by Luke on 2/22/2016.
  */
-public class BridgeUnitLink {
+public class BridgeUnitLink extends Actor {
+
 
     Body body;
     Texture img;
@@ -64,6 +68,15 @@ public class BridgeUnitLink {
 
         shape.dispose();
     }
+
+    @Override
+    public void draw(Batch batch, float ParentAlpha){
+        sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2); //sets position of sprite to the same as the body
+        sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
+        setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
+        sprite.draw(batch);
+    }
+
 
     public Body getBody(){
         return this.body;

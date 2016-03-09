@@ -14,7 +14,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.BackgroundCliffs;
@@ -88,6 +90,7 @@ public class MainGame extends Stage implements Screen{
         camera = new OrthographicCamera();
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
         viewport = new FitViewport(SCREEN_WIDTH,SCREEN_HEIGHT,camera);
+        setViewport(viewport);
 
 
 
@@ -97,52 +100,11 @@ public class MainGame extends Stage implements Screen{
         bodiesInTheWorld = new Array<Body>();
 
 
-        /*
-        bridgeUnit.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("DONE CLICKED IT YOU DID");
-                burnWood(x,y);
-            }
-        });
-        */
-
-        //initialize array of bridge units
-
-
-
-
-        // ALL JOINT STUFF
-
-
-
         testCliffs = new BackgroundCliffs();
         testCliffs.CreateCliffs(img3, img4, world);
 
         //new bridge uni
         buildBridge();
-        //new joint connecting left cliff to bridge
-        BridgeJoint leftCliffToUnitJoint = new BridgeJoint();
-      //  leftCliffToUnitJoint.CreateJoint(newUnit.getBody(), testCliffs.getBodyLeft());
-        //leftCliffToUnitJoint.getrJointDef().localAnchorA.set(testCliffs.getSpriteLeft().getWidth(), testCliffs.getSpriteLeft().getHeight());
-        //leftCliffToUnitJoint.getrJointDef().localAnchorB.set(-45, 20);
-        //world.createJoint(leftCliffToUnitJoint.getrJointDef());
-
-        //create new link between two brigde pieces
-/*
-        BridgeUnitLink link1 = new BridgeUnitLink();
-        //link1.CreateVertex(img2, world, testCliffs.getSpriteLeft().getWidth() + newUnit.getSprite().getWidth(), testCliffs.getSpriteLeft().getHeight());
-
-        //create joint between link1 and newUnit
-        BridgeJoint unitToLink = new BridgeJoint();
-     //   unitToLink.CreateJoint(link1.getBody(), newUnit.getBody());
-        unitToLink.getrJointDef().localAnchorA.set(0, 0);
-        unitToLink.getrJointDef().localAnchorB.set(0, -45);
-        world.createJoint(unitToLink.getrJointDef());
-*/
-
-
-
 
         //Makes the fire effect
         fireEffect = new ParticleEffect();
@@ -166,7 +128,7 @@ public class MainGame extends Stage implements Screen{
         if(Gdx.input.isTouched()){
             Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
             camera.unproject(pos);
-            burnWood(pos.x,pos.y);
+            //burnWood(pos.x, pos.y);
             
         }
 
@@ -180,6 +142,9 @@ public class MainGame extends Stage implements Screen{
         //sets the background color
         Gdx.gl.glClearColor(0.52f, 0.80f, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        act(delta);
+        draw();
 
         camera.update(); // is generally a good practice to update the camera once per frame
         box2DDebugRenderer.render(world, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
@@ -197,6 +162,8 @@ public class MainGame extends Stage implements Screen{
 
         world.getBodies(bodiesInTheWorld); //gets all the bodies in the world and adds then to the array bodiesInTheWorld
 
+
+
         //draws the actual frame
         game.batch.begin();
 
@@ -207,24 +174,6 @@ public class MainGame extends Stage implements Screen{
         game.font.draw(game.batch, Boolean.toString(testOnClick), 200, 100);
 
         fireEffect.draw(game.batch);
-
-        //Used to draw all moving sprites in bodies in the world (As of now it is just drawing the Bridge sprite in its body)
-        for(Body body : bodiesInTheWorld){
-            if(body.getUserData() != null && body.getUserData() instanceof Sprite){
-                Sprite sprite = (Sprite) body.getUserData();
-                sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2); //sets position of sprite to the same as the body
-                sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
-                sprite.draw(game.batch);
-            }
-
-        }
-        for(BridgeUnitLink link : linksAcross ){
-            Sprite sprite = link.getSprite();
-            Body body = link.getBody();
-            sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2); //sets position of sprite to the same as the body
-            sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
-            sprite.draw(game.batch);
-        }
 
 
 
@@ -260,6 +209,7 @@ public class MainGame extends Stage implements Screen{
         int i = 0;
         for (BridgeUnit unit : bridgeUnitsAcross) {
             unit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
+            addActor(unit);
             i++;
         }
     }
@@ -293,11 +243,13 @@ public class MainGame extends Stage implements Screen{
         ArrayList<BridgeUnitLink> linksAcross = new ArrayList<BridgeUnitLink>();
         //for every unit in the array of Bridge units it creates a link and adds it to the array of links.
         // It does not create a new link to the last  unit in the array of units.
-        for(int i = 0; i < unitsAcross.size() - 1; i++){
+        for(int i = 0; i < unitsAcross.size()-1; i++){
             BridgeUnit unit = unitsAcross.get(i);
             BridgeUnitLink link = new BridgeUnitLink();
-            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH/2, testCliffs.getSpriteLeft().getY() + testCliffs.getSpriteLeft().getHeight() + BridgeUnit.HEIGHT/2);
+            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH / 2, testCliffs.getSpriteLeft().getY() + testCliffs.getSpriteLeft().getHeight() + BridgeUnit.HEIGHT/2);
             linksAcross.add(link);
+            addActor(link);
+
         }
 
         return linksAcross;
@@ -318,20 +270,22 @@ public class MainGame extends Stage implements Screen{
             joint2.CreateJoint(unitsAcross.get(i + 1).getBody(), linksAcross.get(i).getBody());
             joint2.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
             world.createJoint(joint2.getrJointDef());
+
         }
     }
 
 
     @Override
     public void show() {
-
+        System.out.println("show called");
+        Gdx.input.setInputProcessor(this);
     }
 
 
 
     @Override
     public void resize(int width, int height){
-
+        getViewport().update(width, height, true);
     }
     @Override
     public void pause(){
