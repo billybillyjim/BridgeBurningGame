@@ -29,8 +29,7 @@ public class BridgeUnitLink extends Actor {
         sprite = new Sprite(img);
 
         //sets the sprite position based on screen size
-        sprite.setPosition(xPosition,
-                yPosition);
+        sprite.setPosition(xPosition, yPosition);
 
         //Makes a physics body
         BodyDef bodyDef = new BodyDef();

@@ -142,7 +142,7 @@ public class MainGame extends Stage implements Screen{
         //sets the background color
         Gdx.gl.glClearColor(0.52f, 0.80f, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        //The stage (this class) knows about all its actors.. the methods below are responsible to draw all actors in the stage
         act(delta);
         draw();
 
@@ -186,6 +186,7 @@ public class MainGame extends Stage implements Screen{
         buildUnitsAcrossCliffs(bridgeUnitsAcross);
         linksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
         createBridgeLinkJoint(bridgeUnitsAcross, linksAcross);
+        createBridgeUnitPillars(linksAcross);
     }
 
     private void buildUnitsAcrossCliffs(ArrayList<BridgeUnit> bridgeUnitsAcross) {
@@ -265,6 +266,63 @@ public class MainGame extends Stage implements Screen{
             world.createJoint(joint2.getrJointDef());
 
         }
+    }
+
+    private void createBridgeUnitPillars(ArrayList<BridgeUnitLink> linksAcross){
+        ArrayList<BridgeUnit> pillarLeft = new ArrayList<BridgeUnit>();
+        ArrayList<BridgeUnit> pillarRight = new ArrayList<BridgeUnit>();
+        Sprite linkLeft = linksAcross.get(0).getSprite();
+        Sprite linkRight = linksAcross.get(linksAcross.size()-1).getSprite();
+        createPillar(pillarLeft, linkLeft);
+        createPillar(pillarRight, linkRight);
+
+        BridgeUnitLink newLinkLeft = createLinkPillars(pillarLeft);
+        createJointsPillars(linksAcross.get(0), pillarLeft, newLinkLeft);
+        BridgeUnitLink newLinkRight = createLinkPillars(pillarRight);
+        createJointsPillars(linksAcross.get(linksAcross.size()-1), pillarRight, newLinkRight);
+
+    }
+
+    private void createPillar(ArrayList<BridgeUnit> pillarLeft, Sprite linkLeft) {
+        BridgeUnit left1 = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
+        left1.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH / 2, MathUtils.PI / 2);
+        addActor(left1);
+        pillarLeft.add(left1);
+        BridgeUnit left2 = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
+        left2.getBody().setTransform(left1.getSprite().getX(), left1.getSprite().getY() + BridgeUnit.WIDTH * 1.5f, MathUtils.PI / 2);
+        addActor(left2);
+        pillarLeft.add(left2);
+        System.out.println("\n left 1 x" + left1.getSprite().getX() + " left1 y:  " + left1.getSprite().getY());
+        System.out.println("\n left 2 x" + left2.getSprite().getX() + " left2 y:  " + left2.getSprite().getY());
+    }
+
+    private BridgeUnitLink createLinkPillars(ArrayList<BridgeUnit> pillarUnits){
+        BridgeUnit unit = pillarUnits.get(0);
+        BridgeUnitLink link = new BridgeUnitLink();
+        link.CreateVertex(img2, world, unit.getSprite().getX(), unit.getSprite().getY() + BridgeUnit.WIDTH);
+        addActor(link);
+
+        return link;
+    }
+
+    private void createJointsPillars(BridgeUnitLink linkBottom, ArrayList<BridgeUnit> pillarUnits, BridgeUnitLink linkMiddle){
+        Body linkBody = linkBottom.getBody();
+        Body unitBody = pillarUnits.get(0).getBody();
+        BridgeJoint joint = new BridgeJoint();
+        joint.CreateJoint(unitBody, linkBody);
+        joint.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
+        world.createJoint(joint.getrJointDef());
+        System.out.println("joints linkbody: " + linkBody.getJointList().size);
+        Body linkBody2 = linkMiddle.getBody();
+        BridgeJoint joint1 = new BridgeJoint();
+        joint1.CreateJoint(unitBody, linkBody2);
+        joint1.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
+        world.createJoint(joint1.getrJointDef());
+        Body unitBody2 = pillarUnits.get(1).getBody();
+        BridgeJoint joint3 = new BridgeJoint();
+        joint3.CreateJoint(unitBody2, linkBody2);
+        joint3.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
+        world.createJoint(joint3.getrJointDef());
     }
 
 
