@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -95,7 +97,7 @@ public class MainGame extends Stage implements Screen{
 
 
         //Makes a box2d physics environment that sets gravity
-        world = new World(new Vector2(0, -981f), true);
+        world = new World(new Vector2(0, -9.81f), true);
         box2DDebugRenderer = new Box2DDebugRenderer();
         bodiesInTheWorld = new Array<Body>();
 
@@ -109,10 +111,12 @@ public class MainGame extends Stage implements Screen{
         //Makes the fire effect
         fireEffect = new ParticleEffect();
         //Loads the effect file from the assets directory
-        fireEffect.load(Gdx.files.internal("Effect5.p"),Gdx.files.internal("PixelParticle2.png"));
+        fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
         //puts the effect at the given point
-        fireEffect.getEmitters().first().setPosition((float)(800.0 / 1.5) , (float) (480 / 1.5));
+        fireEffect.getEmitters().first().setPosition((float) (800.0 / 1.5), (float) (480 / 1.5));
         fireEffect.start();
+
+
 
 
     }
@@ -283,7 +287,9 @@ public class MainGame extends Stage implements Screen{
         BridgeUnitLink newLinkLeft = createLinkPillars(pillarLeft);
         createJointsPillars(linksAcross.get(0), pillarLeft, newLinkLeft);
         BridgeUnitLink newLinkRight = createLinkPillars(pillarRight);
-        createJointsPillars(linksAcross.get(linksAcross.size()-1), pillarRight, newLinkRight);
+        createJointsPillars(linksAcross.get(linksAcross.size() - 1), pillarRight, newLinkRight);
+
+        createRope(pillarLeft.get(1), pillarRight.get(1));
 
     }
 
@@ -350,6 +356,60 @@ public class MainGame extends Stage implements Screen{
         joint3.CreateJoint(unitBody2, linkBody2);
         joint3.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
         world.createJoint(joint3.getrJointDef());
+    }
+
+    /**
+     * Creates the rope like thing between the pillars. It is actually a series of bodies connected
+     * through revolute joints. I will make these its own class so we can make it an actor and all :D
+     * @param leftPillarUnit
+     * @param rightPillarUnit
+     */
+    private void createRope(BridgeUnit leftPillarUnit, BridgeUnit rightPillarUnit ){
+        int widthRopeSegment = 5;
+        int heightRopeSegment = 30;
+        int extraRopeSegments = 1;
+        float numberOfRopeUnits = (rightPillarUnit.getSprite().getX() - leftPillarUnit.getSprite().getX()) / heightRopeSegment;
+        numberOfRopeUnits += extraRopeSegments;
+        Body[] ropeSegments = new Body[(int)numberOfRopeUnits];
+        RevoluteJoint[] joints = new RevoluteJoint[(int) numberOfRopeUnits - 1];
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(widthRopeSegment / 2, heightRopeSegment / 2);
+
+        for(int i = 0; i < ropeSegments.length; i++){
+            ropeSegments[i] = world.createBody(bodyDef);
+            ropeSegments[i].createFixture(shape, .2f);
+        }
+
+        RevoluteJointDef jointDef = new RevoluteJointDef();
+        jointDef.localAnchorA.y = -heightRopeSegment / 2;
+        jointDef.localAnchorB.y = heightRopeSegment / 2;
+
+        for(int i = 0; i < joints.length; i++){
+            jointDef.bodyA = ropeSegments[i];
+            jointDef.bodyB = ropeSegments[i + 1];
+            joints[i] = (RevoluteJoint) world.createJoint(jointDef);
+        }
+
+        Body leftUnitBody = leftPillarUnit.getBody();
+        jointDef.bodyA = leftUnitBody;
+        jointDef.localAnchorA.set(BridgeUnit.WIDTH / 2, -BridgeUnit.HEIGHT/2);
+        jointDef.bodyB = ropeSegments[0];
+        world.createJoint(jointDef);
+
+        Body rightUnitBody = rightPillarUnit.getBody();
+        jointDef.bodyA = rightUnitBody;
+        jointDef.localAnchorA.y = BridgeUnit.HEIGHT/2;
+        jointDef.localAnchorB.y = -heightRopeSegment/2;
+        jointDef.bodyB = ropeSegments[ropeSegments.length-1];
+        world.createJoint(jointDef);
+
+
     }
 
 

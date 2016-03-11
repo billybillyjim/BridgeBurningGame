@@ -56,7 +56,7 @@ public class BridgeUnit extends Actor{
         //Describes the properties of the fixture
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = .1f;
+        fixtureDef.density = 10f;
         fixtureDef.friction = 0.3f; //0 = like ice, 1 = cannot slide over it at all
 
         setWidth(sprite.getWidth());
