@@ -10,14 +10,19 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
  */
 public class BridgeJoint {
 
+    Body bridgeBody;
+    Body vertexBody;
     RevoluteJointDef rJointDef;
 
     public void CreateJoint(Body bridgeBody, Body vertexBody){
 
         rJointDef = new RevoluteJointDef();
 
-        rJointDef.bodyA = bridgeBody;
-        rJointDef.bodyB = vertexBody;
+        this.bridgeBody = bridgeBody;
+        this.vertexBody = vertexBody;
+
+        rJointDef.bodyA = this.bridgeBody;
+        rJointDef.bodyB = this.vertexBody;
 
         rJointDef.collideConnected = false;
 
@@ -30,4 +35,7 @@ public class BridgeJoint {
     public RevoluteJointDef getrJointDef() {
         return rJointDef;
     }
+
+    public Body getBridgeBody(){return this.bridgeBody;}
+    public Body getVertexBody(){return this.vertexBody;}
 }

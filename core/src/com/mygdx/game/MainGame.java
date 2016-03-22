@@ -36,6 +36,7 @@ public class MainGame extends Stage implements Screen{
     private final int SCREEN_WIDTH = 800;
     private final int SCREEN_HEIGHT = 480;
 
+    private ArrayList<ParticleEffect> particleEffects;
 
     private ParticleEffect fireEffect;
 
@@ -45,19 +46,14 @@ public class MainGame extends Stage implements Screen{
     private Texture img4;
     private World world;
 
-
-    private BridgeUnit bridgeUnit;
-    private BridgeUnitLink testPivot;
-    private BridgeJoint bridgeJoint;
     private BackgroundCliffs testCliffs;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
-
     //array with bridge units links
     ArrayList<BridgeUnitLink> linksAcross;
 
-
+    private FireHandler fireHandler;
 
     private boolean testOnClick = false;
 
@@ -66,9 +62,7 @@ public class MainGame extends Stage implements Screen{
 
     //camera
     private OrthographicCamera camera;
-
     private FitViewport viewport;
-
 
 
     public MainGame(GameLauncher game){
@@ -84,7 +78,7 @@ public class MainGame extends Stage implements Screen{
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
 
-
+        fireHandler = new FireHandler();
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a world that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
@@ -116,7 +110,10 @@ public class MainGame extends Stage implements Screen{
         fireEffect.getEmitters().first().setPosition((float) (800.0 / 1.5), (float) (480 / 1.5));
         fireEffect.start();
 
+        particleEffects = new ArrayList<ParticleEffect>();
+        particleEffects.add(fireEffect);
 
+        fireHandler.burn();
 
 
     }
@@ -155,7 +152,13 @@ public class MainGame extends Stage implements Screen{
         game.batch.setProjectionMatrix(camera.combined); //tells spriteBatch to use coordinate system set by camera
 
         //makes the fire effect change every frame
-        fireEffect.update(Gdx.graphics.getDeltaTime());
+        //fireEffect.update(Gdx.graphics.getDeltaTime());
+        if(!particleEffects.isEmpty()) {
+            for (ParticleEffect fire : particleEffects) {
+                fire.update(Gdx.graphics.getDeltaTime());
+            }
+        }
+
 
         world.getBodies(bodiesInTheWorld); //gets all the bodies in the world and adds then to the array bodiesInTheWorld
 
@@ -171,8 +174,6 @@ public class MainGame extends Stage implements Screen{
         game.font.draw(game.batch, Boolean.toString(testOnClick), 200, 100);
 
         fireEffect.draw(game.batch);
-
-
 
 
         game.batch.end();
@@ -199,15 +200,22 @@ public class MainGame extends Stage implements Screen{
         float rightCliffWidth = testCliffs.getSpriteRight().getWidth();
         float rightCliffHeight = testCliffs.getSpriteRight().getHeight();
         float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth);
-        System.out.print("cliff width" + leftCliffWidth + " cliff Height " + leftCliffHeight);
+        //System.out.print("cliff width" + leftCliffWidth + " cliff Height " + leftCliffHeight);
         for (int i = 0; i < numberOfBridgeUnits; i++) {
-            BridgeUnit newUnit = new BridgeUnit();
+            //BridgeUnit newUnit = new BridgeUnit();
+            //BridgeUnit newUnit = new BridgeUnit(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
+            BridgeUnit newUnit = makeBridgeUnit(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
+
             bridgeUnitsAcross.add(newUnit);
+
+
         }
         int i = 0;
         for (BridgeUnit unit : bridgeUnitsAcross) {
-            unit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
-            addActor(unit);
+            //unit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
+
+            //addActor(unit);
+
             i++;
         }
     }
@@ -308,8 +316,8 @@ public class MainGame extends Stage implements Screen{
         left2.getBody().setTransform(left1.getSprite().getX(), left1.getSprite().getY() + BridgeUnit.WIDTH * 1.5f, MathUtils.PI / 2);
         addActor(left2);
         pillarUnits.add(left2);
-        System.out.println("\n left 1 x" + left1.getSprite().getX() + " left1 y:  " + left1.getSprite().getY());
-        System.out.println("\n left 2 x" + left2.getSprite().getX() + " left2 y:  " + left2.getSprite().getY());
+        //System.out.println("\n left 1 x" + left1.getSprite().getX() + " left1 y:  " + left1.getSprite().getY());
+        //System.out.println("\n left 2 x" + left2.getSprite().getX() + " left2 y:  " + left2.getSprite().getY());
     }
 
     /**
@@ -341,7 +349,7 @@ public class MainGame extends Stage implements Screen{
         joint.CreateJoint(unitBody, linkBody);
         joint.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
         world.createJoint(joint.getrJointDef());
-        System.out.println("joints linkbody: " + linkBody.getJointList().size);
+        //System.out.println("joints linkbody: " + linkBody.getJointList().size);
 
         //joint between first unit of the pillar and link in the middle
         Body linkBody2 = linkMiddle.getBody();
@@ -415,7 +423,7 @@ public class MainGame extends Stage implements Screen{
 
     @Override
     public void show() {
-        System.out.println("show called");
+
         Gdx.input.setInputProcessor(this);
     }
 
@@ -440,11 +448,22 @@ public class MainGame extends Stage implements Screen{
     }
     public void burnWood(float x, float y){
         testOnClick = true;
-        for(int i = 0; i < fireEffect.getEmitters().size; i++) {
-            fireEffect.getEmitters().get(i).setPosition(x,y);
-        }
-        //fireEffect.getEmitters().first().setPosition(x,y);
+
+        fireEffect = new ParticleEffect();
+        //Loads the effect file from the assets directory
+        fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
+
+        fireEffect.getEmitters().first().setPosition(x,y);
         fireEffect.start();
+
+        fireEffect.reset();
+    }
+
+    public BridgeUnit makeBridgeUnit(Texture texture, World world, float xPosition, float yPosition){
+        BridgeUnit unit = new BridgeUnit(texture, world, xPosition,yPosition);
+        addActor(unit);
+        fireHandler.addBridgeUnit(unit);
+        return unit;
     }
 
 }

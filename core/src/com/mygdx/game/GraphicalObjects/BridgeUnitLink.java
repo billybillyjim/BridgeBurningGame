@@ -20,6 +20,8 @@ public class BridgeUnitLink extends Actor {
     Texture img;
     Sprite sprite;
 
+    private boolean onFire;
+
     public void CreateVertex(Texture texture, World world, float xPosition, float yPosition){
 
 
@@ -83,6 +85,9 @@ public class BridgeUnitLink extends Actor {
     public Sprite getSprite(){
         return this.sprite;
     }
+    public boolean getOnFire(){return this.onFire;}
+
+
 
 }
 

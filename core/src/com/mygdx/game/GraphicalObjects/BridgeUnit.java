@@ -20,6 +20,7 @@ public class BridgeUnit extends Actor{
     private Body body;
     private Texture img;
     private Sprite sprite;
+    private boolean onFire;
     public final static int WIDTH = 100;
     public final static int HEIGHT = 20;
 
@@ -67,6 +68,7 @@ public class BridgeUnit extends Actor{
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                onFire = true;
                 System.out.println("DONE CLICKED IT YOU DID");
             }
         });
@@ -117,7 +119,7 @@ public class BridgeUnit extends Actor{
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                onFire = true;
                 System.out.println("DONE CLICKED IT YOU DID");
             }
         });
@@ -150,5 +152,8 @@ public class BridgeUnit extends Actor{
     public Sprite getSprite(){
         return  this.sprite;
     }
+    public boolean getOnFire(){return this.onFire;}
+
+    public void setOnFire(){this.onFire = true;}
 
 }
