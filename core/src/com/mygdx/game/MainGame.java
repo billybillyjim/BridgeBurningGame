@@ -9,16 +9,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.BackgroundCliffs;
@@ -27,7 +21,6 @@ import com.mygdx.game.PhysicalObjects.BridgeJoint;
 import com.mygdx.game.GraphicalObjects.BridgeUnitLink;
 
 import java.util.ArrayList;
-
 
 public class MainGame extends Stage implements Screen{
 
@@ -49,7 +42,7 @@ public class MainGame extends Stage implements Screen{
     private BridgeUnit bridgeUnit;
     private BridgeUnitLink testPivot;
     private BridgeJoint bridgeJoint;
-    private BackgroundCliffs testCliffs;
+    private BackgroundCliffs cliffs;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
@@ -57,10 +50,7 @@ public class MainGame extends Stage implements Screen{
     //array with bridge units links
     ArrayList<BridgeUnitLink> linksAcross;
 
-
-
     private boolean testOnClick = false;
-
 
     private Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
 
@@ -68,8 +58,6 @@ public class MainGame extends Stage implements Screen{
     private OrthographicCamera camera;
 
     private FitViewport viewport;
-
-
 
     public MainGame(GameLauncher game){
 
@@ -85,7 +73,6 @@ public class MainGame extends Stage implements Screen{
         img4 = new Texture("RightCliff.png");
 
 
-
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a world that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
         //the origin (0, 0) of this coordinate system is in the lower left corner by default. It is possible to change
@@ -95,15 +82,14 @@ public class MainGame extends Stage implements Screen{
         setViewport(viewport);
 
 
-
         //Makes a box2d physics environment that sets gravity
-        world = new World(new Vector2(0, -9.81f), true);
+        world = new World(new Vector2(0, -981f), true);
         box2DDebugRenderer = new Box2DDebugRenderer();
         bodiesInTheWorld = new Array<Body>();
 
 
-        testCliffs = new BackgroundCliffs();
-        testCliffs.CreateCliffs(img3, img4, world);
+        cliffs = new BackgroundCliffs();
+        cliffs.CreateCliffs(img3, img4, world);
 
         //new bridge uni
         buildBridge();
@@ -111,12 +97,10 @@ public class MainGame extends Stage implements Screen{
         //Makes the fire effect
         fireEffect = new ParticleEffect();
         //Loads the effect file from the assets directory
-        fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
+        fireEffect.load(Gdx.files.internal("Effect5.p"),Gdx.files.internal("PixelParticle2.png"));
         //puts the effect at the given point
-        fireEffect.getEmitters().first().setPosition((float) (800.0 / 1.5), (float) (480 / 1.5));
+        fireEffect.getEmitters().first().setPosition((float)(800.0 / 1.5) , (float) (480 / 1.5));
         fireEffect.start();
-
-
 
 
     }
@@ -133,7 +117,6 @@ public class MainGame extends Stage implements Screen{
             Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
             camera.unproject(pos);
             burnWood(pos.x, pos.y);
-            
         }
 
         box2DDebugRenderer.render(world, camera.combined);
@@ -142,11 +125,10 @@ public class MainGame extends Stage implements Screen{
         world.step(Gdx.graphics.getDeltaTime(), 6, 2);
 
 
-
         //sets the background color
         Gdx.gl.glClearColor(0.52f, 0.80f, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //The stage (this class) knows about all its actors.. the methods below are responsible to draw all actors in the stage
+
         act(delta);
         draw();
 
@@ -164,20 +146,14 @@ public class MainGame extends Stage implements Screen{
         //draws the actual frame
         game.batch.begin();
 
-
-        game.batch.draw(testCliffs.getSpriteLeft(), testCliffs.getSpriteLeft().getX(), testCliffs.getSpriteLeft().getY());
-        game.batch.draw(testCliffs.getSpriteRight(), testCliffs.getSpriteRight().getX(), testCliffs.getSpriteRight().getY());
+        game.batch.draw(cliffs.getSpriteLeft(), cliffs.getSpriteLeft().getX(), cliffs.getSpriteLeft().getY());
+        game.batch.draw(cliffs.getSpriteRight(), cliffs.getSpriteRight().getX(), cliffs.getSpriteRight().getY());
 
         game.font.draw(game.batch, Boolean.toString(testOnClick), 200, 100);
 
         fireEffect.draw(game.batch);
 
-
-
-
         game.batch.end();
-
-
 
     }
 
@@ -190,30 +166,26 @@ public class MainGame extends Stage implements Screen{
         buildUnitsAcrossCliffs(bridgeUnitsAcross);
         linksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
         createBridgeLinkJoint(bridgeUnitsAcross, linksAcross);
-        createBridgeUnitPillars(linksAcross);
     }
 
     private void buildUnitsAcrossCliffs(ArrayList<BridgeUnit> bridgeUnitsAcross) {
-        float leftCliffWidth =  testCliffs.getSpriteLeft().getWidth();
-        float leftCliffHeight = testCliffs.getSpriteLeft().getHeight();
-        float rightCliffWidth = testCliffs.getSpriteRight().getWidth();
-        float rightCliffHeight = testCliffs.getSpriteRight().getHeight();
+        float leftCliffWidth =  cliffs.getSpriteLeft().getWidth();
+        float leftCliffHeight = cliffs.getSpriteLeft().getHeight();
+        float rightCliffWidth = cliffs.getSpriteRight().getWidth();
+        float rightCliffHeight = cliffs.getSpriteRight().getHeight();
         float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth);
-        System.out.print("cliff width" + leftCliffWidth + " cliff Height " + leftCliffHeight);
+        System.out.println("cliff width " + leftCliffWidth + " cliff Height " + leftCliffHeight);
         for (int i = 0; i < numberOfBridgeUnits; i++) {
             BridgeUnit newUnit = new BridgeUnit();
             bridgeUnitsAcross.add(newUnit);
         }
         int i = 0;
         for (BridgeUnit unit : bridgeUnitsAcross) {
-            unit.CreateTestBridge(img, world, testCliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), testCliffs.getSpriteLeft().getY() + leftCliffHeight);
+            unit.CreateTestBridge(img, world, cliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
             addActor(unit);
             i++;
         }
     }
-
-
-
 
     /**
      * This calculates the number of bridge units necessary to connect both cliffs
@@ -244,10 +216,9 @@ public class MainGame extends Stage implements Screen{
         for(int i = 0; i < unitsAcross.size()-1; i++){
             BridgeUnit unit = unitsAcross.get(i);
             BridgeUnitLink link = new BridgeUnitLink();
-            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH / 2, testCliffs.getSpriteLeft().getY() + testCliffs.getSpriteLeft().getHeight() + BridgeUnit.HEIGHT/2);
+            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH / 2, cliffs.getSpriteLeft().getY() + cliffs.getSpriteLeft().getHeight() + BridgeUnit.HEIGHT/2);
             linksAcross.add(link);
             addActor(link);
-
         }
 
         return linksAcross;
@@ -272,153 +243,12 @@ public class MainGame extends Stage implements Screen{
         }
     }
 
-    /**
-     * method responsible for organinizing and calling all  methods to create the pillars of the bridges
-     * @param linksAcross
-     */
-    private void createBridgeUnitPillars(ArrayList<BridgeUnitLink> linksAcross){
-        ArrayList<BridgeUnit> pillarLeft = new ArrayList<BridgeUnit>(); //pillar of the left
-        ArrayList<BridgeUnit> pillarRight = new ArrayList<BridgeUnit>();   //pillar of the right
-        Sprite linkLeft = linksAcross.get(0).getSprite(); //the left pillar is created in the x location of the first unit that is across the cliff
-        Sprite linkRight = linksAcross.get(linksAcross.size()-1).getSprite(); //the right pillar is created in the x location of the last unit that is across the cliff
-        createPillar(pillarLeft, linkLeft);
-        createPillar(pillarRight, linkRight);
-
-        BridgeUnitLink newLinkLeft = createLinkPillars(pillarLeft);
-        createJointsPillars(linksAcross.get(0), pillarLeft, newLinkLeft);
-        BridgeUnitLink newLinkRight = createLinkPillars(pillarRight);
-        createJointsPillars(linksAcross.get(linksAcross.size() - 1), pillarRight, newLinkRight);
-
-        createRope(pillarLeft.get(1), pillarRight.get(1));
-
-    }
-
-    /**
-     * this method actually creates a pillar
-     * @param pillarUnits
-     * @param linkLeft
-     */
-
-    private void createPillar(ArrayList<BridgeUnit> pillarUnits, Sprite linkLeft) {
-        BridgeUnit left1 = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
-        left1.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH / 2, MathUtils.PI / 2);
-        addActor(left1);
-        pillarUnits.add(left1);
-        BridgeUnit left2 = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
-        left2.getBody().setTransform(left1.getSprite().getX(), left1.getSprite().getY() + BridgeUnit.WIDTH * 1.5f, MathUtils.PI / 2);
-        addActor(left2);
-        pillarUnits.add(left2);
-        System.out.println("\n left 1 x" + left1.getSprite().getX() + " left1 y:  " + left1.getSprite().getY());
-        System.out.println("\n left 2 x" + left2.getSprite().getX() + " left2 y:  " + left2.getSprite().getY());
-    }
-
-    /**
-     * This method creates the link between the 2 units in the pillar
-     * @param pillarUnits
-     * @return
-     */
-    private BridgeUnitLink createLinkPillars(ArrayList<BridgeUnit> pillarUnits){
-        BridgeUnit unit = pillarUnits.get(0);
-        BridgeUnitLink link = new BridgeUnitLink();
-        link.CreateVertex(img2, world, unit.getSprite().getX(), unit.getSprite().getY() + BridgeUnit.WIDTH);
-        addActor(link);
-
-        return link;
-    }
-
-    /**
-     * this method creates the joint between the links and the bridge units of the pillars
-     * @param linkBottom this is the link between at the base of the pillar
-     * @param pillarUnits this is the array with the bridge units of the pillar
-     * @param linkMiddle this is the link between the two bridge units of the pillar
-     */
-    private void createJointsPillars(BridgeUnitLink linkBottom, ArrayList<BridgeUnit> pillarUnits, BridgeUnitLink linkMiddle){
-        Body linkBody = linkBottom.getBody();
-        Body unitBody = pillarUnits.get(0).getBody();
-
-        //joint between link at the base and first bridge unit of the pillar
-        BridgeJoint joint = new BridgeJoint();
-        joint.CreateJoint(unitBody, linkBody);
-        joint.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
-        world.createJoint(joint.getrJointDef());
-        System.out.println("joints linkbody: " + linkBody.getJointList().size);
-
-        //joint between first unit of the pillar and link in the middle
-        Body linkBody2 = linkMiddle.getBody();
-        BridgeJoint joint1 = new BridgeJoint();
-        joint1.CreateJoint(unitBody, linkBody2);
-        joint1.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
-        world.createJoint(joint1.getrJointDef());
-
-        //joint between second unit of the pillar and link in the middle
-        Body unitBody2 = pillarUnits.get(1).getBody();
-        BridgeJoint joint3 = new BridgeJoint();
-        joint3.CreateJoint(unitBody2, linkBody2);
-        joint3.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
-        world.createJoint(joint3.getrJointDef());
-    }
-
-    /**
-     * Creates the rope like thing between the pillars. It is actually a series of bodies connected
-     * through revolute joints. I will make these its own class so we can make it an actor and all :D
-     * @param leftPillarUnit
-     * @param rightPillarUnit
-     */
-    private void createRope(BridgeUnit leftPillarUnit, BridgeUnit rightPillarUnit ){
-        int widthRopeSegment = 5;
-        int heightRopeSegment = 30;
-        int extraRopeSegments = 1;
-        float numberOfRopeUnits = (rightPillarUnit.getSprite().getX() - leftPillarUnit.getSprite().getX()) / heightRopeSegment;
-        numberOfRopeUnits += extraRopeSegments;
-        Body[] ropeSegments = new Body[(int)numberOfRopeUnits];
-        RevoluteJoint[] joints = new RevoluteJoint[(int) numberOfRopeUnits - 1];
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(widthRopeSegment / 2, heightRopeSegment / 2);
-
-        for(int i = 0; i < ropeSegments.length; i++){
-            ropeSegments[i] = world.createBody(bodyDef);
-            ropeSegments[i].createFixture(shape, .2f);
-        }
-
-        RevoluteJointDef jointDef = new RevoluteJointDef();
-        jointDef.localAnchorA.y = -heightRopeSegment / 2;
-        jointDef.localAnchorB.y = heightRopeSegment / 2;
-
-        for(int i = 0; i < joints.length; i++){
-            jointDef.bodyA = ropeSegments[i];
-            jointDef.bodyB = ropeSegments[i + 1];
-            joints[i] = (RevoluteJoint) world.createJoint(jointDef);
-        }
-
-        Body leftUnitBody = leftPillarUnit.getBody();
-        jointDef.bodyA = leftUnitBody;
-        jointDef.localAnchorA.set(BridgeUnit.WIDTH / 2, -BridgeUnit.HEIGHT/2);
-        jointDef.bodyB = ropeSegments[0];
-        world.createJoint(jointDef);
-
-        Body rightUnitBody = rightPillarUnit.getBody();
-        jointDef.bodyA = rightUnitBody;
-        jointDef.localAnchorA.y = BridgeUnit.HEIGHT/2;
-        jointDef.localAnchorB.y = -heightRopeSegment/2;
-        jointDef.bodyB = ropeSegments[ropeSegments.length-1];
-        world.createJoint(jointDef);
-
-
-    }
-
 
     @Override
     public void show() {
         System.out.println("show called");
         Gdx.input.setInputProcessor(this);
     }
-
 
 
     @Override

@@ -1,17 +1,29 @@
 package com.mygdx.game;
 
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+
 
 /**
  * Created by Eloà on 26/02/2016.
+ * tutorial from 'http://www.tempoparalelo.com/blog/?p=76' last retrieved 3/22/2016
  */
 public class MainMenuScreen implements Screen {
 
     final GameLauncher game;
     private OrthographicCamera camera;
+    private Skin skin;
 
     /**
      *  The only parameter for the constructor necessary
@@ -27,6 +39,27 @@ public class MainMenuScreen implements Screen {
         camera.setToOrtho(false, 800, 480);
     }
 
+    private void createSkin(){
+        //Font of the skin
+        BitmapFont font = new BitmapFont();
+        skin = new Skin();
+        skin.add("default", font);
+
+        //Texture of the skin
+        Pixmap pixmap = new Pixmap((int)Gdx.graphics.getWidth()/6,(int)Gdx.graphics.getHeight()/10, Pixmap.Format.RGB888);
+        pixmap.setColor(Color.BLUE);
+        pixmap.fill();
+        skin.add("background",new Texture(pixmap));
+
+        //Style of the skin
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.up = skin.newDrawable("background", Color.GRAY);
+        textButtonStyle.down = skin.newDrawable("background", Color.DARK_GRAY);
+        textButtonStyle.checked = skin.newDrawable("background", Color.DARK_GRAY);
+        textButtonStyle.over = skin.newDrawable("background", Color.LIGHT_GRAY);
+        textButtonStyle.font = skin.getFont("default");
+        skin.add("default", textButtonStyle);
+    }
 
     @Override
     public void show() {
@@ -35,22 +68,37 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+
+        Stage stage = new Stage();
+        Table menuTable = new Table();
+        Gdx.input.setInputProcessor(stage);// Make the stage consume events
+        createSkin();
+
+        //Create "START GAME" button with the skin
+        TextButton startGameButton = new TextButton("START GAME", skin);
+        menuTable.add(startGameButton);
+        menuTable.row();
+
+        //Create "OPTIONS" button
+        //TextButton optionsButton = new TextButton("OPTIONS", skin);
+        //menuTable.add(optionsButton);
+
+        menuTable.setFillParent(true);
+        stage.addActor(menuTable);
+
+        Gdx.gl.glClearColor(1, 2, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
+        stage.act();
+        stage.draw();
+        Gdx.input.setInputProcessor(stage);
 
-        //uses BitmapFont and SpriteBatch that where created in the main class Drop;
-        game.batch.begin();
-        game.font.draw(game.batch, "Welcome to the Burning Bridges Game!!", 100, 150);
-        game.font.draw(game.batch, "Tap Anywhere to Begin", 100, 100);
-        game.batch.end();
-
-        if(Gdx.input.isTouched()){
-            game.setScreen(new MainGame(game));
-            dispose();
-        }
+        startGameButton.addListener(new ClickListener(){
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new MainGame(game));
+                dispose();
+            }
+        });
     }
 
     @Override
@@ -77,4 +125,6 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
 
     }
+
+
 }
