@@ -36,27 +36,15 @@ public class MainGame extends Stage implements Screen{
 
     private ParticleEffect fireEffect;
 
-    private Texture img;
-    private Texture img2;
+
     private Texture img3;
     private Texture img4;
     private World world;
 
 
-    private BridgeUnit bridgeUnit;
-    private BridgeUnitLink testPivot;
-    private BridgeJoint bridgeJoint;
     private BackgroundCliffs cliffs;
 
     private Box2DDebugRenderer box2DDebugRenderer;
-
-
-    //array with bridge units links
-    ArrayList<BridgeUnitLink> linksAcross;
-
-    private boolean testOnClick = false;
-
-    private Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
 
     //camera
     private OrthographicCamera camera;
@@ -71,8 +59,7 @@ public class MainGame extends Stage implements Screen{
         game.font.setColor(Color.WHITE);
 
         //Sets texture to image in assets folder
-        img = new Texture("Wood.png");
-        img2 = new Texture("Pivot.png");
+
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
 
@@ -89,7 +76,6 @@ public class MainGame extends Stage implements Screen{
         //Makes a box2d physics environment that sets gravity
         world = new World(new Vector2(0, -9.81f), true);
         box2DDebugRenderer = new Box2DDebugRenderer();
-        bodiesInTheWorld = new Array<Body>();
 
 
         cliffs = new BackgroundCliffs(img3, img4, world);
@@ -131,7 +117,7 @@ public class MainGame extends Stage implements Screen{
 
 
         //sets the background color
-        Gdx.gl.glClearColor(0, 0, 0 , .3f);
+        Gdx.gl.glClearColor(0, 0, 0, .3f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //The stage (this class) knows about all its actors.. the methods below are responsible to draw all actors in the stage
         act(delta);
@@ -143,10 +129,6 @@ public class MainGame extends Stage implements Screen{
 
         //makes the fire effect change every frame
         fireEffect.update(Gdx.graphics.getDeltaTime());
-
-        world.getBodies(bodiesInTheWorld); //gets all the bodies in the world and adds then to the array bodiesInTheWorld
-
-
 
         //draws the actual frame
         game.batch.begin();
@@ -183,7 +165,7 @@ public class MainGame extends Stage implements Screen{
 
     }
     public void burnWood(float x, float y){
-        testOnClick = true;
+
         for(int i = 0; i < fireEffect.getEmitters().size; i++) {
             fireEffect.getEmitters().get(i).setPosition(x,y);
         }
