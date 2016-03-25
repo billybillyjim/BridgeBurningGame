@@ -275,6 +275,7 @@ public class MainGame extends Stage implements Screen{
         Cable rightCable = new Cable(world, pillarRight.get(1), unitsAcross.get(unitsAcross.size()-1),  unitsAcross.get(unitsAcross.size()-2).getBody().getPosition().x -  BridgeUnit.WIDTH / 2 ,(unitsAcross.get(unitsAcross.size()-1).getBody().getPosition().x + BridgeUnit.WIDTH / 2), "lowerRight", "upperRight" );
         addActor(mainCable);
         addActor(leftCable);
+        addActor(rightCable);
 
 
     }
