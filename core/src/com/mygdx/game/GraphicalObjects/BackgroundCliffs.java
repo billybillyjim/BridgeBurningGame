@@ -1,14 +1,16 @@
 package com.mygdx.game.GraphicalObjects;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
 /**
  * Created by Eloise on 2/28/16.
  */
 
-public class BackgroundCliffs {
+public class BackgroundCliffs extends Actor {
 
     private Body bodyLeft;
     private Body bodyRight;
@@ -20,7 +22,7 @@ public class BackgroundCliffs {
     private final int cliffHeight = 172;
 
 
-    public void CreateCliffs(Texture texture1, Texture texture2, World world) {
+    public BackgroundCliffs(Texture texture1, Texture texture2, World world) {
         // Sets image to one in Texture folder
         img1 = texture1;
         img2 = texture2;
@@ -81,6 +83,12 @@ public class BackgroundCliffs {
         shape2.dispose();
 
 
+    }
+
+    @Override
+    public void draw(Batch batch, float ParentAlpha){
+        batch.draw(spriteLeft, spriteLeft.getX(), spriteLeft.getY());
+        batch.draw(spriteRight, spriteRight.getX(), spriteRight.getY());
     }
 
     public Body getBodyLeft(){return this.bodyLeft;}

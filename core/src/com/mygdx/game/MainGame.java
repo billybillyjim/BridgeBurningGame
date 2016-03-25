@@ -92,13 +92,12 @@ public class MainGame extends Stage implements Screen{
         bodiesInTheWorld = new Array<Body>();
 
 
-        cliffs = new BackgroundCliffs();
-        cliffs.CreateCliffs(img3, img4, world);
+        cliffs = new BackgroundCliffs(img3, img4, world);
+        this.addActor(cliffs);
 
-        //Bridge bridge = new Bridge(world, this, (int) (cliffs.getSpriteLeft().getX() + cliffs.getSpriteLeft().getWidth()/2), (int) (cliffs.getSpriteLeft().getY() + cliffs.getSpriteLeft().getHeight()), (int) (cliffs.getSpriteRight().getX() - cliffs.getSpriteLeft().getWidth()/2));
+        Bridge bridge = new Bridge(world, this, cliffs);
 
-        //new bridge uni
-        buildBridge();
+
 
         //Makes the fire effect
         fireEffect = new ParticleEffect();
@@ -152,201 +151,11 @@ public class MainGame extends Stage implements Screen{
         //draws the actual frame
         game.batch.begin();
 
-        game.batch.draw(cliffs.getSpriteLeft(), cliffs.getSpriteLeft().getX(), cliffs.getSpriteLeft().getY());
-        game.batch.draw(cliffs.getSpriteRight(), cliffs.getSpriteRight().getX(), cliffs.getSpriteRight().getY());
-
-        game.font.draw(game.batch, Boolean.toString(testOnClick), 200, 100);
-
         fireEffect.draw(game.batch);
 
         game.batch.end();
 
     }
-
-    /**
-     * method responsible for setting up the bridge
-     */
-
-    private void buildBridge() {
-        ArrayList<BridgeUnit> bridgeUnitsAcross = new ArrayList<BridgeUnit>();
-        buildUnitsAcrossCliffs(bridgeUnitsAcross);
-        linksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
-        createBridgeLinkJoint(bridgeUnitsAcross, linksAcross);
-        createBridgeUnitPillars(linksAcross, bridgeUnitsAcross);
-    }
-
-    private void buildUnitsAcrossCliffs(ArrayList<BridgeUnit> bridgeUnitsAcross) {
-        float leftCliffWidth =  cliffs.getSpriteLeft().getWidth();
-        float leftCliffHeight = cliffs.getSpriteLeft().getHeight();
-        float rightCliffWidth = cliffs.getSpriteRight().getWidth();
-        float rightCliffHeight = cliffs.getSpriteRight().getHeight();
-        float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth);
-        System.out.println("cliff width " + leftCliffWidth + " cliff Height " + leftCliffHeight);
-        for (int i = 0; i < numberOfBridgeUnits; i++) {
-            BridgeUnit newUnit = new BridgeUnit();
-            bridgeUnitsAcross.add(newUnit);
-        }
-        int i = 0;
-        for (BridgeUnit unit : bridgeUnitsAcross) {
-            unit.CreateTestBridge(img, world, cliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
-            addActor(unit);
-            i++;
-        }
-    }
-
-    /**
-     * This calculates the number of bridge units necessary to connect both cliffs
-     * @param leftCliffWidth
-     * @param rightCliffWidth
-     * @return
-     */
-
-    private float getNumberOfBridgeUnits(float leftCliffWidth, float rightCliffWidth) {
-        float distanceBetweenCliffs = SCREEN_WIDTH - (leftCliffWidth + rightCliffWidth);
-        float numberOfBridgeUnits = distanceBetweenCliffs / BridgeUnit.WIDTH;
-        //This if statement checks if the number of bridge units calculated above is enough to cover the distance. If it is not it add one more board.
-        if((numberOfBridgeUnits * BridgeUnit.WIDTH) < distanceBetweenCliffs){
-            numberOfBridgeUnits += 1;
-        }
-        return numberOfBridgeUnits;
-    }
-
-    /**
-     * Takes an array of bridge units and creates a array of bridge unit links
-     * @param unitsAcross as array of Bridge units
-     * @return an array of bridge unit links
-     */
-    private ArrayList<BridgeUnitLink> createBridgeUnitLinks(ArrayList<BridgeUnit> unitsAcross){
-        ArrayList<BridgeUnitLink> linksAcross = new ArrayList<BridgeUnitLink>();
-        //for every unit in the array of Bridge units it creates a link and adds it to the array of links.
-        // It does not create a new link to the last  unit in the array of units.
-        for(int i = 0; i < unitsAcross.size()-1; i++){
-            BridgeUnit unit = unitsAcross.get(i);
-            BridgeUnitLink link = new BridgeUnitLink();
-            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH / 2, cliffs.getSpriteLeft().getY() + cliffs.getSpriteLeft().getHeight() + BridgeUnit.HEIGHT / 2);
-            linksAcross.add(link);
-            addActor(link);
-        }
-
-        return linksAcross;
-    }
-
-    /**
-     * Creates a joint between the links and the units. This still needs a lot of work.
-     * @param unitsAcross
-     * @param linksAcross
-     */
-    private void createBridgeLinkJoint(ArrayList<BridgeUnit> unitsAcross, ArrayList<BridgeUnitLink> linksAcross){
-        for(int i = 0; i < linksAcross.size(); i++){
-            BridgeJoint joint = new BridgeJoint();
-            BridgeJoint joint2 = new BridgeJoint();
-            joint.CreateJoint(unitsAcross.get(i).getBody(), linksAcross.get(i).getBody());
-            joint.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
-            world.createJoint(joint.getrJointDef());
-            joint2.CreateJoint(unitsAcross.get(i + 1).getBody(), linksAcross.get(i).getBody());
-            joint2.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
-            world.createJoint(joint2.getrJointDef());
-
-        }
-    }
-
-    /**
-     * method responsible for organinizing and calling all  methods to create the pillars of the bridges
-     * @param linksAcross
-     */
-    private void createBridgeUnitPillars(ArrayList<BridgeUnitLink> linksAcross, ArrayList<BridgeUnit> unitsAcross){
-        ArrayList<BridgeUnit> pillarLeft = new ArrayList<BridgeUnit>(); //pillar of the left
-        ArrayList<BridgeUnit> pillarRight = new ArrayList<BridgeUnit>();   //pillar of the right
-        Sprite linkLeft = linksAcross.get(0).getSprite(); //the left pillar is created in the x location of the first unit that is across the cliff
-        System.out.println("leftUnit from createBridgeUnitPillars x " + linkLeft.getX());
-        Sprite linkRight = linksAcross.get(linksAcross.size()-1).getSprite(); //the right pillar is created in the x location of the last unit that is across the cliff
-        createPillar(pillarLeft, linkLeft);
-        createPillar(pillarRight, linkRight);
-
-        BridgeUnitLink newLinkLeft = createLinkPillars(pillarLeft);
-        createJointsPillars(linksAcross.get(0), pillarLeft, newLinkLeft);
-        BridgeUnitLink newLinkRight = createLinkPillars(pillarRight);
-        createJointsPillars(linksAcross.get(linksAcross.size() - 1), pillarRight, newLinkRight);
-
-
-        Cable mainCable = new Cable(world, pillarLeft.get(1), pillarRight.get(1),pillarLeft.get(1).getSprite().getX(), pillarRight.get(1).getSprite().getX(), "lowerRight", "upperRight" );
-        Cable leftCable = new Cable(world, unitsAcross.get(0), pillarLeft.get(1), (unitsAcross.get(0).getBody().getPosition().x - BridgeUnit.WIDTH / 2),(unitsAcross.get(1).getBody().getPosition().x + BridgeUnit.WIDTH / 2), "upperLeft", "upperRight" );
-
-        Cable rightCable = new Cable(world, pillarRight.get(1), unitsAcross.get(unitsAcross.size()-1),  unitsAcross.get(unitsAcross.size()-2).getBody().getPosition().x -  BridgeUnit.WIDTH / 2 ,(unitsAcross.get(unitsAcross.size()-1).getBody().getPosition().x + BridgeUnit.WIDTH / 2), "lowerRight", "upperRight" );
-        addActor(mainCable);
-        addActor(leftCable);
-        addActor(rightCable);
-
-
-    }
-
-    /**
-     * this method actually creates a pillar
-     * @param pillarUnits
-     * @param linkLeft
-     */
-
-    private void createPillar(ArrayList<BridgeUnit> pillarUnits, Sprite linkLeft) {
-        BridgeUnit left1 = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
-
-        left1.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH / 2, MathUtils.PI / 2);
-        addActor(left1);
-        pillarUnits.add(left1);
-        BridgeUnit left2 = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
-        left2.getBody().setTransform(left1.getSprite().getX(), left1.getSprite().getY() + BridgeUnit.WIDTH * 1.5f, MathUtils.PI / 2);
-        addActor(left2);
-        pillarUnits.add(left2);
-        System.out.println("\n left 1 x" + left1.getSprite().getX() + " left1 y:  " + left1.getSprite().getY());
-        System.out.println("\n left 2 x" + left2.getSprite().getX() + " left2 y:  " + left2.getSprite().getY());
-    }
-
-    /**
-     * This method creates the link between the 2 units in the pillar
-     * @param pillarUnits
-     * @return
-     */
-    private BridgeUnitLink createLinkPillars(ArrayList<BridgeUnit> pillarUnits){
-        BridgeUnit unit = pillarUnits.get(0);
-        BridgeUnitLink link = new BridgeUnitLink();
-        link.CreateVertex(img2, world, unit.getSprite().getX(), unit.getSprite().getY() + BridgeUnit.WIDTH);
-        addActor(link);
-
-        return link;
-    }
-
-    /**
-     * this method creates the joint between the links and the bridge units of the pillars
-     * @param linkBottom this is the link between at the base of the pillar
-     * @param pillarUnits this is the array with the bridge units of the pillar
-     * @param linkMiddle this is the link between the two bridge units of the pillar
-     */
-    private void createJointsPillars(BridgeUnitLink linkBottom, ArrayList<BridgeUnit> pillarUnits, BridgeUnitLink linkMiddle){
-        Body linkBody = linkBottom.getBody();
-        Body unitBody = pillarUnits.get(0).getBody();
-
-        //joint between link at the base and first bridge unit of the pillar
-        BridgeJoint joint = new BridgeJoint();
-        joint.CreateJoint(unitBody, linkBody);
-        joint.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
-        world.createJoint(joint.getrJointDef());
-        System.out.println("joints linkbody: " + linkBody.getJointList().size);
-
-        //joint between first unit of the pillar and link in the middle
-        Body linkBody2 = linkMiddle.getBody();
-        BridgeJoint joint1 = new BridgeJoint();
-        joint1.CreateJoint(unitBody, linkBody2);
-        joint1.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
-        world.createJoint(joint1.getrJointDef());
-
-        //joint between second unit of the pillar and link in the middle
-        Body unitBody2 = pillarUnits.get(1).getBody();
-        BridgeJoint joint3 = new BridgeJoint();
-        joint3.CreateJoint(unitBody2, linkBody2);
-        joint3.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
-        world.createJoint(joint3.getrJointDef());
-    }
-
-
 
 
     @Override
