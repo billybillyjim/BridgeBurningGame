@@ -88,17 +88,27 @@ public class MainMenuScreen implements Screen {
 
         Gdx.gl.glClearColor(1, 2, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act();
-        stage.draw();
         Gdx.input.setInputProcessor(stage);
 
-        startGameButton.addListener(new ClickListener(){
+
+        startGameButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new MainGame(game));
                 dispose();
             }
         });
+
+
+
+
+        stage.act();
+        stage.draw();
+       /* if(Gdx.input.isTouched()){
+            game.setScreen(new MainGame(game));
+            dispose();
+        }
+       */
+
     }
 
     @Override
