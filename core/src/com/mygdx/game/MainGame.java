@@ -9,22 +9,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
-import com.mygdx.game.PhysicalObjects.BridgeJoint;
-
-import java.util.ArrayList;
 
 public class MainGame extends Stage implements Screen{
 
@@ -39,8 +29,8 @@ public class MainGame extends Stage implements Screen{
 
     private Texture img3;
     private Texture img4;
-    private World world;
-
+    //Makes a box2d physics environment that sets gravity
+    public final static World WORLD = new World(new Vector2(0, -9.81f), true);
 
     private BackgroundCliffs cliffs;
 
@@ -65,7 +55,7 @@ public class MainGame extends Stage implements Screen{
 
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
-        // it creates a world that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
+        // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
         //the origin (0, 0) of this coordinate system is in the lower left corner by default. It is possible to change
         camera = new OrthographicCamera();
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -73,15 +63,14 @@ public class MainGame extends Stage implements Screen{
         setViewport(viewport);
 
 
-        //Makes a box2d physics environment that sets gravity
-        world = new World(new Vector2(0, -9.81f), true);
+
         box2DDebugRenderer = new Box2DDebugRenderer();
 
 
-        cliffs = new BackgroundCliffs(img3, img4, world);
+        cliffs = new BackgroundCliffs(img3, img4, WORLD);
         this.addActor(cliffs);
 
-        Bridge bridge = new Bridge(world, this, cliffs);
+        Bridge bridge = new Bridge(WORLD, this, cliffs);
 
 
 
@@ -97,7 +86,7 @@ public class MainGame extends Stage implements Screen{
     }
     @Override
     public void dispose(){
-        world.dispose();
+        WORLD.dispose();
         box2DDebugRenderer.dispose();
 
     }
@@ -110,10 +99,10 @@ public class MainGame extends Stage implements Screen{
             burnWood(pos.x, pos.y);
         }
 
-        box2DDebugRenderer.render(world, camera.combined);
+        box2DDebugRenderer.render(WORLD, camera.combined);
 
-        //Makes the box2d world play at a given frame rate
-        world.step(Gdx.graphics.getDeltaTime(), 6, 2);
+        //Makes the box2d WORLD play at a given frame rate
+        WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
 
 
         //sets the background color
@@ -124,7 +113,7 @@ public class MainGame extends Stage implements Screen{
         draw();
 
         camera.update(); // is generally a good practice to update the camera once per frame
-        box2DDebugRenderer.render(world, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
+        box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
         game.batch.setProjectionMatrix(camera.combined); //tells spriteBatch to use coordinate system set by camera
 
         //makes the fire effect change every frame

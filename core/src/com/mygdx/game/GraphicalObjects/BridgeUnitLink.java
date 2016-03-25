@@ -20,7 +20,7 @@ public class BridgeUnitLink extends Actor {
     Texture img;
     Sprite sprite;
 
-    public void CreateVertex(Texture texture, World world, float xPosition, float yPosition){
+    public BridgeUnitLink(Texture texture, World world, float xPosition, float yPosition){
 
 
         //Sets texture to image in assets folder

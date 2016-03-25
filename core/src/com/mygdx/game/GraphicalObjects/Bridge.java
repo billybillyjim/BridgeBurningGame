@@ -48,10 +48,6 @@ public class Bridge extends Actor {
 
     }
 
-    private void createBridgeUnit(){
-        BridgeUnit unit = new BridgeUnit(img, world, 400, 200);
-        stage.addActor(unit);
-    }
 
     private void buildUnitsAcrossCliffs() {
         float leftCliffWidth =  cliffs.getSpriteLeft().getWidth();
@@ -61,14 +57,10 @@ public class Bridge extends Actor {
         float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth, cliffs.getSpriteLeft().getX(), cliffs.getSpriteRight().getX());
         System.out.println("cliff width " + leftCliffWidth + " cliff Height " + leftCliffHeight);
         for (int i = 0; i < numberOfBridgeUnits; i++) {
-            BridgeUnit newUnit = new BridgeUnit();
-            bridgeUnitsAcross.add(newUnit);
-        }
-        int i = 0;
-        for (BridgeUnit unit : bridgeUnitsAcross) {
-            unit.CreateTestBridge(img, world, cliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
+            BridgeUnit unit = new BridgeUnit(img, world, cliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
+            bridgeUnitsAcross.add(unit);
             stage.addActor(unit);
-            i++;
+
         }
     }
 
@@ -100,8 +92,7 @@ public class Bridge extends Actor {
         // It does not create a new link to the last  unit in the array of units.
         for(int i = 0; i < unitsAcross.size()-1; i++){
             BridgeUnit unit = unitsAcross.get(i);
-            BridgeUnitLink link = new BridgeUnitLink();
-            link.CreateVertex(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH / 2, cliffs.getSpriteLeft().getY() + cliffs.getSpriteLeft().getHeight() + BridgeUnit.HEIGHT / 2);
+            BridgeUnitLink link = new BridgeUnitLink(img2, world, unit.getBody().getPosition().x + BridgeUnit.WIDTH / 2, cliffs.getSpriteLeft().getY() + cliffs.getSpriteLeft().getHeight() + BridgeUnit.HEIGHT / 2);
             linksAcross.add(link);
             stage.addActor(link);
         }
@@ -193,8 +184,7 @@ public class Bridge extends Actor {
      */
     private BridgeUnitLink createLinkPillars(ArrayList<BridgeUnit> pillarUnits){
         BridgeUnit unit = pillarUnits.get(0);
-        BridgeUnitLink link = new BridgeUnitLink();
-        link.CreateVertex(img2, world, unit.getSprite().getX(), unit.getSprite().getY() + BridgeUnit.WIDTH);
+        BridgeUnitLink link = new BridgeUnitLink(img2, world, unit.getSprite().getX(), unit.getSprite().getY() + BridgeUnit.WIDTH);
         stage.addActor(link);
 
         return link;
