@@ -12,9 +12,13 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
+
+import java.util.ArrayList;
 
 public class MainGame extends Stage implements Screen{
 
@@ -24,8 +28,6 @@ public class MainGame extends Stage implements Screen{
     private final int SCREEN_HEIGHT = 480;
 
     private ArrayList<ParticleEffect> particleEffects;
-
-    private ParticleEffect fireEffect;
 
 
     private Texture img3;
@@ -44,8 +46,9 @@ public class MainGame extends Stage implements Screen{
 
     private boolean testOnClick = false;
 
-
-    private Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
+    public Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
+    public Array<Actor> actorsInTheWorld;
+    public Array<BridgeUnit> bridgeUnitsInTheWorld;
 
     //camera
     private OrthographicCamera camera;
@@ -87,7 +90,7 @@ public class MainGame extends Stage implements Screen{
 
 
         //Makes the fire effect
-        fireEffect = new ParticleEffect();
+        ParticleEffect fireEffect = new ParticleEffect();
         //Loads the effect file from the assets directory
         fireEffect.load(Gdx.files.internal("Effect5.p"),Gdx.files.internal("PixelParticle2.png"));
         //puts the effect at the given point
@@ -100,7 +103,13 @@ public class MainGame extends Stage implements Screen{
         fireHandler.burn();
 
 
+
+
+        System.out.println(WORLD.getBodyCount());
+
+
     }
+
     @Override
     public void dispose(){
         WORLD.dispose();
@@ -115,6 +124,8 @@ public class MainGame extends Stage implements Screen{
             camera.unproject(pos);
             burnWood(pos.x, pos.y);
         }
+
+
 
         box2DDebugRenderer.render(WORLD, camera.combined);
 
@@ -145,7 +156,10 @@ public class MainGame extends Stage implements Screen{
         //draws the actual frame
         game.batch.begin();
 
-        fireEffect.draw(game.batch);
+        for(ParticleEffect effect:particleEffects){
+            effect.draw(game.batch);
+        }
+
 
         game.batch.end();
 
@@ -156,6 +170,7 @@ public class MainGame extends Stage implements Screen{
     public void show() {
         System.out.println("show called");
         Gdx.input.setInputProcessor(this);
+
     }
 
 
@@ -178,27 +193,42 @@ public class MainGame extends Stage implements Screen{
     }
     public void burnWood(float x, float y){
 
-        for(int i = 0; i < fireEffect.getEmitters().size; i++) {
-            fireEffect.getEmitters().get(i).setPosition(x,y);
-        }
-        //fireEffect.getEmitters().first().setPosition(x,y);
-        testOnClick = true;
+        for(Actor actor:this.getActors()){
+            if(actor.getName() != null && actor.getName().equals("Bridge Unit")){
 
-        fireEffect = new ParticleEffect();
-        //Loads the effect file from the assets directory
+                BridgeUnit bunit = (BridgeUnit)actor;
+                if(bunit.getIsOnFire()){
+
+                    x = ((bunit.getX() + bunit.getRight()) / 2) - (bunit.getWidth() / 2) + 50; //This is disgusting; needs fixing
+                    System.out.println(x);
+                    y = bunit.getY();
+                    bunit.setIsOnFire(false);
+
+                }
+            }
+        }
+
+        ParticleEffect fireEffect = new ParticleEffect();
         fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
 
         fireEffect.getEmitters().first().setPosition(x,y);
+        particleEffects.add(fireEffect);
+
+
+        for(int i = 0; i < fireEffect.getEmitters().size; i++) {
+
+            fireEffect.getEmitters().get(i).setPosition(x,y);
+
+        }
+
+
         fireEffect.start();
 
         fireEffect.reset();
+
     }
 
-    public BridgeUnit makeBridgeUnit(Texture texture, World world, float xPosition, float yPosition){
-        BridgeUnit unit = new BridgeUnit(texture, world, xPosition,yPosition);
-        addActor(unit);
-        fireHandler.addBridgeUnit(unit);
-        return unit;
-    }
+
+
 
 }

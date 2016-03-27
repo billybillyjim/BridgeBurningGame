@@ -1,5 +1,9 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.JointEdge;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.GraphicalObjects.BridgeUnit;
 import com.mygdx.game.GraphicalObjects.BridgeUnitLink;
 import com.mygdx.game.PhysicalObjects.BridgeJoint;
@@ -15,6 +19,8 @@ public class FireHandler {
     ArrayList<BridgeUnit> bridgeUnits;
     ArrayList<BridgeUnitLink> bridgeUnitLinks;
     ArrayList<BridgeJoint> bridgeJoints;
+    Array<JointEdge> bridgeJointEdges;
+    Array<Actor> bridgePieces;
 
     public FireHandler(){
         this.bridgeUnits = new ArrayList<BridgeUnit>();
@@ -29,14 +35,19 @@ public class FireHandler {
         this.bridgeJoints = bridgeJoints;
 
     }
+
+    public FireHandler(Array<JointEdge> jointEdges){
+        this.bridgeJointEdges = jointEdges;
+    }
+
     public boolean checkFires(){
         for(int i = 0; i < bridgeUnits.size(); i++){
-            if(bridgeUnits.get(i).getOnFire()){
+            if(bridgeUnits.get(i).getIsOnFire()){
                 return true;
             }
         }
         for(int i = 0; i < bridgeUnitLinks.size(); i++){
-            if(bridgeUnitLinks.get(i).getOnFire()){
+            if(bridgeUnitLinks.get(i).getIsOnFire()){
                 return true;
             }
         }
@@ -52,11 +63,13 @@ public class FireHandler {
         return true;
     }
 
-    public boolean burnAdjacent(BridgeUnit unit, BridgeJoint joint){
-
-        if(joint.getBridgeBody().equals(unit.getBody())){
-            return true;
+    public boolean burnAdjacent(JointEdge j){
+        for(int i = 0; i < bridgeUnits.size(); i++){
+            if(j.other.equals(bridgeUnits.get(i).getBody())){
+                System.out.println("ADJACENT BURNED");
+            }
         }
+
         return false;
     }
 

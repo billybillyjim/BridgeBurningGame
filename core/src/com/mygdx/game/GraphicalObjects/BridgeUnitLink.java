@@ -19,6 +19,7 @@ public class BridgeUnitLink extends Actor {
     Body body;
     Texture img;
     Sprite sprite;
+    boolean isOnFire;
 
     public BridgeUnitLink(Texture texture, World world, float xPosition, float yPosition){
 
@@ -83,6 +84,7 @@ public class BridgeUnitLink extends Actor {
     public Sprite getSprite(){
         return this.sprite;
     }
+    public boolean getIsOnFire(){return this.isOnFire;}
 
 }
 

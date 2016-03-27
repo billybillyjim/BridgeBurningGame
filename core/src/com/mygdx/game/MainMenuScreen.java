@@ -103,11 +103,11 @@ public class MainMenuScreen implements Screen {
 
         stage.act();
         stage.draw();
-       /* if(Gdx.input.isTouched()){
+        if(Gdx.input.isTouched()){
             game.setScreen(new MainGame(game));
             dispose();
         }
-       */
+
 
     }
 

@@ -26,6 +26,8 @@ public class BridgeUnit extends Actor{
     public final static int WIDTH = 100;
     public final static int HEIGHT = 20;
 
+    private boolean isOnFire;
+
     public BridgeUnit(Texture texture, World world, float xPosition, float yPosition){
 
         //Sets texture to image in assets folder
@@ -33,7 +35,7 @@ public class BridgeUnit extends Actor{
         //Makes a sprite of that texture
         sprite = new Sprite(img);
 
-
+        this.setName("Bridge Unit");
 
         //sets the sprite position based on screen size
         sprite.setPosition(xPosition, yPosition);
@@ -68,7 +70,7 @@ public class BridgeUnit extends Actor{
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                isOnFire = true;
                 System.out.println("DONE CLICKED IT YOU DID");
             }
         });
@@ -81,6 +83,9 @@ public class BridgeUnit extends Actor{
         body.setUserData(sprite); //adds sprite to the user data (creates an association between the sprite and the body)
 
         shape.dispose();
+
+
+
     }
 
 
@@ -98,5 +103,9 @@ public class BridgeUnit extends Actor{
     public Sprite getSprite(){
         return  this.sprite;
     }
+
+    public boolean getIsOnFire(){return this.isOnFire;}
+
+    public void setIsOnFire(boolean b){this.isOnFire = b;}
 
 }
