@@ -19,13 +19,20 @@ public class FireHandler {
     ArrayList<BridgeUnit> bridgeUnits;
     ArrayList<BridgeUnitLink> bridgeUnitLinks;
     ArrayList<BridgeJoint> bridgeJoints;
-    Array<JointEdge> bridgeJointEdges;
-    Array<Actor> bridgePieces;
+
 
     public FireHandler(){
         this.bridgeUnits = new ArrayList<BridgeUnit>();
         this.bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
         this.bridgeJoints = new ArrayList<BridgeJoint>();
+    }
+
+    public FireHandler(ArrayList<BridgeUnit> bridgeUnits){
+
+        this.bridgeUnits = bridgeUnits;
+        this.bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
+        this.bridgeJoints = new ArrayList<BridgeJoint>();
+
     }
 
     public FireHandler(ArrayList<BridgeUnit> bridgeUnits, ArrayList<BridgeUnitLink> bridgeUnitLinks, ArrayList<BridgeJoint> bridgeJoints){
@@ -35,11 +42,7 @@ public class FireHandler {
         this.bridgeJoints = bridgeJoints;
 
     }
-
-    public FireHandler(Array<JointEdge> jointEdges){
-        this.bridgeJointEdges = jointEdges;
-    }
-
+    //Checks to see if any bridgeUnit or bridgeUnitLink is on fire
     public boolean checkFires(){
         for(int i = 0; i < bridgeUnits.size(); i++){
             if(bridgeUnits.get(i).getIsOnFire()){
@@ -62,7 +65,7 @@ public class FireHandler {
 
         return true;
     }
-
+    //Does not work
     public boolean burnAdjacent(JointEdge j){
         for(int i = 0; i < bridgeUnits.size(); i++){
             if(j.other.equals(bridgeUnits.get(i).getBody())){

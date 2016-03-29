@@ -66,9 +66,6 @@ public class MainGame extends Stage implements Screen{
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
 
-
-        fireHandler = new FireHandler();
-
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
         //the origin (0, 0) of this coordinate system is in the lower left corner by default. It is possible to change
@@ -76,8 +73,6 @@ public class MainGame extends Stage implements Screen{
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
         viewport = new FitViewport(SCREEN_WIDTH,SCREEN_HEIGHT,camera);
         setViewport(viewport);
-
-
 
         box2DDebugRenderer = new Box2DDebugRenderer();
 
@@ -87,26 +82,13 @@ public class MainGame extends Stage implements Screen{
 
         Bridge bridge = new Bridge(WORLD, this, cliffs);
 
+        //Lets the fireHandler know all the actors in the bridge.
+        fireHandler = new FireHandler(bridge.getBridgeUnits());
 
-
-        //Makes the fire effect
-        ParticleEffect fireEffect = new ParticleEffect();
-        //Loads the effect file from the assets directory
-        fireEffect.load(Gdx.files.internal("Effect5.p"),Gdx.files.internal("PixelParticle2.png"));
-        //puts the effect at the given point
-        fireEffect.getEmitters().first().setPosition((float)(800.0 / 1.5) , (float) (480 / 1.5));
-        fireEffect.start();
-
+        //Creates an array of particleEffects, which allows for many fires on the screen at once.
         particleEffects = new ArrayList<ParticleEffect>();
-        particleEffects.add(fireEffect);
 
         fireHandler.burn();
-
-
-
-
-        System.out.println(WORLD.getBodyCount());
-
 
     }
 
@@ -124,8 +106,6 @@ public class MainGame extends Stage implements Screen{
             camera.unproject(pos);
             burnWood(pos.x, pos.y);
         }
-
-
 
         box2DDebugRenderer.render(WORLD, camera.combined);
 
@@ -152,14 +132,12 @@ public class MainGame extends Stage implements Screen{
             }
         }
 
-
         //draws the actual frame
         game.batch.begin();
-
+        //Runs through the array of particleEffects and draws each one
         for(ParticleEffect effect:particleEffects){
             effect.draw(game.batch);
         }
-
 
         game.batch.end();
 
@@ -168,7 +146,7 @@ public class MainGame extends Stage implements Screen{
 
     @Override
     public void show() {
-        System.out.println("show called");
+
         Gdx.input.setInputProcessor(this);
 
     }
@@ -191,6 +169,7 @@ public class MainGame extends Stage implements Screen{
     public void hide() {
 
     }
+    //Currently used for both click burning and the burning of each bridgeUnit
     public void burnWood(float x, float y){
 
         for(Actor actor:this.getActors()){
@@ -199,7 +178,7 @@ public class MainGame extends Stage implements Screen{
                 BridgeUnit bunit = (BridgeUnit)actor;
                 if(bunit.getIsOnFire()){
 
-                    x = ((bunit.getX() + bunit.getRight()) / 2) - (bunit.getWidth() / 2) + 50; //This is disgusting; needs fixing
+                    x = bunit.getX() + 50; //This is disgusting; needs fixing
                     System.out.println(x);
                     y = bunit.getY();
                     bunit.setIsOnFire(false);
@@ -210,15 +189,11 @@ public class MainGame extends Stage implements Screen{
 
         ParticleEffect fireEffect = new ParticleEffect();
         fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
-
         fireEffect.getEmitters().first().setPosition(x,y);
         particleEffects.add(fireEffect);
 
-
         for(int i = 0; i < fireEffect.getEmitters().size; i++) {
-
             fireEffect.getEmitters().get(i).setPosition(x,y);
-
         }
 
 

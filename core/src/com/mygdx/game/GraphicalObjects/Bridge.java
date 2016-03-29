@@ -223,7 +223,15 @@ public class Bridge extends Actor {
     }
 
 
+    public ArrayList<BridgeUnit> getBridgeUnits(){
 
+        ArrayList<BridgeUnit> bridgeUnits = new ArrayList<BridgeUnit>();
+        bridgeUnits.addAll(bridgeUnitsAcross);
+        bridgeUnits.addAll(bridgeUnitsPillarLeft);
+        bridgeUnits.addAll(bridgeUnitsPillarRight);
+
+        return bridgeUnits;
+    }
 
 
 
