@@ -80,7 +80,7 @@ public class BridgeUnit extends Actor{
 
         sprite.setSize(WIDTH, HEIGHT); //set sprite size to the same size of the body
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
-        body.setUserData(sprite); //adds sprite to the user data (creates an association between the sprite and the body)
+
 
         shape.dispose();
 

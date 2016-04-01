@@ -9,6 +9,9 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 /**
  * Created by Luke on 2/22/2016.
@@ -22,6 +25,7 @@ public class BridgeUnitLink extends Actor {
     boolean isOnFire;
 
     public BridgeUnitLink(Texture texture, World world, float xPosition, float yPosition){
+        this.setName("Bridge Unit Link");
 
 
         //Sets texture to image in assets folder
@@ -46,10 +50,13 @@ public class BridgeUnitLink extends Actor {
 
 
 
+
         //Makes a shape for the body
         CircleShape shape = new CircleShape();
         shape.setRadius(10);
         //Sets the shape to a box
+
+
 
 
 
@@ -77,6 +84,10 @@ public class BridgeUnitLink extends Actor {
         sprite.draw(batch);
     }
 
+    public void changeBodyType(){
+        body.setType(BodyDef.BodyType.DynamicBody);
+    }
+
 
     public Body getBody(){
         return this.body;
@@ -85,6 +96,7 @@ public class BridgeUnitLink extends Actor {
         return this.sprite;
     }
     public boolean getIsOnFire(){return this.isOnFire;}
+
 
 }
 

@@ -185,6 +185,7 @@ public class MainGame extends Stage implements Screen{
 
                 }
             }
+
         }
 
         ParticleEffect fireEffect = new ParticleEffect();
@@ -196,12 +197,20 @@ public class MainGame extends Stage implements Screen{
             fireEffect.getEmitters().get(i).setPosition(x,y);
         }
 
-
         fireEffect.start();
 
         fireEffect.reset();
 
     }
+
+    public void destroyJoints(Body body){
+        Array<JointEdge> jointEdges = body.getJointList();
+        for(JointEdge edge : jointEdges ){
+            WORLD.destroyJoint(edge.joint);
+        }
+    }
+
+
 
 
 
