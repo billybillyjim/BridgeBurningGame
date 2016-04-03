@@ -89,8 +89,6 @@ public class MainGame extends Stage implements Screen{
         //Creates an array of particleEffects, which allows for many fires on the screen at once.
         particleEffects = new ArrayList<ParticleEffect>();
 
-        fireHandler.burn();
-
 
     }
 
@@ -113,7 +111,7 @@ public class MainGame extends Stage implements Screen{
                 ((BridgeUnit) actor).setIsOnFire(true);
             }
             burnWood(pos.x, pos.y);
-            //fireHandler.updateBridgeUnitArray();
+
             fireHandler.burnAdjacents();
         }
 
@@ -179,7 +177,7 @@ public class MainGame extends Stage implements Screen{
     public void hide() {
 
     }
-    //Currently used for both click burning and the burning of each bridgeUnit
+    //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
     public void burnWood(float x, float y){
 
         for(Actor actor:this.getActors()){

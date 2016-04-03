@@ -58,14 +58,6 @@ public class FireHandler {
         return false;
     }
 
-    public boolean burn(){
-        for(int i = 0; i < bridgeUnits.size(); i++){
-            System.out.println(bridgeUnits.get(i).getX());
-        }
-
-
-        return true;
-    }
     //Burns all BridgeUnitLinks adjacent to BridgeUnits. Currently it has to iterate through all the Bridge Units, check if they are on fire,
     //get their JointEdges and compare each BridgeUnitLink to each JointEdge. I'm not sure if there is a less wasteful method but it doesn't
     //seem to matter to the performance at least on the desktop version
