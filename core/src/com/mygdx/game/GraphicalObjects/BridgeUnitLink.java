@@ -96,6 +96,9 @@ public class BridgeUnitLink extends Actor {
         return this.sprite;
     }
     public boolean getIsOnFire(){return this.isOnFire;}
+    public void setIsOnFire(boolean isOnFire){
+        this.isOnFire = isOnFire;
+    }
 
 
 }

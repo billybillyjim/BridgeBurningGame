@@ -66,14 +66,15 @@ public class BridgeUnit extends Actor{
         setHeight(sprite.getHeight());
         setBounds(0, 0, getWidth(), getHeight());
 
-        setTouchable(Touchable.enabled);
+        /*setTouchable(Touchable.enabled);
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 isOnFire = true;
-                System.out.println("DONE CLICKED IT YOU DID");
+
             }
         });
+        */
 
 
         body.createFixture(fixtureDef);

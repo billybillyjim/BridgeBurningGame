@@ -49,6 +49,7 @@ public class MainGame extends Stage implements Screen{
     public Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
     public Array<Actor> actorsInTheWorld;
     public Array<BridgeUnit> bridgeUnitsInTheWorld;
+    public Array<BridgeUnitLink> bridgeUnitLinksInTheWorld;
 
     //camera
     private OrthographicCamera camera;
@@ -83,12 +84,13 @@ public class MainGame extends Stage implements Screen{
         Bridge bridge = new Bridge(WORLD, this, cliffs);
 
         //Lets the fireHandler know all the actors in the bridge.
-        fireHandler = new FireHandler(bridge.getBridgeUnits());
+        fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
 
         //Creates an array of particleEffects, which allows for many fires on the screen at once.
         particleEffects = new ArrayList<ParticleEffect>();
 
         fireHandler.burn();
+
 
     }
 
@@ -104,7 +106,15 @@ public class MainGame extends Stage implements Screen{
         if(Gdx.input.isTouched()){
             Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
             camera.unproject(pos);
+
+            Actor actor = this.hit(pos.x,pos.y,true);
+            if(actor != null && actor.getName().equals("Bridge Unit")){
+                actor = (BridgeUnit)actor;
+                ((BridgeUnit) actor).setIsOnFire(true);
+            }
             burnWood(pos.x, pos.y);
+            //fireHandler.updateBridgeUnitArray();
+            fireHandler.burnAdjacents();
         }
 
         box2DDebugRenderer.render(WORLD, camera.combined);
@@ -179,14 +189,25 @@ public class MainGame extends Stage implements Screen{
                 if(bunit.getIsOnFire()){
 
                     x = bunit.getX() + 50; //This is disgusting; needs fixing
-                    System.out.println(x);
                     y = bunit.getY();
-                    bunit.setIsOnFire(false);
+                    //bunit.setIsOnFire(false);
 
                 }
             }
+            else if(actor.getName() != null && actor.getName().equals("Bridge Unit Link")){
+
+                BridgeUnitLink bunitLink = (BridgeUnitLink)actor;
+                if(bunitLink.getIsOnFire()){
+                    x = bunitLink.getX() + (bunitLink.getWidth() / 2);
+                    y = bunitLink.getY();
+
+                }
+
+            }
 
         }
+
+
 
         ParticleEffect fireEffect = new ParticleEffect();
         fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
