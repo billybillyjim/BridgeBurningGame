@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -18,7 +19,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class MainGame extends Stage implements Screen{
 
@@ -29,11 +30,12 @@ public class MainGame extends Stage implements Screen{
 
     private ArrayList<ParticleEffect> particleEffects;
 
+    private int numOfJoints = 0;
 
     private Texture img3;
     private Texture img4;
     //Makes a box2d physics environment that sets gravity
-    public final static World WORLD = new World(new Vector2(0, -9.81f), true);
+    public final static World WORLD = new World(new Vector2(0, -98.1f), true);
 
     private BackgroundCliffs cliffs;
 
@@ -101,18 +103,23 @@ public class MainGame extends Stage implements Screen{
     @Override
     public void render(float delta){
 
-        if(Gdx.input.isTouched()){
+        if(Gdx.input.justTouched()){
             Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
             camera.unproject(pos);
 
             Actor actor = this.hit(pos.x,pos.y,true);
-            if(actor != null && actor.getName().equals("Bridge Unit")){
-                actor = (BridgeUnit)actor;
+            if(actor != null && actor.getName().equals("Bridge Unit Link")){
+                ((BridgeUnitLink) actor).setIsOnFire(true);
+
+            }
+            else if(actor != null && actor.getName().equals("Bridge Unit")){
+
                 ((BridgeUnit) actor).setIsOnFire(true);
             }
-            burnWood(pos.x, pos.y);
-
             fireHandler.burnAdjacents();
+            burnWood();
+
+
         }
 
         box2DDebugRenderer.render(WORLD, camera.combined);
@@ -178,55 +185,81 @@ public class MainGame extends Stage implements Screen{
 
     }
     //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
-    public void burnWood(float x, float y){
+    public void burnWood(){
+
+
+        ArrayList<Float> xCoordinates = new ArrayList<Float>();
+        ArrayList<Float> yCoordinates = new ArrayList<Float>();
+        float x = 0;
+        float y = 0;
 
         for(Actor actor:this.getActors()){
-            if(actor.getName() != null && actor.getName().equals("Bridge Unit")){
+            if(actor.getName() != null && actor.getName().equals("Bridge Unit Link")){
+
+                BridgeUnitLink bunitLink = (BridgeUnitLink)actor;
+                if(bunitLink.getIsOnFire()){
+                    x = bunitLink.getX() + (bunitLink.getWidth() / 2);
+                    y = bunitLink.getY();
+                    xCoordinates.add(x);
+                    yCoordinates.add(y);
+
+
+                }
+                else{
+                    //destroyJoints(bunitLink.getBody());
+                }
+
+            }
+            else if(actor.getName() != null && actor.getName().equals("Bridge Unit")){
 
                 BridgeUnit bunit = (BridgeUnit)actor;
                 if(bunit.getIsOnFire()){
 
                     x = bunit.getX() + 50; //This is disgusting; needs fixing
                     y = bunit.getY();
+                    xCoordinates.add(x);
+                    yCoordinates.add(y);
+
                     //bunit.setIsOnFire(false);
 
                 }
-            }
-            else if(actor.getName() != null && actor.getName().equals("Bridge Unit Link")){
-
-                BridgeUnitLink bunitLink = (BridgeUnitLink)actor;
-                if(bunitLink.getIsOnFire()){
-                    x = bunitLink.getX() + (bunitLink.getWidth() / 2);
-                    y = bunitLink.getY();
-
+                else{
+                    //destroyJoints(bunit.getBody());
                 }
-
             }
 
+
+        }
+        System.out.println(xCoordinates.size());
+
+        for(int i = 0; i < xCoordinates.size(); i++){
+
+            ParticleEffect fireEffect = new ParticleEffect();
+            fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
+            fireEffect.getEmitters().first().setPosition(xCoordinates.get(i),yCoordinates.get(i));
+            particleEffects.add(fireEffect);
+
+            for(int j = 0; j < fireEffect.getEmitters().size; j++) {
+                fireEffect.getEmitters().get(j).setPosition(xCoordinates.get(i),yCoordinates.get(i));
+            }
+
+            fireEffect.start();
+
+            fireEffect.reset();
         }
 
-
-
-        ParticleEffect fireEffect = new ParticleEffect();
-        fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
-        fireEffect.getEmitters().first().setPosition(x,y);
-        particleEffects.add(fireEffect);
-
-        for(int i = 0; i < fireEffect.getEmitters().size; i++) {
-            fireEffect.getEmitters().get(i).setPosition(x,y);
-        }
-
-        fireEffect.start();
-
-        fireEffect.reset();
-
+        xCoordinates.clear();
+        yCoordinates.clear();
     }
 
     public void destroyJoints(Body body){
         Array<JointEdge> jointEdges = body.getJointList();
-        for(JointEdge edge : jointEdges ){
+        for(JointEdge edge : jointEdges ) {
+
             WORLD.destroyJoint(edge.joint);
+
         }
+
     }
 
 
