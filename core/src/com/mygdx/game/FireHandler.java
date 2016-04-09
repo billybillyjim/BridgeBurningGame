@@ -68,7 +68,6 @@ public class FireHandler {
             if(bridgeUnits.get(i).getIsOnFire()){
                 //Gets the list of JointEdges
                 Array<JointEdge> jointEdges = bridgeUnits.get(i).getBody().getJointList();
-
                 //Runs through the list of bridgeUnit links
                 for(BridgeUnitLink bridgeUnitLink : bridgeUnitLinks){
                     //Runs through the list of Joint edges
@@ -76,7 +75,6 @@ public class FireHandler {
                         //Checks to see if any of them match
                         if(jointEdge.other.equals(bridgeUnitLink.getBody())){
                             //Sets the bridgeUnitLink on fire if they match
-
                             bridgeUnitLink.setIsOnFire(true);
                         }
                     }
@@ -84,19 +82,18 @@ public class FireHandler {
                 jointEdges.clear();
             }
         }
-        /*for(int i = 0; i < bridgeUnitLinks.size(); i++){
+        for(int i = 0; i < bridgeUnitLinks.size(); i++){
             if(bridgeUnitLinks.get(i).getIsOnFire()){
-                Array<JointEdge> jointEdges = bridgeUnits.get(i).getBody().getJointList();
-                for(JointEdge e : jointEdges){
-                    System.out.println(e + " " + i);
-                }
+                Array<JointEdge> jointEdges = bridgeUnitLinks.get(i).getBody().getJointList();
                 //Runs through the list of bridgeUnit links
                 for(BridgeUnit bridgeUnit : bridgeUnits){
                     //Runs through the list of Joint edges
                     for(JointEdge jointEdge : jointEdges){
+
                         //Checks to see if any of them match
                         if(jointEdge.other.equals(bridgeUnit.getBody())){
                             //Sets the bridgeUnitLink on fire if they match
+
                             bridgeUnit.setIsOnFire(true);
                         }
                     }
@@ -104,7 +101,7 @@ public class FireHandler {
                 jointEdges.clear();
             }
         }
-        */
+
 
         return false;
     }

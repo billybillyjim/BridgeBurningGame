@@ -19,6 +19,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class MainGame extends Stage implements Screen{
@@ -48,10 +50,10 @@ public class MainGame extends Stage implements Screen{
 
     private boolean testOnClick = false;
 
-    public Array<Body> bodiesInTheWorld; //this array will be used to keep all the bodies created in the world
-    public Array<Actor> actorsInTheWorld;
-    public Array<BridgeUnit> bridgeUnitsInTheWorld;
-    public Array<BridgeUnitLink> bridgeUnitLinksInTheWorld;
+    private float timeLimit;
+    private float timeCycle;
+
+    private DecimalFormat df = new DecimalFormat("#.#");
 
     //camera
     private OrthographicCamera camera;
@@ -63,6 +65,7 @@ public class MainGame extends Stage implements Screen{
 
         //Sets a font color
         game.font.setColor(Color.WHITE);
+
 
         //Sets texture to image in assets folder
 
@@ -79,7 +82,6 @@ public class MainGame extends Stage implements Screen{
 
         box2DDebugRenderer = new Box2DDebugRenderer();
 
-
         cliffs = new BackgroundCliffs(img3, img4, WORLD);
         this.addActor(cliffs);
 
@@ -91,6 +93,8 @@ public class MainGame extends Stage implements Screen{
         //Creates an array of particleEffects, which allows for many fires on the screen at once.
         particleEffects = new ArrayList<ParticleEffect>();
 
+        timeLimit = 30;
+        timeCycle = 1;
 
     }
 
@@ -111,16 +115,19 @@ public class MainGame extends Stage implements Screen{
             if(actor != null && actor.getName().equals("Bridge Unit Link")){
                 ((BridgeUnitLink) actor).setIsOnFire(true);
 
+
             }
             else if(actor != null && actor.getName().equals("Bridge Unit")){
 
                 ((BridgeUnit) actor).setIsOnFire(true);
             }
-            fireHandler.burnAdjacents();
+            //fireHandler.burnAdjacents();
             burnWood();
 
 
         }
+        timeLimit -= Gdx.graphics.getDeltaTime();
+        timeCycle -= Gdx.graphics.getDeltaTime();
 
         box2DDebugRenderer.render(WORLD, camera.combined);
 
@@ -129,7 +136,7 @@ public class MainGame extends Stage implements Screen{
 
 
         //sets the background color
-        Gdx.gl.glClearColor(0, 0, 0, .3f);
+        Gdx.gl.glClearColor(1, 1, 1, .3f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //The stage (this class) knows about all its actors.. the methods below are responsible to draw all actors in the stage
         act(delta);
@@ -149,12 +156,26 @@ public class MainGame extends Stage implements Screen{
 
         //draws the actual frame
         game.batch.begin();
+
+        game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
         //Runs through the array of particleEffects and draws each one
         for(ParticleEffect effect:particleEffects){
             effect.draw(game.batch);
         }
 
         game.batch.end();
+
+        if(timeCycle < 0.0f){
+            System.out.println("Was clicked");
+            timeCycle = 1;
+            fireHandler.burnAdjacents();
+            burnWood();
+
+        }
+
+        if(timeLimit < 0.0f){
+            //TODO: make this cause a game over
+        }
 
     }
 
@@ -235,7 +256,7 @@ public class MainGame extends Stage implements Screen{
         for(int i = 0; i < xCoordinates.size(); i++){
 
             ParticleEffect fireEffect = new ParticleEffect();
-            fireEffect.load(Gdx.files.internal("Effect5.p"), Gdx.files.internal("PixelParticle2.png"));
+            fireEffect.load(Gdx.files.internal("Effect7.p"), Gdx.files.internal("PixelParticle2.png"));
             fireEffect.getEmitters().first().setPosition(xCoordinates.get(i),yCoordinates.get(i));
             particleEffects.add(fireEffect);
 
