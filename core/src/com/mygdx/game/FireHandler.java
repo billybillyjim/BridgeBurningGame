@@ -89,11 +89,9 @@ public class FireHandler {
                 for(BridgeUnit bridgeUnit : bridgeUnits){
                     //Runs through the list of Joint edges
                     for(JointEdge jointEdge : jointEdges){
-
                         //Checks to see if any of them match
                         if(jointEdge.other.equals(bridgeUnit.getBody())){
                             //Sets the bridgeUnitLink on fire if they match
-
                             bridgeUnit.setIsOnFire(true);
                         }
                     }
