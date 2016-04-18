@@ -22,7 +22,7 @@ public class Cable extends Actor {
 
     private final int widthCableSegment = 5;
     private final int heightCableSegment = 30;
-    private int extraCableSegments = 1;
+    private int extraCableSegments;
     private final Texture cableTexture = new Texture("cableTex.jpg");
 
     private  Body[] cableSegments;
@@ -33,7 +33,7 @@ public class Cable extends Actor {
 
 
     //add xinitialloc and xfinalloc as paramaters
-    public Cable(World world, BridgeUnit cableSupportLeft, BridgeUnit cableSupportRight, String leftAnchororientation, String rightAnchororientation){
+    public Cable(World world, BridgeUnit cableSupportLeft, BridgeUnit cableSupportRight, String leftAnchororientation, String rightAnchororientation, int extraSegments){
 
         float x1 = cableSupportLeft.getBody().getPosition().x;
         float y1 = cableSupportLeft.getBody().getPosition().y;
@@ -44,6 +44,7 @@ public class Cable extends Actor {
         spritesArray = new ArrayList<Sprite>();
         this.leftAnchororientation = leftAnchororientation;
         this.rightAnchororientation = rightAnchororientation;
+        this.extraCableSegments = extraSegments;
         float numberOfRopeUnits = ((float) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)))/heightCableSegment;
         numberOfRopeUnits += extraCableSegments;
         cableSegments = new Body[(int)numberOfRopeUnits];
@@ -62,7 +63,7 @@ public class Cable extends Actor {
             sprite.setSize(widthCableSegment, heightCableSegment);
 
             spritesArray.add(sprite);
-            bodyDef.position.set((cableSupportLeft.getSprite().getX() + BridgeUnit.HEIGHT/2), cableSupportLeft.getSprite().getY() + BridgeUnit.WIDTH * 2 ) ;
+            bodyDef.position.set((x1 + BridgeUnit.HEIGHT), y1 + BridgeUnit.WIDTH * 2 ) ;
             // if(i == ropeSegments.length - 1) bodyDef.position.set((rightPillarUnit.getSprite().getX() - BridgeUnit.HEIGHT/2), leftPillarUnit.getSprite().getY() + BridgeUnit.WIDTH * 2) ;
             cableSegments[i] = world.createBody(bodyDef);
             cableSegments[i].createFixture(shape, .2f);

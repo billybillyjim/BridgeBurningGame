@@ -89,7 +89,7 @@ public class FireHandler {
         for(int i = 0; i < bridgeUnitLinks.size(); i++){
             if(bridgeUnitLinks.get(i).getIsOnFire()){
                 Array<JointEdge> jointEdges = bridgeUnitLinks.get(i).getBody().getJointList();
-                //bridgeUnitLinks.get(i).setIsBurnt(true);
+                bridgeUnitLinks.get(i).setIsBurnt(true);
                 //Runs through the list of bridgeUnit links
                 for(BridgeUnit bridgeUnit : bridgeUnits){
                     //Runs through the list of Joint edges
@@ -107,8 +107,8 @@ public class FireHandler {
 
         return false;
     }
-    public ArrayList<BridgeUnit> burnUp(){
-        ArrayList<BridgeUnit> burntBridgeUnits = new ArrayList<BridgeUnit>();
+    public ArrayList<BridgeUnit> burnUpBridgeUnits( ArrayList<BridgeUnit> burntBridgeUnits){
+
         for(BridgeUnit b : bridgeUnits){
             if(b.getIsBurnt()){
                 System.out.println(b.getBody().getJointList().size);
@@ -118,6 +118,19 @@ public class FireHandler {
         }
 
         return burntBridgeUnits;
+    }
+
+    public ArrayList<BridgeUnitLink> burnUpBridgeUnitLinks(ArrayList<BridgeUnitLink> burntBridgeUnitLinks  ){
+
+        for(BridgeUnitLink b : bridgeUnitLinks){
+            if(b.getIsBurnt()){
+                System.out.println(b.getBody().getJointList().size);
+                burntBridgeUnitLinks.add(b);
+
+            }
+        }
+
+        return burntBridgeUnitLinks;
     }
     public void updateBridgeUnitArray(ArrayList<BridgeUnit> bridgeUnits){
 

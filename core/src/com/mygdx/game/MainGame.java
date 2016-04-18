@@ -9,7 +9,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
 
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -45,7 +43,7 @@ public class MainGame extends Stage implements Screen{
     private Box2DDebugRenderer box2DDebugRenderer;
 
     //array with bridge units links
-    ArrayList<BridgeUnitLink> linksAcross;
+    ArrayList<BridgeUnitLink> bridgeUnitLinks;
     ArrayList<BridgeUnit> bridgeUnits = new ArrayList<BridgeUnit>();
 
     private FireHandler fireHandler;
@@ -94,11 +92,12 @@ public class MainGame extends Stage implements Screen{
         fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
 
 
-        //Creates an array of particleEffects, which allows for many fires on the screen at once.
-        particleEffects = new ArrayList<ParticleEffect>();
+
 
         timeLimit = 30;
         timeCycle = 1;
+
+        bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
 
     }
 
@@ -152,28 +151,22 @@ public class MainGame extends Stage implements Screen{
 
         //makes the fire effect change every frame
         //fireEffect.update(Gdx.graphics.getDeltaTime());
-        if(!particleEffects.isEmpty()) {
-            for (ParticleEffect fire : particleEffects) {
-                fire.update(Gdx.graphics.getDeltaTime());
-            }
-        }
+
 
         //draws the actual frame
         game.batch.begin();
 
         game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
         //Runs through the array of particleEffects and draws each one
-        for(ParticleEffect effect:particleEffects){
-            effect.draw(game.batch);
-        }
-
         game.batch.end();
 
         if(timeCycle < 0.0f){
 
             timeCycle = 1;
             fireHandler.burnAdjacents();
-            bridgeUnits = fireHandler.burnUp();
+            bridgeUnits = fireHandler.burnUpBridgeUnits(bridgeUnits);
+            bridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(bridgeUnitLinks);
+
             burnWood();
 
         }
@@ -213,76 +206,14 @@ public class MainGame extends Stage implements Screen{
     //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
     public void burnWood(){
 
-
-       /* ArrayList<Float> xCoordinates = new ArrayList<Float>();
-        ArrayList<Float> yCoordinates = new ArrayList<Float>();
-        float x = 0;
-        float y = 0;
-
-        for(Actor actor:this.getActors()){
-            if(actor.getName() != null && actor.getName().equals("Bridge Unit Link")){
-
-                BridgeUnitLink bunitLink = (BridgeUnitLink)actor;
-                if(bunitLink.getIsOnFire()){
-                    x = bunitLink.getX() + (bunitLink.getWidth() / 2);
-                    y = bunitLink.getY();
-                    xCoordinates.add(x);
-                    yCoordinates.add(y);
-                    bunitLink.changeBodyType();
-
-
-                }
-                else{
-                    //destroyJoints(bunitLink.getBody());
-                }
-
-            }
-            else if(actor.getName() != null && actor.getName().equals("Bridge Unit")){
-
-                BridgeUnit bunit = (BridgeUnit)actor;
-                if(bunit.getIsOnFire() && !bunit.getIsBurnt()){
-
-                    x = bunit.getX() + 50; //This is disgusting; needs fixing
-                    y = bunit.getY();
-                    xCoordinates.add(x);
-                    yCoordinates.add(y);
-
-                    //bunit.setIsOnFire(false);
-                    destroyJoints(bunit.getBody());
-
-                }
-
-                else{
-                    //destroyJoints(bunit.getBody());
-                }
-            }
-
-
-        }
-
-
-        for(int i = 0; i < xCoordinates.size(); i++){
-
-            ParticleEffect fireEffect = new ParticleEffect();
-            fireEffect.load(Gdx.files.internal("Effect7.p"), Gdx.files.internal("PixelParticle2.png"));
-            fireEffect.getEmitters().first().setPosition(xCoordinates.get(i),yCoordinates.get(i));
-            particleEffects.add(fireEffect);
-
-            for(int j = 0; j < fireEffect.getEmitters().size; j++) {
-                fireEffect.getEmitters().get(j).setPosition(xCoordinates.get(i),yCoordinates.get(i));
-            }
-
-            fireEffect.start();
-
-            fireEffect.reset();
-            xCoordinates.clear();
-        yCoordinates.clear();
-        }*/
-
         for(BridgeUnit bridgeUnit : bridgeUnits){
 
             destroyJoints(bridgeUnit.getBody());
             //particleEffects.remove(particleEffects.get(bridgeUnits.indexOf(bridgeUnit)));
+        }
+
+        for(BridgeUnitLink bridgeUnitLink : bridgeUnitLinks){
+            bridgeUnitLink.changeBodyType();
         }
 
     }
@@ -298,19 +229,4 @@ public class MainGame extends Stage implements Screen{
     }
 
 
-    public void putBridgeUnitLinksOut(){
-        for(Actor actor : this.getActors()){
-            if(actor.getName().equals("Bridge Unit Link")){
-                BridgeUnitLink bridgeUnitLink = (BridgeUnitLink)actor;
-                if(bridgeUnitLink.getIsBurnt()){
-
-                }
-            }
-        }
-    }
-
-
-
-
-
-}
+  }

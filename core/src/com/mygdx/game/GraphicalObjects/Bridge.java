@@ -155,9 +155,9 @@ public class Bridge extends Actor {
     }
 
     private void createCable(ArrayList<BridgeUnit> unitsAcross, ArrayList<BridgeUnit> pillarLeft, ArrayList<BridgeUnit> pillarRight) {
-        Cable mainCable = new Cable(world, pillarLeft.get(pillarLeft.size()-1), pillarRight.get(pillarLeft.size()-1), "lowerRight", "upperRight" );
-        Cable leftCable = new Cable(world, unitsAcross.get(0), pillarLeft.get(pillarLeft.size()-1), "upperLeft", "upperRight" );
-        Cable rightCable = new Cable(world, pillarRight.get(pillarLeft.size()-1), unitsAcross.get(unitsAcross.size()-1), "lowerRight", "upperRight" );
+        Cable mainCable = new Cable(world, pillarLeft.get(pillarLeft.size()-1), pillarRight.get(pillarLeft.size()-1), "lowerRight", "upperRight", 1 );
+        Cable leftCable = new Cable(world, unitsAcross.get(0), pillarLeft.get(pillarLeft.size()-1), "upperLeft", "upperRight", 0 );
+        Cable rightCable = new Cable(world, pillarRight.get(pillarLeft.size()-1), unitsAcross.get(unitsAcross.size()-1), "lowerRight", "upperRight", 0 );
         stage.addActor(mainCable);
         stage.addActor(leftCable);
         stage.addActor(rightCable);
@@ -200,6 +200,7 @@ public class Bridge extends Actor {
         for(int i = 0; i < pillarUnits.size()-1; i++){
             BridgeUnit unit = pillarUnits.get(i);
             BridgeUnitLink link = new BridgeUnitLink(img2, world, unit.getBody().getPosition().x, unit.getBody().getPosition().y + BridgeUnit.WIDTH);
+            link.changeBodyType();
             pillarLinks.add(link);
             stage.addActor(link);
         }
