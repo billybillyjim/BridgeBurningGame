@@ -23,6 +23,7 @@ public class BridgeUnitLink extends Actor {
     Texture img;
     Sprite sprite;
     boolean isOnFire;
+    private final float RADIUS = 4f;
     boolean isBurnt;
 
     public BridgeUnitLink(Texture texture, World world, float xPosition, float yPosition){
@@ -54,7 +55,7 @@ public class BridgeUnitLink extends Actor {
 
         //Makes a shape for the body
         CircleShape shape = new CircleShape();
-        shape.setRadius(10);
+        shape.setRadius(RADIUS);
         //Sets the shape to a box
 
 
@@ -69,7 +70,7 @@ public class BridgeUnitLink extends Actor {
 
         body.createFixture(fixtureDef);
 
-        sprite.setSize(10 * 2, 10 * 2); //set sprite size to the same size of the body
+        sprite.setSize(RADIUS * 2, RADIUS * 2); //set sprite size to the same size of the body
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2);  //set the origin over which the sprites rotates to the center of the sprite
         //body.setUserData(sprite); //adds sprite to the user data (creates an association between the sprite and the body)
 

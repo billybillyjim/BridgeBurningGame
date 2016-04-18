@@ -17,6 +17,8 @@ import java.util.ArrayList;
  */
 public class Bridge extends Actor {
 
+    public final int PILLAR_HEIGHT = 200;
+
     private ArrayList<BridgeUnit> bridgeUnitsAcross;
     private ArrayList<BridgeUnit> bridgeUnitsPillarLeft;
     private ArrayList<BridgeUnit> bridgeUnitsPillarRight;
@@ -32,7 +34,10 @@ public class Bridge extends Actor {
     private Stage stage;
     private BackgroundCliffs cliffs;
 
+    private float distanceBetweenCliffs;
 
+
+    //TODO create formula to calculate over which unit/link should the pillar stand
 
 
     public Bridge(World world, Stage stage, BackgroundCliffs cliffs){
@@ -57,7 +62,7 @@ public class Bridge extends Actor {
         float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth, cliffs.getSpriteLeft().getX(), cliffs.getSpriteRight().getX());
         System.out.println("cliff width " + leftCliffWidth + " cliff Height " + leftCliffHeight);
         for (int i = 0; i < numberOfBridgeUnits; i++) {
-            BridgeUnit unit = new BridgeUnit(img, world, cliffs.getSpriteLeft().getX() + leftCliffWidth + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
+            BridgeUnit unit = new BridgeUnit(img, world, cliffs.getSpriteLeft().getX() + leftCliffWidth * 0.8f + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
             bridgeUnitsAcross.add(unit);
             stage.addActor(unit);
 
@@ -72,7 +77,7 @@ public class Bridge extends Actor {
      */
 
     private float getNumberOfBridgeUnits(float leftCliffWidth, float rightCliffWidth, float leftCliffX, float rightCliffX) {
-        float distanceBetweenCliffs =  (rightCliffX - rightCliffWidth/2) -  (leftCliffX + leftCliffWidth/2);
+        distanceBetweenCliffs =  (rightCliffX - rightCliffWidth * 0.4f) -  (leftCliffX + leftCliffWidth * 0.4f) + BridgeUnit.WIDTH;
         float numberOfBridgeUnits = distanceBetweenCliffs / BridgeUnit.WIDTH;
         //This if statement checks if the number of bridge units calculated above is enough to cover the distance. If it is not it add one more board.
         if((numberOfBridgeUnits * BridgeUnit.WIDTH) < distanceBetweenCliffs){
@@ -133,26 +138,26 @@ public class Bridge extends Actor {
         Sprite linkLeft = linksAcross.get(0).getSprite(); //the left pillar is created in the x location of the first unit that is across the cliff
         System.out.println("leftUnit from createBridgeUnitPillars x " + linkLeft.getX());
         Sprite linkRight = linksAcross.get(linksAcross.size()-1).getSprite(); //the right pillar is created in the x location of the last unit that is across the cliff
-        createPillar(bridgeUnitsPillarLeft, linkLeft);
-        createPillar(bridgeUnitsPillarRight, linkRight);
 
-        BridgeUnitLink newLinkLeft = createLinkPillars(bridgeUnitsPillarLeft);
-        createJointsPillars(linksAcross.get(0), bridgeUnitsPillarLeft, newLinkLeft);
-        bridgeUnitsLinksPillarLeft.add(newLinkLeft);
+        int indexOfLinkBase = findBridgeUnitLinkBaseOfPillar();
+        createPillar(bridgeUnitsPillarLeft, linksAcross.get(indexOfLinkBase).getSprite() );
+        createPillar(bridgeUnitsPillarRight, linksAcross.get(linksAcross.size()-indexOfLinkBase).getSprite());
+
+        createLinkPillars(bridgeUnitsPillarLeft, bridgeUnitsLinksPillarLeft);
+        createJointsPillars(linksAcross.get(indexOfLinkBase), bridgeUnitsPillarLeft, bridgeUnitsLinksPillarLeft);
 
 
-        BridgeUnitLink newLinkRight = createLinkPillars(bridgeUnitsPillarRight);
-        createJointsPillars(linksAcross.get(linksAcross.size() - 1), bridgeUnitsPillarRight, newLinkRight);
-        bridgeUnitsLinksPillarRight.add(newLinkLeft);
+        createLinkPillars(bridgeUnitsPillarRight, bridgeUnitsLinksPillarRight);
+        createJointsPillars(linksAcross.get(linksAcross.size()-indexOfLinkBase), bridgeUnitsPillarRight, bridgeUnitsLinksPillarRight);
+
 
 
     }
 
     private void createCable(ArrayList<BridgeUnit> unitsAcross, ArrayList<BridgeUnit> pillarLeft, ArrayList<BridgeUnit> pillarRight) {
-        Cable mainCable = new Cable(world, pillarLeft.get(1), pillarRight.get(1),pillarLeft.get(1).getSprite().getX(), pillarRight.get(1).getSprite().getX(), "lowerRight", "upperRight" );
-        Cable leftCable = new Cable(world, unitsAcross.get(0), pillarLeft.get(1), (unitsAcross.get(0).getBody().getPosition().x - BridgeUnit.WIDTH / 2),(unitsAcross.get(1).getBody().getPosition().x + BridgeUnit.WIDTH / 2), "upperLeft", "upperRight" );
-
-        Cable rightCable = new Cable(world, pillarRight.get(1), unitsAcross.get(unitsAcross.size()-1),  unitsAcross.get(unitsAcross.size()-2).getBody().getPosition().x -  BridgeUnit.WIDTH / 2 ,(unitsAcross.get(unitsAcross.size()-1).getBody().getPosition().x + BridgeUnit.WIDTH / 2), "lowerRight", "upperRight" );
+        Cable mainCable = new Cable(world, pillarLeft.get(pillarLeft.size()-1), pillarRight.get(pillarLeft.size()-1), "lowerRight", "upperRight" );
+        Cable leftCable = new Cable(world, unitsAcross.get(0), pillarLeft.get(pillarLeft.size()-1), "upperLeft", "upperRight" );
+        Cable rightCable = new Cable(world, pillarRight.get(pillarLeft.size()-1), unitsAcross.get(unitsAcross.size()-1), "lowerRight", "upperRight" );
         stage.addActor(mainCable);
         stage.addActor(leftCable);
         stage.addActor(rightCable);
@@ -165,16 +170,25 @@ public class Bridge extends Actor {
      */
 
     private void createPillar(ArrayList<BridgeUnit> pillarUnits, Sprite linkLeft) {
-        BridgeUnit left1 = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
+        int numberOfUnitsInPillar = PILLAR_HEIGHT/BridgeUnit.WIDTH;
+        System.out.println("num of pillars = " + numberOfUnitsInPillar);
+        for(int i = 0; i < numberOfUnitsInPillar; i++){
+            System.out.println("num of pillars = " + numberOfUnitsInPillar + ": " + i);
+            BridgeUnit left = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
+            left.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH * i, MathUtils.PI / 2);
+            pillarUnits.add(left);
+            stage.addActor(left);
+        }
 
-        left1.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH / 2, MathUtils.PI / 2);
-        stage.addActor(left1);
-        pillarUnits.add(left1);
-        BridgeUnit left2 = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
-        left2.getBody().setTransform(left1.getSprite().getX(), left1.getSprite().getY() + BridgeUnit.WIDTH * 1.5f, MathUtils.PI / 2);
-        stage.addActor(left2);
-        pillarUnits.add(left2);
 
+    }
+
+    private int findBridgeUnitLinkBaseOfPillar(){
+        int unitLocatedAt = (int) 60 / BridgeUnit.WIDTH;
+        if(unitLocatedAt == 0) unitLocatedAt = 1;
+
+
+        return unitLocatedAt;
     }
 
     /**
@@ -182,21 +196,23 @@ public class Bridge extends Actor {
      * @param pillarUnits
      * @return
      */
-    private BridgeUnitLink createLinkPillars(ArrayList<BridgeUnit> pillarUnits){
-        BridgeUnit unit = pillarUnits.get(0);
-        BridgeUnitLink link = new BridgeUnitLink(img2, world, unit.getSprite().getX(), unit.getSprite().getY() + BridgeUnit.WIDTH);
-        stage.addActor(link);
+    private void createLinkPillars(ArrayList<BridgeUnit> pillarUnits, ArrayList<BridgeUnitLink> pillarLinks ){
+        for(int i = 0; i < pillarUnits.size()-1; i++){
+            BridgeUnit unit = pillarUnits.get(i);
+            BridgeUnitLink link = new BridgeUnitLink(img2, world, unit.getBody().getPosition().x, unit.getBody().getPosition().y + BridgeUnit.WIDTH);
+            pillarLinks.add(link);
+            stage.addActor(link);
+        }
 
-        return link;
     }
 
     /**
      * this method creates the joint between the links and the bridge units of the pillars
-     * @param linkBottom this is the link between at the base of the pillar
+     *
      * @param pillarUnits this is the array with the bridge units of the pillar
-     * @param linkMiddle this is the link between the two bridge units of the pillar
+     * @param pillarLinks this is the link between the two bridge units of the pillar
      */
-    private void createJointsPillars(BridgeUnitLink linkBottom, ArrayList<BridgeUnit> pillarUnits, BridgeUnitLink linkMiddle){
+    private void createJointsPillars(BridgeUnitLink linkBottom, ArrayList<BridgeUnit> pillarUnits, ArrayList<BridgeUnitLink> pillarLinks){
         Body linkBody = linkBottom.getBody();
         Body unitBody = pillarUnits.get(0).getBody();
 
@@ -205,21 +221,18 @@ public class Bridge extends Actor {
         joint.CreateJoint(unitBody, linkBody);
         joint.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
         world.createJoint(joint.getrJointDef());
-        System.out.println("joints linkbody: " + linkBody.getJointList().size);
 
-        //joint between first unit of the pillar and link in the middle
-        Body linkBody2 = linkMiddle.getBody();
-        BridgeJoint joint1 = new BridgeJoint();
-        joint1.CreateJoint(unitBody, linkBody2);
-        joint1.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
-        world.createJoint(joint1.getrJointDef());
+        for(int i = 0; i < pillarLinks.size(); i++){
+            BridgeJoint joint2 = new BridgeJoint();
+            BridgeJoint joint3 = new BridgeJoint();
+            joint2.CreateJoint(pillarUnits.get(i).getBody(), pillarLinks.get(i).getBody());
+            joint2.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
+            world.createJoint(joint2.getrJointDef());
+            joint3.CreateJoint(pillarUnits.get(i + 1).getBody(), pillarLinks.get(i).getBody());
+            joint3.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
+            world.createJoint(joint3.getrJointDef());
 
-        //joint between second unit of the pillar and link in the middle
-        Body unitBody2 = pillarUnits.get(1).getBody();
-        BridgeJoint joint3 = new BridgeJoint();
-        joint3.CreateJoint(unitBody2, linkBody2);
-        joint3.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
-        world.createJoint(joint3.getrJointDef());
+        }
     }
 
 

@@ -25,9 +25,10 @@ public class BridgeUnit extends Actor{
     private Texture img;
     private Sprite sprite;
 
+
     private ParticleEffect fireEffect;
 
-    public final static int WIDTH = 100;
+    public final static int WIDTH = 25;
     public final static int HEIGHT = 20;
 
     private int durability;
@@ -52,8 +53,10 @@ public class BridgeUnit extends Actor{
         BodyDef bodyDef = new BodyDef();
         //Defines the body to be able to have physics applied to it
         bodyDef.type = BodyDef.BodyType.DynamicBody;
+
         //puts the body in a specific spot over the sprite
         bodyDef.position.set(sprite.getX(), sprite.getY());
+
 
         body = world.createBody(bodyDef);
 
@@ -130,6 +133,7 @@ public class BridgeUnit extends Actor{
 
 
         shape.dispose();
+
 
 
     }

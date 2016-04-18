@@ -22,7 +22,7 @@ public class Cable extends Actor {
 
     private final int widthCableSegment = 5;
     private final int heightCableSegment = 30;
-    private final int extraCableSegments = 1;
+    private int extraCableSegments = 1;
     private final Texture cableTexture = new Texture("cableTex.jpg");
 
     private  Body[] cableSegments;
@@ -30,15 +30,21 @@ public class Cable extends Actor {
     private String leftAnchororientation; //leftAnchorOrientation
     private String rightAnchororientation; //leftAnchorOrientation
 
+
+
     //add xinitialloc and xfinalloc as paramaters
-    public Cable(World world, BridgeUnit cableSupportLeft, BridgeUnit cableSupportRight, float xInitial, float xFinal, String leftAnchororientation, String rightAnchororientation){
+    public Cable(World world, BridgeUnit cableSupportLeft, BridgeUnit cableSupportRight, String leftAnchororientation, String rightAnchororientation){
+
+        float x1 = cableSupportLeft.getBody().getPosition().x;
+        float y1 = cableSupportLeft.getBody().getPosition().y;
+        float x2 = cableSupportRight.getBody().getPosition().x;
+        float y2 = cableSupportRight.getBody().getPosition().y;
+        System.out.println("x1 = " + x1 + " x2 = " + x2 + " y1 = " + y1 + " y2 = " + y2);
 
         spritesArray = new ArrayList<Sprite>();
         this.leftAnchororientation = leftAnchororientation;
         this.rightAnchororientation = rightAnchororientation;
-
-
-        float numberOfRopeUnits = (xFinal - xInitial) / heightCableSegment;
+        float numberOfRopeUnits = ((float) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)))/heightCableSegment;
         numberOfRopeUnits += extraCableSegments;
         cableSegments = new Body[(int)numberOfRopeUnits];
         RevoluteJoint[] joints = new RevoluteJoint[(int) numberOfRopeUnits - 1];
@@ -47,11 +53,6 @@ public class Cable extends Actor {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-
-
-
-
-
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(widthCableSegment / 2, heightCableSegment / 2);

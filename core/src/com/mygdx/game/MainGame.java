@@ -32,6 +32,7 @@ public class MainGame extends Stage implements Screen{
 
     private ArrayList<ParticleEffect> particleEffects;
 
+    private int maxTime; //maximum time in seconds the player has to make the bridge burn
     private int numOfJoints = 0;
 
     private Texture img3;
@@ -72,6 +73,7 @@ public class MainGame extends Stage implements Screen{
 
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
+        maxTime = 60;
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
@@ -226,6 +228,7 @@ public class MainGame extends Stage implements Screen{
                     y = bunitLink.getY();
                     xCoordinates.add(x);
                     yCoordinates.add(y);
+                    bunitLink.changeBodyType();
 
 
                 }
@@ -245,6 +248,7 @@ public class MainGame extends Stage implements Screen{
                     yCoordinates.add(y);
 
                     //bunit.setIsOnFire(false);
+                    destroyJoints(bunit.getBody());
 
                 }
 
@@ -291,7 +295,6 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyJoint(edge.joint);
 
         }
-
     }
 
 
@@ -305,6 +308,8 @@ public class MainGame extends Stage implements Screen{
             }
         }
     }
+
+
 
 
 
