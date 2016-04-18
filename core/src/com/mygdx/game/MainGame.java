@@ -45,6 +45,7 @@ public class MainGame extends Stage implements Screen{
 
     //array with bridge units links
     ArrayList<BridgeUnitLink> linksAcross;
+    ArrayList<BridgeUnit> bridgeUnits = new ArrayList<BridgeUnit>();
 
     private FireHandler fireHandler;
 
@@ -89,6 +90,7 @@ public class MainGame extends Stage implements Screen{
 
         //Lets the fireHandler know all the actors in the bridge.
         fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
+
 
         //Creates an array of particleEffects, which allows for many fires on the screen at once.
         particleEffects = new ArrayList<ParticleEffect>();
@@ -166,9 +168,10 @@ public class MainGame extends Stage implements Screen{
         game.batch.end();
 
         if(timeCycle < 0.0f){
-            System.out.println("Was clicked");
+
             timeCycle = 1;
             fireHandler.burnAdjacents();
+            bridgeUnits = fireHandler.burnUp();
             burnWood();
 
         }
@@ -234,7 +237,7 @@ public class MainGame extends Stage implements Screen{
             else if(actor.getName() != null && actor.getName().equals("Bridge Unit")){
 
                 BridgeUnit bunit = (BridgeUnit)actor;
-                if(bunit.getIsOnFire()){
+                if(bunit.getIsOnFire() && !bunit.getIsBurnt()){
 
                     x = bunit.getX() + 50; //This is disgusting; needs fixing
                     y = bunit.getY();
@@ -244,6 +247,7 @@ public class MainGame extends Stage implements Screen{
                     //bunit.setIsOnFire(false);
 
                 }
+
                 else{
                     //destroyJoints(bunit.getBody());
                 }
@@ -251,7 +255,7 @@ public class MainGame extends Stage implements Screen{
 
 
         }
-        System.out.println(xCoordinates.size());
+
 
         for(int i = 0; i < xCoordinates.size(); i++){
 
@@ -269,12 +273,18 @@ public class MainGame extends Stage implements Screen{
             fireEffect.reset();
         }
 
+        for(BridgeUnit bridgeUnit : bridgeUnits){
+
+            destroyJoints(bridgeUnit.getBody());
+            particleEffects.remove(particleEffects.get(bridgeUnits.indexOf(bridgeUnit)));
+        }
         xCoordinates.clear();
         yCoordinates.clear();
     }
 
     public void destroyJoints(Body body){
         Array<JointEdge> jointEdges = body.getJointList();
+        System.out.println(jointEdges.size);
         for(JointEdge edge : jointEdges ) {
 
             WORLD.destroyJoint(edge.joint);

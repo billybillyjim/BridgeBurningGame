@@ -23,6 +23,7 @@ public class BridgeUnitLink extends Actor {
     Texture img;
     Sprite sprite;
     boolean isOnFire;
+    boolean isBurnt;
 
     public BridgeUnitLink(Texture texture, World world, float xPosition, float yPosition){
         this.setName("Bridge Unit Link");
@@ -96,9 +97,11 @@ public class BridgeUnitLink extends Actor {
         return this.sprite;
     }
     public boolean getIsOnFire(){return this.isOnFire;}
+    public boolean getIsBurnt(){return this.isBurnt;}
     public void setIsOnFire(boolean isOnFire){
         this.isOnFire = isOnFire;
     }
+    public void setIsBurnt(boolean b){this.isBurnt = b;}
 
 
 }

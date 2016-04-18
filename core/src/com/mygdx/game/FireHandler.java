@@ -31,6 +31,7 @@ public class FireHandler {
     public FireHandler(ArrayList<BridgeUnit> bridgeUnits, ArrayList<BridgeUnitLink> bridgeUnitLinks){
 
         this.bridgeUnits = bridgeUnits;
+        System.out.println("The number of bridge units made in firehandler " + bridgeUnits.get(0).getBody().getJointList().size);
         this.bridgeUnitLinks = bridgeUnitLinks;
         this.bridgeJoints = new ArrayList<BridgeJoint>();
 
@@ -65,7 +66,11 @@ public class FireHandler {
         //Iterates through the ArrayList of BridgeUnits
         for(int i = 0; i < bridgeUnits.size(); i++){
             //Checks to see if they are on fire
+            if(bridgeUnits.get(i).getDurability() <= 0){
+                bridgeUnits.get(i).setIsBurnt(true);
+            }
             if(bridgeUnits.get(i).getIsOnFire()){
+                bridgeUnits.get(i).decrementDurability();
                 //Gets the list of JointEdges
                 Array<JointEdge> jointEdges = bridgeUnits.get(i).getBody().getJointList();
                 //Runs through the list of bridgeUnit links
@@ -79,12 +84,12 @@ public class FireHandler {
                         }
                     }
                 }
-                jointEdges.clear();
             }
         }
         for(int i = 0; i < bridgeUnitLinks.size(); i++){
             if(bridgeUnitLinks.get(i).getIsOnFire()){
                 Array<JointEdge> jointEdges = bridgeUnitLinks.get(i).getBody().getJointList();
+                //bridgeUnitLinks.get(i).setIsBurnt(true);
                 //Runs through the list of bridgeUnit links
                 for(BridgeUnit bridgeUnit : bridgeUnits){
                     //Runs through the list of Joint edges
@@ -96,15 +101,26 @@ public class FireHandler {
                         }
                     }
                 }
-                jointEdges.clear();
             }
         }
 
 
         return false;
     }
+    public ArrayList<BridgeUnit> burnUp(){
+        ArrayList<BridgeUnit> burntBridgeUnits = new ArrayList<BridgeUnit>();
+        for(BridgeUnit b : bridgeUnits){
+            if(b.getIsBurnt()){
+                System.out.println(b.getBody().getJointList().size);
+                burntBridgeUnits.add(b);
+
+            }
+        }
+
+        return burntBridgeUnits;
+    }
     public void updateBridgeUnitArray(ArrayList<BridgeUnit> bridgeUnits){
-        this.bridgeUnits = bridgeUnits;
+
     }
 
     public void addBridgeUnit(BridgeUnit unit){
