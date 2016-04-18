@@ -212,7 +212,7 @@ public class MainGame extends Stage implements Screen{
     public void burnWood(){
 
 
-        ArrayList<Float> xCoordinates = new ArrayList<Float>();
+       /* ArrayList<Float> xCoordinates = new ArrayList<Float>();
         ArrayList<Float> yCoordinates = new ArrayList<Float>();
         float x = 0;
         float y = 0;
@@ -271,15 +271,16 @@ public class MainGame extends Stage implements Screen{
             fireEffect.start();
 
             fireEffect.reset();
-        }
+            xCoordinates.clear();
+        yCoordinates.clear();
+        }*/
 
         for(BridgeUnit bridgeUnit : bridgeUnits){
 
             destroyJoints(bridgeUnit.getBody());
-            particleEffects.remove(particleEffects.get(bridgeUnits.indexOf(bridgeUnit)));
+            //particleEffects.remove(particleEffects.get(bridgeUnits.indexOf(bridgeUnit)));
         }
-        xCoordinates.clear();
-        yCoordinates.clear();
+
     }
 
     public void destroyJoints(Body body){
@@ -294,7 +295,16 @@ public class MainGame extends Stage implements Screen{
     }
 
 
+    public void putBridgeUnitLinksOut(){
+        for(Actor actor : this.getActors()){
+            if(actor.getName().equals("Bridge Unit Link")){
+                BridgeUnitLink bridgeUnitLink = (BridgeUnitLink)actor;
+                if(bridgeUnitLink.getIsBurnt()){
 
+                }
+            }
+        }
+    }
 
 
 

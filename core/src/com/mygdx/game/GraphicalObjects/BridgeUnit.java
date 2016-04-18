@@ -1,7 +1,9 @@
 package com.mygdx.game.GraphicalObjects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.*;
@@ -22,6 +24,8 @@ public class BridgeUnit extends Actor{
     private Body body;
     private Texture img;
     private Sprite sprite;
+
+    private ParticleEffect fireEffect;
 
     public final static int WIDTH = 100;
     public final static int HEIGHT = 20;
@@ -72,6 +76,9 @@ public class BridgeUnit extends Actor{
 
         sprite.setSize(WIDTH, HEIGHT); //set sprite size to the same size of the body
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
+
+        fireEffect = new ParticleEffect();
+        fireEffect.load(Gdx.files.internal("Effect7.p"), Gdx.files.internal("PixelParticle2.png"));
 
 
         shape.dispose();
@@ -134,6 +141,18 @@ public class BridgeUnit extends Actor{
         sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
+        if(isOnFire) {
+            fireEffect.update(Gdx.graphics.getDeltaTime());
+
+            for (int j = 0; j < fireEffect.getEmitters().size; j++) {
+                fireEffect.getEmitters().get(j).setPosition(body.getPosition().x, body.getPosition().y);
+            }
+
+            fireEffect.start();
+
+            fireEffect.draw(batch);
+        }
+
     }
     public void decrementDurability(){
         this.durability--;
