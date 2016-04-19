@@ -28,7 +28,7 @@ public class Bridge extends Actor {
     private ArrayList<BridgeUnitLink> bridgeUnitsLinksPillarRight;
 
 
-    private final Texture img = new Texture("Wood.png");;
+    private final Texture img = new Texture("Wood2.png");;
     private final Texture img2 = new Texture("Pivot.png");
     private World world;
     private Stage stage;

@@ -128,12 +128,16 @@ public class MainGame extends Stage implements Screen{
             Actor actor = this.hit(pos.x,pos.y,true);
             if(actor != null && actor.getName().equals("Bridge Unit Link")){
                 ((BridgeUnitLink) actor).setIsOnFire(true);
+                System.out.println(actor.getX());
+                System.out.println(actor.getWidth());
 
 
             }
             else if(actor != null && actor.getName().equals("Bridge Unit")){
 
                 ((BridgeUnit) actor).setIsOnFire(true);
+                System.out.println(actor.getX());
+                System.out.println(actor.getWidth());
             }
             //fireHandler.burnAdjacents();
             burnWood();
@@ -225,7 +229,6 @@ public class MainGame extends Stage implements Screen{
 
     public void destroyJoints(Body body){
         Array<JointEdge> jointEdges = body.getJointList();
-        System.out.println(jointEdges.size);
         for(JointEdge edge : jointEdges ) {
 
             WORLD.destroyJoint(edge.joint);
