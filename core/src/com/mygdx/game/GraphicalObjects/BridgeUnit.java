@@ -37,59 +37,10 @@ public class BridgeUnit extends Actor{
     private boolean isBurnt;
 
     public BridgeUnit(Texture texture, World world, float xPosition, float yPosition){
-
-        //Sets texture to image in assets folder
-        img = texture;
-        //Makes a sprite of that texture
-        sprite = new Sprite(img);
-
-        this.setName("Bridge Unit");
-
-        durability = 5;
-
-
-        //sets the sprite position based on screen size
-        sprite.setPosition(xPosition, yPosition);
-
-        //Makes a physics body
-        BodyDef bodyDef = new BodyDef();
-        //Defines the body to be able to have physics applied to it
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-
-        //puts the body in a specific spot over the sprite
-        bodyDef.position.set(sprite.getX(), sprite.getY());
-
-
-        body = world.createBody(bodyDef);
-
-        //Makes a shape for the body
-        PolygonShape shape = new PolygonShape();
-        //Sets the shape to a box
-        shape.setAsBox(WIDTH/2, HEIGHT/2); //it has to be divided by 2 because setAsBo method takes half width and half height as input for some reason.
-
-        //Describes the properties of the fixture
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 10f;
-        fixtureDef.friction = 0.3f; //0 = like ice, 1 = cannot slide over it at all
-
-        setWidth(sprite.getWidth());
-        setHeight(sprite.getHeight());
-        setBounds(0, 0, getWidth(), getHeight());
-
-        body.createFixture(fixtureDef);
-
-        sprite.setSize(WIDTH, HEIGHT); //set sprite size to the same size of the body
-        sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
-
-        fireEffect = new ParticleEffect();
-        fireEffect.load(Gdx.files.internal("Effect8.p"), Gdx.files.internal("PixelParticle2.png"));
-
-
-        shape.dispose();
-
+        this(texture, world, xPosition, yPosition, 1);
 
     }
+
     public BridgeUnit(Texture texture, World world, float xPosition, float yPosition, int durability){
 
         //Sets texture to image in assets folder
@@ -151,9 +102,9 @@ public class BridgeUnit extends Actor{
         sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
-        if(isBurnt){
+        /*if(isBurnt){
             isOnFire = false;
-        }
+        }*/
         if(isOnFire) {
 
             fireEffect.update(Gdx.graphics.getDeltaTime());

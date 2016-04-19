@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -42,6 +43,8 @@ public class MainGame extends Stage implements Screen{
 
     private Texture img3;
     private Texture img4;
+    private Sprite backgroundImage;
+
     private Texture background;
     private Sprite backgroundSprite;
     //Makes a box2d physics environment that sets gravity
@@ -107,6 +110,8 @@ public class MainGame extends Stage implements Screen{
 
         timeLimit = 30;
         timeCycle = 1;
+
+        bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
 
     }
 
@@ -178,6 +183,18 @@ public class MainGame extends Stage implements Screen{
         //fireEffect.update(Gdx.graphics.getDeltaTime());
 
 
+        //draws the actual frame
+        game.batch.begin();
+
+        game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
+
+        //Runs through the array of particleEffects and draws each one
+        game.batch.end();
+        //The stage (this class) knows about all its actors.. the methods below are responsible to draw all actors in the stage
+        act(delta);
+        draw();
+        box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
+
 
         if(timeCycle < 0.0f){
 
@@ -215,6 +232,7 @@ public class MainGame extends Stage implements Screen{
 
     //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
     public void burnWood(){
+
         for(BridgeUnit bridgeUnit : bridgeUnits){
 
             destroyJoints(bridgeUnit.getBody());

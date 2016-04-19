@@ -110,7 +110,7 @@ public class FireHandler {
 
         for(BridgeUnit b : bridgeUnits){
             if(b.getIsBurnt()){
-
+                System.out.println(b.getBody().getJointList().size);
                 burntBridgeUnits.add(b);
 
             }
@@ -123,7 +123,7 @@ public class FireHandler {
 
         for(BridgeUnitLink b : bridgeUnitLinks){
             if(b.getIsBurnt()){
-
+                System.out.println(b.getBody().getJointList().size);
                 burntBridgeUnitLinks.add(b);
 
             }

@@ -37,7 +37,6 @@ public class Bridge extends Actor {
     private float distanceBetweenCliffs;
 
 
-    //TODO create formula to calculate over which unit/link should the pillar stand
 
 
     public Bridge(World world, Stage stage, BackgroundCliffs cliffs){
