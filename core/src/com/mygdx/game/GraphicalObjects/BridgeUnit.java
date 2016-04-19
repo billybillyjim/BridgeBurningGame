@@ -97,9 +97,10 @@ public class BridgeUnit extends Actor{
         //Makes a sprite of that texture
         sprite = new Sprite(img);
 
+        this.setName("Bridge Unit");
+
         this.durability = durability;
 
-        this.setName("Bridge Unit");
 
         //sets the sprite position based on screen size
         sprite.setPosition(xPosition, yPosition);
@@ -108,8 +109,10 @@ public class BridgeUnit extends Actor{
         BodyDef bodyDef = new BodyDef();
         //Defines the body to be able to have physics applied to it
         bodyDef.type = BodyDef.BodyType.DynamicBody;
+
         //puts the body in a specific spot over the sprite
         bodyDef.position.set(sprite.getX(), sprite.getY());
+
 
         body = world.createBody(bodyDef);
 
@@ -133,10 +136,11 @@ public class BridgeUnit extends Actor{
         sprite.setSize(WIDTH, HEIGHT); //set sprite size to the same size of the body
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
 
+        fireEffect = new ParticleEffect();
+        fireEffect.load(Gdx.files.internal("Effect8.p"), Gdx.files.internal("PixelParticle2.png"));
+
 
         shape.dispose();
-
-
 
     }
 
@@ -147,6 +151,9 @@ public class BridgeUnit extends Actor{
         sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
+        if(isBurnt){
+            isOnFire = false;
+        }
         if(isOnFire) {
 
             fireEffect.update(Gdx.graphics.getDeltaTime());
@@ -159,6 +166,7 @@ public class BridgeUnit extends Actor{
 
             fireEffect.draw(batch);
         }
+
 
     }
     public void decrementDurability(){

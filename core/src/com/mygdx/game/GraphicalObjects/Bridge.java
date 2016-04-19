@@ -28,7 +28,7 @@ public class Bridge extends Actor {
     private ArrayList<BridgeUnitLink> bridgeUnitsLinksPillarRight;
 
 
-    private final Texture img = new Texture("Wood2.png");;
+    private final Texture img = new Texture("Paper.png");;
     private final Texture img2 = new Texture("Pivot.png");
     private World world;
     private Stage stage;
@@ -174,7 +174,7 @@ public class Bridge extends Actor {
         System.out.println("num of pillars = " + numberOfUnitsInPillar);
         for(int i = 0; i < numberOfUnitsInPillar; i++){
             System.out.println("num of pillars = " + numberOfUnitsInPillar + ": " + i);
-            BridgeUnit left = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY());
+            BridgeUnit left = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY(), 10);
             left.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH * i, MathUtils.PI / 2);
             pillarUnits.add(left);
             stage.addActor(left);
