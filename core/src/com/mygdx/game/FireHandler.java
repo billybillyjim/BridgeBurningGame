@@ -31,7 +31,6 @@ public class FireHandler {
     public FireHandler(ArrayList<BridgeUnit> bridgeUnits, ArrayList<BridgeUnitLink> bridgeUnitLinks){
 
         this.bridgeUnits = bridgeUnits;
-        System.out.println("The number of bridge units made in firehandler " + bridgeUnits.get(0).getBody().getJointList().size);
         this.bridgeUnitLinks = bridgeUnitLinks;
         this.bridgeJoints = new ArrayList<BridgeJoint>();
 
@@ -111,7 +110,7 @@ public class FireHandler {
 
         for(BridgeUnit b : bridgeUnits){
             if(b.getIsBurnt()){
-                System.out.println(b.getBody().getJointList().size);
+
                 burntBridgeUnits.add(b);
 
             }
@@ -124,7 +123,7 @@ public class FireHandler {
 
         for(BridgeUnitLink b : bridgeUnitLinks){
             if(b.getIsBurnt()){
-                System.out.println(b.getBody().getJointList().size);
+
                 burntBridgeUnitLinks.add(b);
 
             }

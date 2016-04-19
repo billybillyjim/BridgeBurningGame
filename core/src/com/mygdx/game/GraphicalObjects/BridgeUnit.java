@@ -1,6 +1,7 @@
 package com.mygdx.game.GraphicalObjects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -25,7 +26,6 @@ public class BridgeUnit extends Actor{
     private Texture img;
     private Sprite sprite;
 
-
     private ParticleEffect fireEffect;
 
     public final static int WIDTH = 25;
@@ -44,7 +44,9 @@ public class BridgeUnit extends Actor{
         sprite = new Sprite(img);
 
         this.setName("Bridge Unit");
+
         durability = 5;
+
 
         //sets the sprite position based on screen size
         sprite.setPosition(xPosition, yPosition);
@@ -81,7 +83,7 @@ public class BridgeUnit extends Actor{
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
 
         fireEffect = new ParticleEffect();
-        fireEffect.load(Gdx.files.internal("Effect7.p"), Gdx.files.internal("PixelParticle2.png"));
+        fireEffect.load(Gdx.files.internal("Effect8.p"), Gdx.files.internal("PixelParticle2.png"));
 
 
         shape.dispose();
@@ -146,6 +148,7 @@ public class BridgeUnit extends Actor{
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
         if(isOnFire) {
+
             fireEffect.update(Gdx.graphics.getDeltaTime());
 
             for (int j = 0; j < fireEffect.getEmitters().size; j++) {

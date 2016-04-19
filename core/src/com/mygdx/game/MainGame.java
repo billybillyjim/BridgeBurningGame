@@ -7,8 +7,12 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
@@ -18,6 +22,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -33,8 +38,12 @@ public class MainGame extends Stage implements Screen{
     private int maxTime; //maximum time in seconds the player has to make the bridge burn
     private int numOfJoints = 0;
 
+    private Music fireSound;
+
     private Texture img3;
     private Texture img4;
+    private Texture background;
+    private Sprite backgroundSprite;
     //Makes a box2d physics environment that sets gravity
     public final static World WORLD = new World(new Vector2(0, -98.1f), true);
 
@@ -43,7 +52,7 @@ public class MainGame extends Stage implements Screen{
     private Box2DDebugRenderer box2DDebugRenderer;
 
     //array with bridge units links
-    ArrayList<BridgeUnitLink> bridgeUnitLinks;
+    ArrayList<BridgeUnitLink> bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
     ArrayList<BridgeUnit> bridgeUnits = new ArrayList<BridgeUnit>();
 
     private FireHandler fireHandler;
@@ -71,6 +80,9 @@ public class MainGame extends Stage implements Screen{
 
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
+        background = new Texture("BG1.png");
+
+        backgroundSprite = new Sprite(background);
         maxTime = 60;
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
@@ -91,13 +103,10 @@ public class MainGame extends Stage implements Screen{
         //Lets the fireHandler know all the actors in the bridge.
         fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
 
-
-
+        fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningLoop2.wav"));
 
         timeLimit = 30;
         timeCycle = 1;
-
-        bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
 
     }
 
@@ -109,6 +118,8 @@ public class MainGame extends Stage implements Screen{
     }
     @Override
     public void render(float delta){
+
+
 
         if(Gdx.input.justTouched()){
             Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
@@ -141,6 +152,16 @@ public class MainGame extends Stage implements Screen{
         //sets the background color
         Gdx.gl.glClearColor(1, 1, 1, .3f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //draws the actual frame
+        game.batch.begin();
+
+        backgroundSprite.draw(game.batch);
+        game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
+        //Runs through the array of particleEffects and draws each one
+
+
+        game.batch.end();
+
         //The stage (this class) knows about all its actors.. the methods below are responsible to draw all actors in the stage
         act(delta);
         draw();
@@ -153,20 +174,18 @@ public class MainGame extends Stage implements Screen{
         //fireEffect.update(Gdx.graphics.getDeltaTime());
 
 
-        //draws the actual frame
-        game.batch.begin();
-
-        game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
-        //Runs through the array of particleEffects and draws each one
-        game.batch.end();
 
         if(timeCycle < 0.0f){
+
+            if(fireHandler.checkFires() && fireSound.isPlaying() == false){
+                fireSound.play();
+            }
 
             timeCycle = 1;
             fireHandler.burnAdjacents();
             bridgeUnits = fireHandler.burnUpBridgeUnits(bridgeUnits);
             bridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(bridgeUnitLinks);
-
+            //bridgeUnits = fireHandler.burnUp();
             burnWood();
 
         }
@@ -184,28 +203,14 @@ public class MainGame extends Stage implements Screen{
         Gdx.input.setInputProcessor(this);
 
     }
-
-
+    
     @Override
     public void resize(int width, int height){
         getViewport().update(width, height, true);
     }
-    @Override
-    public void pause(){
 
-    }
-    @Override
-    public void resume(){
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
     //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
     public void burnWood(){
-
         for(BridgeUnit bridgeUnit : bridgeUnits){
 
             destroyJoints(bridgeUnit.getBody());
@@ -229,4 +234,18 @@ public class MainGame extends Stage implements Screen{
     }
 
 
-  }
+    @Override
+    public void pause(){
+
+    }
+    @Override
+    public void resume(){
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+}
