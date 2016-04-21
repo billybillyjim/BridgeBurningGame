@@ -6,6 +6,7 @@ package com.mygdx.game;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -18,7 +19,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
@@ -43,6 +48,7 @@ public class MainGame extends Stage implements Screen{
 
     private Texture img3;
     private Texture img4;
+    private Texture img1;
     private Sprite backgroundImage;
 
     private Texture background;
@@ -51,6 +57,7 @@ public class MainGame extends Stage implements Screen{
     public final static World WORLD = new World(new Vector2(0, -98.1f), true);
 
     private BackgroundCliffs cliffs;
+    private RefreshButton refreshButton;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
@@ -67,7 +74,6 @@ public class MainGame extends Stage implements Screen{
 
     private DecimalFormat df = new DecimalFormat("#.#");
 
-    //camera
     private OrthographicCamera camera;
     private FitViewport viewport;
 
@@ -75,11 +81,8 @@ public class MainGame extends Stage implements Screen{
 
         this.game = game;
 
-        //Sets a font color
         game.font.setColor(Color.WHITE);
 
-
-        //Sets texture to image in assets folder
 
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
@@ -87,6 +90,10 @@ public class MainGame extends Stage implements Screen{
 
         backgroundSprite = new Sprite(background);
         maxTime = 60;
+
+        drawCliffs();
+
+
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
@@ -98,8 +105,7 @@ public class MainGame extends Stage implements Screen{
 
         box2DDebugRenderer = new Box2DDebugRenderer();
 
-        cliffs = new BackgroundCliffs(img3, img4, WORLD);
-        this.addActor(cliffs);
+
 
         Bridge bridge = new Bridge(WORLD, this, cliffs);
 
@@ -108,7 +114,8 @@ public class MainGame extends Stage implements Screen{
 
         fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningLoop2.wav"));
 
-        timeLimit = 30;
+
+        timeLimit = 31;
         timeCycle = 1;
 
         bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
@@ -116,29 +123,21 @@ public class MainGame extends Stage implements Screen{
     }
 
     @Override
-    public void dispose(){
-        WORLD.dispose();
-        box2DDebugRenderer.dispose();
-
-    }
-    @Override
-    public void render(float delta){
+    public void render(float delta) {
 
 
-
-        if(Gdx.input.justTouched()){
-            Vector3 pos = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
+        if (Gdx.input.justTouched()) {
+            Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(pos);
 
-            Actor actor = this.hit(pos.x,pos.y,true);
-            if(actor != null && actor.getName().equals("Bridge Unit Link")){
+            Actor actor = this.hit(pos.x, pos.y, true);
+            if (actor != null && actor.getName().equals("Bridge Unit Link")) {
                 ((BridgeUnitLink) actor).setIsOnFire(true);
                 System.out.println(actor.getX());
                 System.out.println(actor.getWidth());
 
 
-            }
-            else if(actor != null && actor.getName().equals("Bridge Unit")){
+            } else if (actor != null && actor.getName().equals("Bridge Unit")) {
 
                 ((BridgeUnit) actor).setIsOnFire(true);
                 System.out.println(actor.getX());
@@ -157,6 +156,7 @@ public class MainGame extends Stage implements Screen{
         //Makes the box2d WORLD play at a given frame rate
         WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
 
+        drawButtons();
 
         //sets the background color
         Gdx.gl.glClearColor(1, 1, 1, .3f);
@@ -179,26 +179,12 @@ public class MainGame extends Stage implements Screen{
         box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
         game.batch.setProjectionMatrix(camera.combined); //tells spriteBatch to use coordinate system set by camera
 
-        //makes the fire effect change every frame
-        //fireEffect.update(Gdx.graphics.getDeltaTime());
-
-
-        //draws the actual frame
-        game.batch.begin();
-
-        game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
-
-        //Runs through the array of particleEffects and draws each one
-        game.batch.end();
-        //The stage (this class) knows about all its actors.. the methods below are responsible to draw all actors in the stage
-        act(delta);
-        draw();
-        box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
-
-
+        fireGo();
+    }
+    private void fireGo(){
         if(timeCycle < 0.0f){
 
-            if(fireHandler.checkFires() && fireSound.isPlaying() == false){
+            if(fireHandler.checkFires() && !fireSound.isPlaying()){
                 fireSound.play();
             }
 
@@ -212,7 +198,7 @@ public class MainGame extends Stage implements Screen{
         }
 
         if(timeLimit < 0.0f){
-            //TODO: make this cause a game over
+            game.setScreen(new EndGameScreen(game));
         }
 
     }
@@ -232,7 +218,6 @@ public class MainGame extends Stage implements Screen{
 
     //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
     public void burnWood(){
-
         for(BridgeUnit bridgeUnit : bridgeUnits){
 
             destroyJoints(bridgeUnit.getBody());
@@ -254,6 +239,52 @@ public class MainGame extends Stage implements Screen{
         }
     }
 
+    public void drawCliffs(){
+        img3 = new Texture("LeftCliff.png");
+        img4 = new Texture("RightCliff.png");
+        cliffs = new BackgroundCliffs(img3, img4, WORLD);
+        this.addActor(cliffs);
+
+    }
+
+    @Override
+    public void dispose(){
+        WORLD.dispose();
+        box2DDebugRenderer.dispose();
+
+    }
+
+    public void reset(){
+        clear();
+        Array<Body> bodies = new Array<Body>();
+        WORLD.getBodies(bodies);
+        for(Body body: bodies){
+            WORLD.destroyBody(body);
+        }
+        timeLimit = 31;
+        Bridge bridge = new Bridge(WORLD, this, cliffs);
+        drawCliffs();
+        fireGo();
+        //TODO: stop fire first!! allow fire spreading
+    }
+
+    private void drawButtons(){
+        img1 = new Texture("Refresh.png");
+        refreshButton = new RefreshButton(img1, WORLD);
+        this.addActor(refreshButton);
+
+        refreshButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                reset();
+            }
+        });
+        if (Gdx.input.isKeyPressed(Input.Keys.R)){
+            reset();
+          }
+
+    }
 
     @Override
     public void pause(){

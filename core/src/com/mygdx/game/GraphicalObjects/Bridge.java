@@ -11,6 +11,7 @@ import com.mygdx.game.PhysicalObjects.BridgeJoint;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Eloa on 17/03/2016.
@@ -30,7 +31,7 @@ public class Bridge extends Actor {
 
     private final Texture img = new Texture("Paper.png");;
     private final Texture img2 = new Texture("Pivot.png");
-    private World world;
+    public final World world;
     private Stage stage;
     private BackgroundCliffs cliffs;
 

@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.MainGame;
 
@@ -134,6 +135,10 @@ public class BridgeUnit extends Actor{
 
     public boolean getIsOnFire(){return this.isOnFire;}
     public boolean getIsBurnt(){return this.isBurnt;}
+
+    public void changeTexture(Texture newTexture){
+        sprite.set(new Sprite(newTexture));
+    }
 
     public void setIsOnFire(boolean b){this.isOnFire = b;}
     public void setIsBurnt(boolean b){this.isBurnt = b;}
