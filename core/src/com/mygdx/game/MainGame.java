@@ -9,11 +9,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -21,14 +18,11 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
 
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -61,9 +55,10 @@ public class MainGame extends Stage implements Screen{
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
+    private Bridge bridge;
     //array with bridge units links
-    ArrayList<BridgeUnitLink> bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
-    ArrayList<BridgeUnit> bridgeUnits = new ArrayList<BridgeUnit>();
+    ArrayList<BridgeUnitLink> burntBridgeUnitLinks = new ArrayList<BridgeUnitLink>();
+    ArrayList<BridgeUnit> burntBridgeUnits = new ArrayList<BridgeUnit>();
 
     private FireHandler fireHandler;
 
@@ -107,7 +102,7 @@ public class MainGame extends Stage implements Screen{
 
 
 
-        Bridge bridge = new Bridge(WORLD, this, cliffs);
+        bridge = new Bridge(WORLD, this, cliffs);
 
         //Lets the fireHandler know all the actors in the bridge.
         fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
@@ -118,7 +113,7 @@ public class MainGame extends Stage implements Screen{
         timeLimit = 31;
         timeCycle = 1;
 
-        bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
+        burntBridgeUnitLinks = new ArrayList<BridgeUnitLink>();
 
     }
 
@@ -153,10 +148,11 @@ public class MainGame extends Stage implements Screen{
 
         box2DDebugRenderer.render(WORLD, camera.combined);
 
+
         //Makes the box2d WORLD play at a given frame rate
         WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
-
         drawButtons();
+
 
         //sets the background color
         Gdx.gl.glClearColor(1, 1, 1, .3f);
@@ -166,6 +162,7 @@ public class MainGame extends Stage implements Screen{
 
         backgroundSprite.draw(game.batch);
         game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
+        game.font.draw(game.batch, percentageOfBridgeBurned(), this.getWidth() / 2, this.getHeight() - 40);
         //Runs through the array of particleEffects and draws each one
 
 
@@ -190,9 +187,10 @@ public class MainGame extends Stage implements Screen{
 
             timeCycle = 1;
             fireHandler.burnAdjacents();
-            bridgeUnits = fireHandler.burnUpBridgeUnits(bridgeUnits);
-            bridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(bridgeUnitLinks);
-            //bridgeUnits = fireHandler.burnUp();
+            burntBridgeUnits = fireHandler.burnUpBridgeUnits(burntBridgeUnits);
+            burntBridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(burntBridgeUnitLinks);
+            //percentageOfBridgeBurned();
+            //burntBridgeUnits = fireHandler.burnUp();
             burnWood();
 
         }
@@ -201,6 +199,16 @@ public class MainGame extends Stage implements Screen{
             game.setScreen(new EndGameScreen(game));
         }
 
+    }
+
+    public String percentageOfBridgeBurned(){
+        int sizeBurnBridge = burntBridgeUnits.size();
+        int sizeBridge = bridge.getBridgeUnits().size();
+        int percentage = (sizeBurnBridge* 100) / sizeBridge;
+
+        System.out.println("sizeB = " + sizeBurnBridge + " sizeBurntB = " + sizeBridge + "percentage " + percentage);
+
+        return percentage + "%";
     }
 
 
@@ -218,13 +226,13 @@ public class MainGame extends Stage implements Screen{
 
     //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
     public void burnWood(){
-        for(BridgeUnit bridgeUnit : bridgeUnits){
+        for(BridgeUnit bridgeUnit : burntBridgeUnits){
 
             destroyJoints(bridgeUnit.getBody());
-            //particleEffects.remove(particleEffects.get(bridgeUnits.indexOf(bridgeUnit)));
+            //particleEffects.remove(particleEffects.get(burntBridgeUnits.indexOf(bridgeUnit)));
         }
 
-        for(BridgeUnitLink bridgeUnitLink : bridgeUnitLinks){
+        for(BridgeUnitLink bridgeUnitLink : burntBridgeUnitLinks){
             bridgeUnitLink.changeBodyType();
         }
 
@@ -259,10 +267,12 @@ public class MainGame extends Stage implements Screen{
         Array<Body> bodies = new Array<Body>();
         WORLD.getBodies(bodies);
         for(Body body: bodies){
+            destroyJoints(body);
             WORLD.destroyBody(body);
         }
+
         timeLimit = 31;
-        Bridge bridge = new Bridge(WORLD, this, cliffs);
+        bridge = new Bridge(WORLD, this, cliffs);
         fireHandler.updateBridgeUnitArray(bridge.getBridgeUnits());
         fireHandler.updateBridgeUnitLinkArray(bridge.getBridgeUnitLinks());
         drawCliffs();
@@ -283,6 +293,7 @@ public class MainGame extends Stage implements Screen{
             }
         });
         if (Gdx.input.isKeyPressed(Input.Keys.R)){
+
             reset();
           }
 
