@@ -132,7 +132,11 @@ public class FireHandler {
         return burntBridgeUnitLinks;
     }
     public void updateBridgeUnitArray(ArrayList<BridgeUnit> bridgeUnits){
+        this.bridgeUnits = bridgeUnits;
 
+    }
+    public void updateBridgeUnitLinkArray(ArrayList<BridgeUnitLink> bridgeUnitsLink){
+        this.bridgeUnitLinks = bridgeUnitsLink;
     }
 
     public void addBridgeUnit(BridgeUnit unit){

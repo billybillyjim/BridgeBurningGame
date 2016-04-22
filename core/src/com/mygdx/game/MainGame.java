@@ -263,6 +263,8 @@ public class MainGame extends Stage implements Screen{
         }
         timeLimit = 31;
         Bridge bridge = new Bridge(WORLD, this, cliffs);
+        fireHandler.updateBridgeUnitArray(bridge.getBridgeUnits());
+        fireHandler.updateBridgeUnitLinkArray(bridge.getBridgeUnitLinks());
         drawCliffs();
         fireGo();
         //TODO: stop fire first!! allow fire spreading
