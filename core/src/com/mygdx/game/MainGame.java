@@ -202,8 +202,8 @@ public class MainGame extends Stage implements Screen{
     }
 
     public String percentageOfBridgeBurned(){
-        int sizeBurnBridge = burntBridgeUnits.size();
-        int sizeBridge = bridge.getBridgeUnits().size();
+        int sizeBurnBridge = burntBridgeUnits.size() + burntBridgeUnitLinks.size();
+        int sizeBridge = bridge.getBridgeUnits().size() + bridge.getBridgeUnitLinks().size();
         int percentage = (sizeBurnBridge* 100) / sizeBridge;
 
         System.out.println("sizeB = " + sizeBurnBridge + " sizeBurntB = " + sizeBridge + "percentage " + percentage);
