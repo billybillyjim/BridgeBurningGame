@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<materials>
+       <material>
+			<name>paper</name>
+			<level>1</level>
+			<image_src>paper.png</image_src>
+			<durability>1</durability>
+			<density>10</density>
+			<friction>0.3</friction>
+       </material>
+	    <material>
+			<name>wood</name>
+			<level>2</level>
+			<image_src>Wood.png</image_src>
+			<durability>1</durability>
+			<density>10</density>
+			<friction>0.3</friction>
+       </material>
+       
+</materials>
+

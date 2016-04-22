@@ -45,6 +45,7 @@ public class MainGame extends Stage implements Screen{
     private Texture img1;
     private Sprite backgroundImage;
 
+
     private Texture background;
     private Sprite backgroundSprite;
     //Makes a box2d physics environment that sets gravity
@@ -72,11 +73,15 @@ public class MainGame extends Stage implements Screen{
     private OrthographicCamera camera;
     private FitViewport viewport;
 
+    private int level;
+
     public MainGame(GameLauncher game){
 
         this.game = game;
 
         game.font.setColor(Color.WHITE);
+
+        level = 1;
 
 
         img3 = new Texture("LeftCliff.png");
@@ -102,7 +107,7 @@ public class MainGame extends Stage implements Screen{
 
 
 
-        bridge = new Bridge(WORLD, this, cliffs);
+        bridge = new Bridge(WORLD, this, cliffs, level);
 
         //Lets the fireHandler know all the actors in the bridge.
         fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
@@ -197,6 +202,7 @@ public class MainGame extends Stage implements Screen{
 
         if(timeLimit < 0.0f){
             game.setScreen(new EndGameScreen(game));
+
         }
 
     }
@@ -206,7 +212,6 @@ public class MainGame extends Stage implements Screen{
         int sizeBridge = bridge.getBridgeUnits().size() + bridge.getBridgeUnitLinks().size();
         int percentage = (sizeBurnBridge* 100) / sizeBridge;
 
-        System.out.println("sizeB = " + sizeBurnBridge + " sizeBurntB = " + sizeBridge + "percentage " + percentage);
 
         return percentage + "%";
     }
@@ -272,7 +277,7 @@ public class MainGame extends Stage implements Screen{
         }
 
         timeLimit = 31;
-        bridge = new Bridge(WORLD, this, cliffs);
+        bridge = new Bridge(WORLD, this, cliffs, level);
         fireHandler.updateBridgeUnitArray(bridge.getBridgeUnits());
         fireHandler.updateBridgeUnitLinkArray(bridge.getBridgeUnitLinks());
         drawCliffs();

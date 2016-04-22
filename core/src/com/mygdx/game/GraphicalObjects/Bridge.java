@@ -7,11 +7,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.mygdx.game.Material;
 import com.mygdx.game.PhysicalObjects.BridgeJoint;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by Eloa on 17/03/2016.
@@ -29,22 +29,28 @@ public class Bridge extends Actor {
     private ArrayList<BridgeUnitLink> bridgeUnitsLinksPillarRight;
 
 
-    private final Texture img = new Texture("Paper.png");;
+
+
     private final Texture img2 = new Texture("Pivot.png");
     public final World world;
     private Stage stage;
     private BackgroundCliffs cliffs;
 
     private float distanceBetweenCliffs;
+    private int level;
+    Material material;
 
 
 
 
-    public Bridge(World world, Stage stage, BackgroundCliffs cliffs){
+
+    public Bridge(World world, Stage stage, BackgroundCliffs cliffs, int level ){
         bridgeUnitsAcross = new ArrayList<BridgeUnit>();
         this.world = world;
         this.stage = stage;
         this.cliffs = cliffs;
+        this.level = level;
+        material = new Material(level);
         buildUnitsAcrossCliffs();
         bridgeUnitsLinksAcross = createBridgeUnitLinks(bridgeUnitsAcross);
         createBridgeLinkJoint(bridgeUnitsAcross, bridgeUnitsLinksAcross);
@@ -62,7 +68,7 @@ public class Bridge extends Actor {
         float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth, cliffs.getSpriteLeft().getX(), cliffs.getSpriteRight().getX());
         System.out.println("cliff width " + leftCliffWidth + " cliff Height " + leftCliffHeight);
         for (int i = 0; i < numberOfBridgeUnits; i++) {
-            BridgeUnit unit = new BridgeUnit(img, world, cliffs.getSpriteLeft().getX() + leftCliffWidth * 0.8f + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
+            BridgeUnit unit = new BridgeUnit(material, world, cliffs.getSpriteLeft().getX() + leftCliffWidth * 0.8f + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
             bridgeUnitsAcross.add(unit);
             stage.addActor(unit);
 
@@ -174,7 +180,7 @@ public class Bridge extends Actor {
         System.out.println("num of pillars = " + numberOfUnitsInPillar);
         for(int i = 0; i < numberOfUnitsInPillar; i++){
             System.out.println("num of pillars = " + numberOfUnitsInPillar + ": " + i);
-            BridgeUnit left = new BridgeUnit(img, world, linkLeft.getX(), linkLeft.getY(), 10);
+            BridgeUnit left = new BridgeUnit(material, world, linkLeft.getX(), linkLeft.getY(), 10);
             left.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH * i, MathUtils.PI / 2);
             pillarUnits.add(left);
             stage.addActor(left);

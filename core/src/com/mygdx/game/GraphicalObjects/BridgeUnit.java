@@ -1,7 +1,6 @@
 package com.mygdx.game.GraphicalObjects;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -9,13 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.MainGame;
+import com.mygdx.game.Material;
 
 
 /**
@@ -37,21 +30,22 @@ public class BridgeUnit extends Actor{
     private boolean isOnFire;
     private boolean isBurnt;
 
-    public BridgeUnit(Texture texture, World world, float xPosition, float yPosition){
-        this(texture, world, xPosition, yPosition, 1);
+
+    public BridgeUnit(Material material, World world, float xPosition, float yPosition){
+        this(material, world, xPosition, yPosition, 1);
 
     }
 
-    public BridgeUnit(Texture texture, World world, float xPosition, float yPosition, int durability){
+    public BridgeUnit(Material material, World world, float xPosition, float yPosition, int durability){
 
         //Sets texture to image in assets folder
-        img = texture;
+        img = new Texture(material.getImage_src());
         //Makes a sprite of that texture
         sprite = new Sprite(img);
 
         this.setName("Bridge Unit");
 
-        this.durability = durability;
+        this.durability = material.getDurability();
 
 
         //sets the sprite position based on screen size
@@ -76,8 +70,8 @@ public class BridgeUnit extends Actor{
         //Describes the properties of the fixture
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 10f;
-        fixtureDef.friction = 0.3f; //0 = like ice, 1 = cannot slide over it at all
+        fixtureDef.density = material.getDensity();
+        fixtureDef.friction = material.getFriction(); //0 = like ice, 1 = cannot slide over it at all
 
         setWidth(sprite.getWidth());
         setHeight(sprite.getHeight());
@@ -103,9 +97,7 @@ public class BridgeUnit extends Actor{
         sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
-        /*if(isBurnt){
-            isOnFire = false;
-        }*/
+
         if(isOnFire) {
 
             fireEffect.update(Gdx.graphics.getDeltaTime());
@@ -117,6 +109,10 @@ public class BridgeUnit extends Actor{
             fireEffect.start();
 
             fireEffect.draw(batch);
+        }
+        if(isBurnt){
+            body.setAngularVelocity((float) Math.random());
+
         }
 
 
