@@ -30,6 +30,12 @@ public class BridgeJoint {
         rJointDef.localAnchorB.set(0,0);
 
 
+       // rJointDef.lowerAngle = -0.1f;
+        //rJointDef.upperAngle = 0.1f;
+        //rJointDef.enableLimit = true;
+
+
+
     }
 
     public RevoluteJointDef getrJointDef() {

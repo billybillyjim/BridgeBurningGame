@@ -29,21 +29,23 @@ import java.util.*;
 public class MainGame extends Stage implements Screen{
 
     private final GameLauncher game;
-    public final int METER_TO_PIXELS = 50; //50 pixels per each meter
+
     private final int SCREEN_WIDTH = 800;
     private final int SCREEN_HEIGHT = 480;
 
     private ArrayList<ParticleEffect> particleEffects;
 
-    private int maxTime; //maximum time in seconds the player has to make the bridge burn
-    private int numOfJoints = 0;
+    private final int maxTime = 60; //maximum time in seconds the player has to make the bridge burn
+
+    boolean constructionMode;
+
 
     private Music fireSound;
 
     private Texture img3;
     private Texture img4;
     private Texture img1;
-    private Sprite backgroundImage;
+
 
 
     private Texture background;
@@ -64,7 +66,7 @@ public class MainGame extends Stage implements Screen{
     private FireHandler fireHandler;
     private BuildHandler buildHandler;
 
-    private boolean testOnClick = false;
+
 
     private float timeLimit;
     private float timeCycle;
@@ -79,6 +81,7 @@ public class MainGame extends Stage implements Screen{
     public MainGame(GameLauncher game){
 
         this.game = game;
+        constructionMode = true;
 
         game.font.setColor(Color.WHITE);
 
@@ -90,11 +93,10 @@ public class MainGame extends Stage implements Screen{
         background = new Texture("BG1.png");
 
         backgroundSprite = new Sprite(background);
-        maxTime = 60;
 
         drawCliffs();
 
-        //buildHandler = new BuildHandler(WORLD, this);
+        buildHandler = new BuildHandler(WORLD, this);
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
@@ -108,54 +110,65 @@ public class MainGame extends Stage implements Screen{
 
 
 
-        bridge = new Bridge(WORLD, this, cliffs, level);
+       // bridge = new Bridge(WORLD, this, cliffs, level);
 
         //Lets the fireHandler know all the actors in the bridge.
-        fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
+        //fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
 
         fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningLoop2.wav"));
 
 
-        timeLimit = 31;
+        timeLimit = maxTime;
         timeCycle = 1;
 
         burntBridgeUnitLinks = new ArrayList<BridgeUnitLink>();
+
+
 
     }
 
     @Override
     public void render(float delta) {
-
-
-        if (Gdx.input.justTouched()) {
-            Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(pos);
-
-            Actor actor = this.hit(pos.x, pos.y, true);
-            if (actor != null && actor.getName().equals("Bridge Unit Link")) {
-                ((BridgeUnitLink) actor).setIsOnFire(true);
-                System.out.println(actor.getX());
-                System.out.println(actor.getWidth());
-
-
-            } else if (actor != null && actor.getName().equals("Bridge Unit")) {
-
-                ((BridgeUnit) actor).setIsOnFire(true);
-                System.out.println(actor.getX());
-                System.out.println(actor.getWidth());
-            }
-            //fireHandler.burnAdjacents();
-            burnWood();
-
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)){
+            if(constructionMode) constructionMode = false;
+            else if(!constructionMode) constructionMode = true;
+            System.out.println("construction mode = " + constructionMode);
 
         }
-        /*
-        if(Gdx.input.justTouched()){
-            Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(pos);
-            System.out.println(pos.x);
-            buildHandler.makeBridgeUnitLink(pos.x,pos.y);
-        }*/
+
+
+        if(!constructionMode) {
+            if (Gdx.input.justTouched()) {
+                Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                camera.unproject(pos);
+
+                Actor actor = this.hit(pos.x, pos.y, true);
+                if (actor != null && actor.getName().equals("Bridge Unit Link")) {
+                    ((BridgeUnitLink) actor).setIsOnFire(true);
+
+
+                } else if (actor != null && actor.getName().equals("Bridge Unit")) {
+
+                    ((BridgeUnit) actor).setIsOnFire(true);
+
+                }
+                fireHandler = new FireHandler(buildHandler.getBridgeUnits(), buildHandler.getBridgeUnitLinks());
+
+
+                //fireHandler.burnAdjacents();
+               // burnWood();
+
+
+            }
+        } else {
+
+            if (Gdx.input.justTouched()) {
+                Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                camera.unproject(pos);
+                System.out.println(pos.x);
+                buildHandler.makeBridgeUnitLink(pos.x, pos.y);
+            }
+        }
         timeLimit -= Gdx.graphics.getDeltaTime();
         timeCycle -= Gdx.graphics.getDeltaTime();
 
@@ -188,10 +201,11 @@ public class MainGame extends Stage implements Screen{
         camera.update(); // is generally a good practice to update the camera once per frame
         box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
         game.batch.setProjectionMatrix(camera.combined); //tells spriteBatch to use coordinate system set by camera
-
         fireGo();
+
     }
     private void fireGo(){
+        if(fireHandler == null) return;
         if(timeCycle < 0.0f){
 
             if(fireHandler.checkFires() && !fireSound.isPlaying()){
@@ -202,14 +216,14 @@ public class MainGame extends Stage implements Screen{
             fireHandler.burnAdjacents();
             burntBridgeUnits = fireHandler.burnUpBridgeUnits(burntBridgeUnits);
             burntBridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(burntBridgeUnitLinks);
-            //percentageOfBridgeBurned();
+
             //burntBridgeUnits = fireHandler.burnUp();
             burnWood();
 
         }
 
         if(timeLimit < 0.0f){
-            game.setScreen(new EndGameScreen(game));
+           game.setScreen(new EndGameScreen(game));
 
         }
 
@@ -284,7 +298,7 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyBody(body);
         }
 
-        timeLimit = 31;
+        timeLimit = maxTime;
         bridge = new Bridge(WORLD, this, cliffs, level);
         fireHandler.updateBridgeUnitArray(bridge.getBridgeUnits());
         fireHandler.updateBridgeUnitLinkArray(bridge.getBridgeUnitLinks());
@@ -305,10 +319,11 @@ public class MainGame extends Stage implements Screen{
                 reset();
             }
         });
-        if (Gdx.input.isKeyPressed(Input.Keys.R)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)){
 
             reset();
           }
+
 
     }
 

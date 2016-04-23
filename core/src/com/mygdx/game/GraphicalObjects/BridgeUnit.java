@@ -22,7 +22,7 @@ public class BridgeUnit extends Actor{
 
     private ParticleEffect fireEffect;
 
-    public final static int WIDTH = 25;
+    public final static int WIDTH = 20;
     public final static int HEIGHT = 20;
 
     private int durability;
@@ -60,6 +60,7 @@ public class BridgeUnit extends Actor{
         bodyDef.position.set(sprite.getX(), sprite.getY());
 
 
+
         body = world.createBody(bodyDef);
 
         //Makes a shape for the body
@@ -78,6 +79,7 @@ public class BridgeUnit extends Actor{
         setBounds(0, 0, getWidth(), getHeight());
 
         body.createFixture(fixtureDef);
+
 
         sprite.setSize(WIDTH, HEIGHT); //set sprite size to the same size of the body
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite

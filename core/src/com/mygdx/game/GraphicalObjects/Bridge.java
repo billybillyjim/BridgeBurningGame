@@ -146,8 +146,8 @@ public class Bridge extends Actor {
         Sprite linkRight = linksAcross.get(linksAcross.size()-1).getSprite(); //the right pillar is created in the x location of the last unit that is across the cliff
 
         int indexOfLinkBase = findBridgeUnitLinkBaseOfPillar();
-        createPillar(bridgeUnitsPillarLeft, linksAcross.get(indexOfLinkBase).getSprite() );
-        createPillar(bridgeUnitsPillarRight, linksAcross.get(linksAcross.size()-indexOfLinkBase).getSprite());
+        createPillar(bridgeUnitsPillarLeft, linksAcross.get(indexOfLinkBase).getSprite());
+        createPillar(bridgeUnitsPillarRight, linksAcross.get(linksAcross.size() - indexOfLinkBase).getSprite());
 
         createLinkPillars(bridgeUnitsPillarLeft, bridgeUnitsLinksPillarLeft);
         createJointsPillars(linksAcross.get(indexOfLinkBase), bridgeUnitsPillarLeft, bridgeUnitsLinksPillarLeft);
@@ -229,6 +229,15 @@ public class Bridge extends Actor {
         joint.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
         world.createJoint(joint.getrJointDef());
 
+       /* for(int i= 0; i < pillarUnits.size() - 1; i++ ){
+            BridgeJoint joint2 = new BridgeJoint();
+            joint2.CreateJoint(pillarUnits.get(i).getBody(), pillarUnits.get(i+1).getBody());
+            joint2.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
+            joint2.getrJointDef().localAnchorB.set(BridgeUnit.WIDTH / 2, 0);
+            world.createJoint(joint2.getrJointDef());
+        }
+        */
+
         for(int i = 0; i < pillarLinks.size(); i++){
             BridgeJoint joint2 = new BridgeJoint();
             BridgeJoint joint3 = new BridgeJoint();
@@ -240,6 +249,7 @@ public class Bridge extends Actor {
             world.createJoint(joint3.getrJointDef());
 
         }
+
     }
 
 

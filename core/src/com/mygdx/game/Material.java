@@ -31,9 +31,8 @@ public class Material {
             Document doc = dBuilder.parse(paper);
             doc.getDocumentElement().normalize();
 
-            System.out.println("root of xml file " + doc.getDocumentElement().getNodeName());
+
             NodeList nodes = doc.getElementsByTagName("material");
-            System.out.println("==========================");
 
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
