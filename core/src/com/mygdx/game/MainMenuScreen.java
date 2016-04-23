@@ -71,7 +71,7 @@ public class MainMenuScreen implements Screen {
         stage.draw();
 
 
-        startGameButton.addListener(new ClickListener() {
+        /*startGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
@@ -79,6 +79,12 @@ public class MainMenuScreen implements Screen {
                 dispose();
             }
         });
+        */
+        if(Gdx.input.isTouched()){
+                        game.setScreen(new MainGame(game));
+                        dispose();
+                    }
+
     }
 
     private void createSkins(){

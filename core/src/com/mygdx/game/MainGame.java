@@ -62,6 +62,7 @@ public class MainGame extends Stage implements Screen{
     ArrayList<BridgeUnit> burntBridgeUnits = new ArrayList<BridgeUnit>();
 
     private FireHandler fireHandler;
+    private BuildHandler buildHandler;
 
     private boolean testOnClick = false;
 
@@ -81,7 +82,7 @@ public class MainGame extends Stage implements Screen{
 
         game.font.setColor(Color.WHITE);
 
-        level = 1;
+        level = 2;
 
 
         img3 = new Texture("LeftCliff.png");
@@ -93,7 +94,7 @@ public class MainGame extends Stage implements Screen{
 
         drawCliffs();
 
-
+        //buildHandler = new BuildHandler(WORLD, this);
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
@@ -148,6 +149,13 @@ public class MainGame extends Stage implements Screen{
 
 
         }
+        /*
+        if(Gdx.input.justTouched()){
+            Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(pos);
+            System.out.println(pos.x);
+            buildHandler.makeBridgeUnitLink(pos.x,pos.y);
+        }*/
         timeLimit -= Gdx.graphics.getDeltaTime();
         timeCycle -= Gdx.graphics.getDeltaTime();
 
@@ -167,7 +175,7 @@ public class MainGame extends Stage implements Screen{
 
         backgroundSprite.draw(game.batch);
         game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
-        game.font.draw(game.batch, percentageOfBridgeBurned(), this.getWidth() / 2, this.getHeight() - 40);
+        //game.font.draw(game.batch, percentageOfBridgeBurned(), this.getWidth() / 2, this.getHeight() - 40);
         //Runs through the array of particleEffects and draws each one
 
 

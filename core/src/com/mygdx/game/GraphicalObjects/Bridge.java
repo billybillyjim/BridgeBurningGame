@@ -31,7 +31,7 @@ public class Bridge extends Actor {
 
 
 
-    private final Texture img2 = new Texture("Pivot.png");
+    private final Texture img2 = new Texture("Wood2.png");
     public final World world;
     private Stage stage;
     private BackgroundCliffs cliffs;
