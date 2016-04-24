@@ -25,9 +25,11 @@ public class BridgeUnitLink extends Actor {
     boolean isOnFire;
     private final float RADIUS = 4f;
     boolean isBurnt;
+    boolean createdByPlayer;
 
     public BridgeUnitLink(Texture texture, World world, float xPosition, float yPosition){
         this.setName("Bridge Unit Link");
+        createdByPlayer = false;
 
 
         //Sets texture to image in assets folder
@@ -104,7 +106,13 @@ public class BridgeUnitLink extends Actor {
     }
     public void setIsBurnt(boolean b){this.isBurnt = b;}
 
+    public boolean isCreatedByPlayer() {
+        return createdByPlayer;
+    }
 
+    public void setCreatedByPlayer(boolean createdByPlayer) {
+        this.createdByPlayer = createdByPlayer;
+    }
 }
 
 

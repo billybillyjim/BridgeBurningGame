@@ -40,12 +40,14 @@ public class BuildHandler {
 
     public void makeBridgeUnitLink(float x, float y){
         BridgeUnitLink link = new BridgeUnitLink(img, world, x, y);
+        link.setCreatedByPlayer(true);
         stage.addActor(link);
         //test();
         if(!bridgeUnitLinks.isEmpty()) {
          makeBridgeUnit(link, x, y);
 
         }
+
         lastBridgeUnitLink = link;
         bridgeUnitLinks.add(link);
     }
@@ -139,13 +141,15 @@ public class BuildHandler {
         for(BridgeUnitLink link : bridgeUnitLinks){
            //int[] test =  getNextLinePoint((int)x, (int)y,(int) link.getBody().getPosition().x , (int) link.getBody().getPosition().y );
             //System.out.println("test next point:");
-            double distance = Math.sqrt((Math.pow(link.getBody().getPosition().x - x, 2) + (Math.pow(link.getBody().getPosition().y - y, 2))));
-            if(distance <= 100){
-                Float directionOfVector = (float) Math.atan((link.getBody().getPosition().y - y)/link.getBody().getPosition().x - x);
-                System.out.println("dir = " + directionOfVector);
-                Float numOfBridgeUnits =  (float) distance / BridgeUnit.WIDTH;
-                Float[] distanceVector = {numOfBridgeUnits, directionOfVector};
-                linksToConnect.put(link, distanceVector);
+            if(link.isCreatedByPlayer()) {
+                double distance = Math.sqrt((Math.pow(link.getBody().getPosition().x - x, 2) + (Math.pow(link.getBody().getPosition().y - y, 2))));
+                if (distance <= 100) {
+                    Float directionOfVector = (float) Math.atan((link.getBody().getPosition().y - y) / link.getBody().getPosition().x - x);
+                    System.out.println("dir = " + directionOfVector);
+                    Float numOfBridgeUnits = (float) distance / BridgeUnit.WIDTH;
+                    Float[] distanceVector = {numOfBridgeUnits, directionOfVector};
+                    linksToConnect.put(link, distanceVector);
+                }
             }
         }
 

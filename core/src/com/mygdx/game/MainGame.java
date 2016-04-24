@@ -299,9 +299,9 @@ public class MainGame extends Stage implements Screen{
         }
 
         timeLimit = maxTime;
-        bridge = new Bridge(WORLD, this, cliffs, level);
-        fireHandler.updateBridgeUnitArray(bridge.getBridgeUnits());
-        fireHandler.updateBridgeUnitLinkArray(bridge.getBridgeUnitLinks());
+        //bridge = new Bridge(WORLD, this, cliffs, level);
+        fireHandler = null;
+
         drawCliffs();
         fireGo();
         //TODO: stop fire first!! allow fire spreading
