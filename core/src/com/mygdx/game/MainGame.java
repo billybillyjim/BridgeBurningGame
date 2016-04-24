@@ -177,7 +177,7 @@ public class MainGame extends Stage implements Screen{
 
         //Makes the box2d WORLD play at a given frame rate
         WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
-        drawButtons();
+
 
 
         //sets the background color
@@ -202,6 +202,7 @@ public class MainGame extends Stage implements Screen{
         box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
         game.batch.setProjectionMatrix(camera.combined); //tells spriteBatch to use coordinate system set by camera
         fireGo();
+        drawButtons();
 
     }
     private void fireGo(){
@@ -301,6 +302,8 @@ public class MainGame extends Stage implements Screen{
         timeLimit = maxTime;
         //bridge = new Bridge(WORLD, this, cliffs, level);
         fireHandler = null;
+        buildHandler.getBridgeUnitLinks().clear();
+        buildHandler.getBridgeUnits().clear();
 
         drawCliffs();
         fireGo();

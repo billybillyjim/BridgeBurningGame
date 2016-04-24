@@ -128,10 +128,10 @@ public class BuildHandler {
             BridgeJoint joint = new BridgeJoint();
             BridgeJoint joint2 = new BridgeJoint();
             joint.CreateJoint(localBridgeUnit.get(i).getBody(), localBridgeUnitLink.get(i).getBody());
-            joint.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
+            joint.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
             world.createJoint(joint.getrJointDef());
             joint2.CreateJoint(localBridgeUnit.get(i + 1).getBody(), localBridgeUnitLink.get(i).getBody());
-            joint2.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
+            joint2.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
             world.createJoint(joint2.getrJointDef());
 
         }
