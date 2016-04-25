@@ -22,7 +22,7 @@ public class BridgeUnit extends Actor{
 
     private ParticleEffect fireEffect;
 
-    public final static int WIDTH = 20;
+    public final static int WIDTH = 10;
     public final static int HEIGHT = 20;
 
     private int durability;

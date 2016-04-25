@@ -21,8 +21,6 @@ public class BuildHandler {
     private World world;
     private Stage stage;
     private final Texture img = new Texture("Pivot.png");
-    private BridgeUnitLink lastBridgeUnitLink;
-    private BridgeUnit lastBridgeUnit;
     private ArrayList<BridgeUnitLink> bridgeUnitLinks;
     private ArrayList<BridgeUnit> bridgeUnits;
 
@@ -33,7 +31,7 @@ public class BuildHandler {
         this.world = world;
         this.stage = stage;
         material = new Material(1);
-        lastBridgeUnit = null;
+
         bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
         bridgeUnits = new ArrayList<BridgeUnit>();
     }
@@ -43,12 +41,9 @@ public class BuildHandler {
         link.setCreatedByPlayer(true);
         stage.addActor(link);
         //test();
-        if(!bridgeUnitLinks.isEmpty()) {
-         makeBridgeUnit(link, x, y);
 
-        }
+        makeBridgeUnit(link, x, y);
 
-        lastBridgeUnitLink = link;
         bridgeUnitLinks.add(link);
     }
 
@@ -61,6 +56,7 @@ public class BuildHandler {
         ArrayList<BridgeUnitLink> localBridgeUnitLinks = new ArrayList<BridgeUnitLink>();
         localBridgeUnitLinks.add(bridgeUnitLink);
 
+
         if (!keySet.isEmpty()){
             Iterator<BridgeUnitLink> it = keySet.iterator();
             while(it.hasNext()) {
@@ -69,6 +65,7 @@ public class BuildHandler {
                 float[] t = {};
                 BridgeUnitLink link = it.next();
                 Float[] distanceVectorInfo = linksToConnect.get(link);
+                localBridgeUnitLinks.add(link);
                 System.out.println("link x = " + link.getBody().getPosition().x + " y = " + link.getBody().getPosition().y);
                 System.out.println("x = " + x + " y = " + y);
                 float xTemp = unitX;
@@ -76,7 +73,28 @@ public class BuildHandler {
 
 
                 while (localBridgeUnits.size() < distanceVectorInfo[0]) {
-                    //if (unitX + BridgeUnit.WIDTH >= link.getBody().getPosition().x) break;
+                   
+                    if(localBridgeUnits.isEmpty()) {
+                        for(int i = 0; i < BridgeUnit.WIDTH/2; i++) {
+                            t = getNextLinePoint(xTemp, yTemp, (int) link.getBody().getPosition().x, (int) link.getBody().getPosition().y);
+                            xTemp = t[0];
+                            yTemp = t[1];
+
+                        }
+                    }
+
+
+
+                    unitX = xTemp;
+                    unitY = yTemp+2;
+                    System.out.println(" coo " + unitX + ", " + unitY);
+                    BridgeUnit bridgeUnit = new BridgeUnit(material, world, unitX, unitY);
+                    bridgeUnit.getBody().setTransform(unitX, unitY, distanceVectorInfo[1]);
+                    bridgeUnit.getBody().setType(BodyDef.BodyType.StaticBody);
+                    localBridgeUnits.add(bridgeUnit);
+                    bridgeUnits.add(bridgeUnit);
+                    stage.addActor(bridgeUnit);
+
 
                     for(int i = 0; i < BridgeUnit.WIDTH; i++) {
                         t = getNextLinePoint(xTemp, yTemp, (int) link.getBody().getPosition().x, (int) link.getBody().getPosition().y);
@@ -84,21 +102,16 @@ public class BuildHandler {
                         yTemp = t[1];
 
                     }
-                    unitX = xTemp;
-                    unitY = yTemp+2;
-                    System.out.println(" coo " + unitX + ", " + unitY);
-                    BridgeUnit bridgeUnit = new BridgeUnit(material, world, unitX, unitY);
-                    bridgeUnit.getBody().setTransform(unitX, unitY, distanceVectorInfo[1]);
-                    //bridgeUnit.getBody().setType(BodyDef.BodyType.StaticBody);
-                    localBridgeUnits.add(bridgeUnit);
-                    bridgeUnits.add(bridgeUnit);
-                    stage.addActor(bridgeUnit);
+
+
 
                 }
 
-
+                makeLinks(localBridgeUnits, localBridgeUnitLinks);
+                localBridgeUnitLinks.clear();
+                localBridgeUnits.clear();
             }
-            makeLinks(localBridgeUnits, localBridgeUnitLinks);
+
 
 
 
@@ -124,11 +137,11 @@ public class BuildHandler {
     }
 
     private void makeJoints(ArrayList<BridgeUnit> localBridgeUnit, ArrayList<BridgeUnitLink> localBridgeUnitLink){
-        for(int i = 0; i < localBridgeUnitLink.size() -1; i++){
+        for(int i = 0; i < localBridgeUnit.size() -1; i++){
             BridgeJoint joint = new BridgeJoint();
             BridgeJoint joint2 = new BridgeJoint();
             joint.CreateJoint(localBridgeUnit.get(i).getBody(), localBridgeUnitLink.get(i).getBody());
-            joint.getrJointDef().localAnchorA.set(-BridgeUnit.WIDTH / 2, 0);
+            joint.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
             world.createJoint(joint.getrJointDef());
             joint2.CreateJoint(localBridgeUnit.get(i + 1).getBody(), localBridgeUnitLink.get(i).getBody());
             joint2.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
@@ -146,8 +159,8 @@ public class BuildHandler {
                 if (distance <= 100) {
                     Float directionOfVector = (float) Math.atan((link.getBody().getPosition().y - y) / link.getBody().getPosition().x - x);
                     System.out.println("dir = " + directionOfVector);
-                    Float numOfBridgeUnits = (float) distance / BridgeUnit.WIDTH;
-                    Float[] distanceVector = {numOfBridgeUnits, directionOfVector};
+                    int numOfBridgeUnits = (int) distance / BridgeUnit.WIDTH;
+                    Float[] distanceVector = {(float)numOfBridgeUnits, directionOfVector};
                     linksToConnect.put(link, distanceVector);
                 }
             }

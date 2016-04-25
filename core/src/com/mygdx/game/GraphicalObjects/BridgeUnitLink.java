@@ -23,7 +23,7 @@ public class BridgeUnitLink extends Actor {
     Texture img;
     Sprite sprite;
     boolean isOnFire;
-    private final float RADIUS = 4f;
+    public static final float RADIUS = 4f;
     boolean isBurnt;
     boolean createdByPlayer;
 

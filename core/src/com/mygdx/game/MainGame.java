@@ -153,13 +153,16 @@ public class MainGame extends Stage implements Screen{
 
                 }
                 fireHandler = new FireHandler(buildHandler.getBridgeUnits(), buildHandler.getBridgeUnitLinks());
+                //Makes the box2d WORLD play at a given frame rate
+
 
 
                 //fireHandler.burnAdjacents();
-               // burnWood();
+                //burnWood();
 
 
             }
+            WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
         } else {
 
             if (Gdx.input.justTouched()) {
@@ -175,8 +178,7 @@ public class MainGame extends Stage implements Screen{
         box2DDebugRenderer.render(WORLD, camera.combined);
 
 
-        //Makes the box2d WORLD play at a given frame rate
-        WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
+
 
 
 
@@ -255,8 +257,10 @@ public class MainGame extends Stage implements Screen{
     //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
     public void burnWood(){
         for(BridgeUnit bridgeUnit : burntBridgeUnits){
-
+            bridgeUnit.getBody().setType(BodyDef.BodyType.DynamicBody);
             destroyJoints(bridgeUnit.getBody());
+            System.out.println("being called");
+
             //particleEffects.remove(particleEffects.get(burntBridgeUnits.indexOf(bridgeUnit)));
         }
 
