@@ -11,6 +11,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -23,7 +24,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class MainGame extends Stage implements Screen{
@@ -33,20 +33,18 @@ public class MainGame extends Stage implements Screen{
     private final int SCREEN_WIDTH = 800;
     private final int SCREEN_HEIGHT = 480;
 
-    private ArrayList<ParticleEffect> particleEffects;
+    private ParticleEffect fireEffect;
+    private static ParticleEffectPool particleEffectPool;
 
     private final int maxTime = 60; //maximum time in seconds the player has to make the bridge burn
 
     boolean constructionMode;
-
 
     private Music fireSound;
 
     private Texture img3;
     private Texture img4;
     private Texture img1;
-
-
 
     private Texture background;
     private Sprite backgroundSprite;
@@ -66,12 +64,7 @@ public class MainGame extends Stage implements Screen{
     private FireHandler fireHandler;
     private BuildHandler buildHandler;
 
-
-
-    private float timeLimit;
     private float timeCycle;
-
-    private DecimalFormat df = new DecimalFormat("#.#");
 
     private OrthographicCamera camera;
     private FitViewport viewport;
@@ -86,7 +79,9 @@ public class MainGame extends Stage implements Screen{
         game.font.setColor(Color.WHITE);
 
         level = 2;
-
+        fireEffect = new ParticleEffect();
+        fireEffect.load(Gdx.files.internal("Effect9.p"), Gdx.files.internal(""));
+        particleEffectPool = new ParticleEffectPool(fireEffect,50,150);
 
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
@@ -96,7 +91,7 @@ public class MainGame extends Stage implements Screen{
 
         drawCliffs();
 
-        buildHandler = new BuildHandler(WORLD, this);
+        buildHandler = new BuildHandler(WORLD, this, particleEffectPool);
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
@@ -118,7 +113,6 @@ public class MainGame extends Stage implements Screen{
         fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningLoop2.wav"));
 
 
-        timeLimit = maxTime;
         timeCycle = 1;
 
         burntBridgeUnitLinks = new ArrayList<BridgeUnitLink>();
@@ -155,12 +149,6 @@ public class MainGame extends Stage implements Screen{
                 fireHandler = new FireHandler(buildHandler.getBridgeUnits(), buildHandler.getBridgeUnitLinks());
                 //Makes the box2d WORLD play at a given frame rate
 
-
-
-                //fireHandler.burnAdjacents();
-                //burnWood();
-
-
             }
             WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
         } else {
@@ -172,15 +160,10 @@ public class MainGame extends Stage implements Screen{
                 buildHandler.makeBridgeUnitLink(pos.x, pos.y);
             }
         }
-        timeLimit -= Gdx.graphics.getDeltaTime();
+
         timeCycle -= Gdx.graphics.getDeltaTime();
 
         box2DDebugRenderer.render(WORLD, camera.combined);
-
-
-
-
-
 
         //sets the background color
         Gdx.gl.glClearColor(1, 1, 1, .3f);
@@ -189,9 +172,8 @@ public class MainGame extends Stage implements Screen{
         game.batch.begin();
 
         backgroundSprite.draw(game.batch);
-        game.font.draw(game.batch, df.format(timeLimit), this.getWidth() / 2, this.getHeight() - 20);
+
         //game.font.draw(game.batch, percentageOfBridgeBurned(), this.getWidth() / 2, this.getHeight() - 40);
-        //Runs through the array of particleEffects and draws each one
 
 
         game.batch.end();
@@ -220,16 +202,9 @@ public class MainGame extends Stage implements Screen{
             burntBridgeUnits = fireHandler.burnUpBridgeUnits(burntBridgeUnits);
             burntBridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(burntBridgeUnitLinks);
 
-            //burntBridgeUnits = fireHandler.burnUp();
             burnWood();
 
         }
-
-        if(timeLimit < 0.0f){
-           game.setScreen(new EndGameScreen(game));
-
-        }
-
     }
 
     public String percentageOfBridgeBurned(){
@@ -259,7 +234,7 @@ public class MainGame extends Stage implements Screen{
         for(BridgeUnit bridgeUnit : burntBridgeUnits){
             bridgeUnit.getBody().setType(BodyDef.BodyType.DynamicBody);
             destroyJoints(bridgeUnit.getBody());
-            System.out.println("being called");
+
 
             //particleEffects.remove(particleEffects.get(burntBridgeUnits.indexOf(bridgeUnit)));
         }
@@ -303,7 +278,6 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyBody(body);
         }
 
-        timeLimit = maxTime;
         //bridge = new Bridge(WORLD, this, cliffs, level);
         fireHandler = null;
         buildHandler.getBridgeUnitLinks().clear();

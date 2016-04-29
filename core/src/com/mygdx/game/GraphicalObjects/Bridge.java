@@ -68,9 +68,9 @@ public class Bridge extends Actor {
         float numberOfBridgeUnits = getNumberOfBridgeUnits(leftCliffWidth, rightCliffWidth, cliffs.getSpriteLeft().getX(), cliffs.getSpriteRight().getX());
         System.out.println("cliff width " + leftCliffWidth + " cliff Height " + leftCliffHeight);
         for (int i = 0; i < numberOfBridgeUnits; i++) {
-            BridgeUnit unit = new BridgeUnit(material, world, cliffs.getSpriteLeft().getX() + leftCliffWidth * 0.8f + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
-            bridgeUnitsAcross.add(unit);
-            stage.addActor(unit);
+            //BridgeUnit unit = new BridgeUnit(material, world, cliffs.getSpriteLeft().getX() + leftCliffWidth * 0.8f + (i * BridgeUnit.WIDTH), cliffs.getSpriteLeft().getY() + leftCliffHeight);
+            //bridgeUnitsAcross.add(unit);
+            //stage.addActor(unit);
 
         }
     }
@@ -180,10 +180,10 @@ public class Bridge extends Actor {
         System.out.println("num of pillars = " + numberOfUnitsInPillar);
         for(int i = 0; i < numberOfUnitsInPillar; i++){
             System.out.println("num of pillars = " + numberOfUnitsInPillar + ": " + i);
-            BridgeUnit left = new BridgeUnit(material, world, linkLeft.getX(), linkLeft.getY(), 10);
-            left.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH * i, MathUtils.PI / 2);
-            pillarUnits.add(left);
-            stage.addActor(left);
+            //BridgeUnit left = new BridgeUnit(material, world, linkLeft.getX(), linkLeft.getY(), 10);
+            //left.getBody().setTransform(linkLeft.getX(), linkLeft.getY() + BridgeUnit.WIDTH * i, MathUtils.PI / 2);
+           // pillarUnits.add(left);
+            //stage.addActor(left);
         }
 
 

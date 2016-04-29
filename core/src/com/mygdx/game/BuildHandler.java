@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,13 +24,15 @@ public class BuildHandler {
     private final Texture img = new Texture("Pivot.png");
     private ArrayList<BridgeUnitLink> bridgeUnitLinks;
     private ArrayList<BridgeUnit> bridgeUnits;
+    private ParticleEffectPool particleEffectPool;
 
 
     Material material;
 
-    public BuildHandler(World world, Stage stage){
+    public BuildHandler(World world, Stage stage, ParticleEffectPool particleEffectPool){
         this.world = world;
         this.stage = stage;
+        this.particleEffectPool = particleEffectPool;
         material = new Material(1);
 
         bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
@@ -88,7 +91,7 @@ public class BuildHandler {
                     unitX = xTemp;
                     unitY = yTemp+2;
                     System.out.println(" coo " + unitX + ", " + unitY);
-                    BridgeUnit bridgeUnit = new BridgeUnit(material, world, unitX, unitY);
+                    BridgeUnit bridgeUnit = new BridgeUnit(material, world, unitX, unitY, particleEffectPool);
                     bridgeUnit.getBody().setTransform(unitX, unitY, distanceVectorInfo[1]);
                     bridgeUnit.getBody().setType(BodyDef.BodyType.StaticBody);
                     localBridgeUnits.add(bridgeUnit);

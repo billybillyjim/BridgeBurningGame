@@ -4,12 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.mygdx.game.Material;
-
 
 /**
  * Created by Luke on 2/22/2016.
@@ -21,6 +21,7 @@ public class BridgeUnit extends Actor{
     private Sprite sprite;
 
     private ParticleEffect fireEffect;
+    private ParticleEffectPool particleEffectPool;
 
     public final static int WIDTH = 10;
     public final static int HEIGHT = 20;
@@ -30,23 +31,18 @@ public class BridgeUnit extends Actor{
     private boolean isOnFire;
     private boolean isBurnt;
 
-
-    public BridgeUnit(Material material, World world, float xPosition, float yPosition){
-        this(material, world, xPosition, yPosition, 1);
-
-    }
-
-    public BridgeUnit(Material material, World world, float xPosition, float yPosition, int durability){
+    public BridgeUnit(Material material, World world, float xPosition, float yPosition, ParticleEffectPool particleEffectPool){
 
         //Sets texture to image in assets folder
         img = new Texture(material.getImage_src());
         //Makes a sprite of that texture
         sprite = new Sprite(img);
 
+
         this.setName("Bridge Unit");
 
         this.durability = material.getDurability();
-
+        this.particleEffectPool = particleEffectPool;
 
         //sets the sprite position based on screen size
         sprite.setPosition(xPosition, yPosition);
@@ -58,8 +54,6 @@ public class BridgeUnit extends Actor{
 
         //puts the body in a specific spot over the sprite
         bodyDef.position.set(sprite.getX(), sprite.getY());
-
-
 
         body = world.createBody(bodyDef);
 
@@ -84,10 +78,8 @@ public class BridgeUnit extends Actor{
         sprite.setSize(WIDTH, HEIGHT); //set sprite size to the same size of the body
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
 
-        fireEffect = new ParticleEffect();
-        fireEffect.load(Gdx.files.internal("Effect8.p"), Gdx.files.internal("PixelParticle2.png"));
-
-
+        fireEffect = particleEffectPool.obtain();
+        fireEffect.dispose();
         shape.dispose();
 
     }
@@ -100,7 +92,7 @@ public class BridgeUnit extends Actor{
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
 
-        if(isOnFire) {
+        if(isOnFire && !isBurnt) {
 
             fireEffect.update(Gdx.graphics.getDeltaTime());
 
@@ -108,12 +100,16 @@ public class BridgeUnit extends Actor{
                 fireEffect.getEmitters().get(j).setPosition(body.getPosition().x, body.getPosition().y);
             }
 
-            fireEffect.start();
+            //fireEffect.start();
 
             fireEffect.draw(batch);
         }
         if(isBurnt){
-            body.setAngularVelocity((float) Math.random());
+            isOnFire = false;
+            particleEffectPool.free((ParticleEffectPool.PooledEffect)fireEffect);
+
+            body.applyAngularImpulse((float) Math.random(), true);
+            //body.setAngularVelocity((float) Math.random());
 
         }
 

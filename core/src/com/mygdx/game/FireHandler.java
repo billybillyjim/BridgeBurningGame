@@ -1,16 +1,12 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.JointEdge;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.GraphicalObjects.Bridge;
 import com.mygdx.game.GraphicalObjects.BridgeUnit;
 import com.mygdx.game.GraphicalObjects.BridgeUnitLink;
 import com.mygdx.game.PhysicalObjects.BridgeJoint;
-
 import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Created by Luke on 3/21/2016.
@@ -36,13 +32,6 @@ public class FireHandler {
 
     }
 
-    public FireHandler(ArrayList<BridgeUnit> bridgeUnits, ArrayList<BridgeUnitLink> bridgeUnitLinks, ArrayList<BridgeJoint> bridgeJoints){
-
-        this.bridgeUnits = bridgeUnits;
-        this.bridgeUnitLinks = bridgeUnitLinks;
-        this.bridgeJoints = bridgeJoints;
-
-    }
     //Checks to see if any bridgeUnit or bridgeUnitLink is on fire
     public boolean checkFires(){
         for(int i = 0; i < bridgeUnits.size(); i++){
@@ -96,7 +85,9 @@ public class FireHandler {
                         //Checks to see if any of them match
                         if(jointEdge.other.equals(bridgeUnit.getBody())){
                             //Sets the bridgeUnitLink on fire if they match
-                            bridgeUnit.setIsOnFire(true);
+                            if(!bridgeUnit.getIsBurnt()) {
+                                bridgeUnit.setIsOnFire(true);
+                            }
                         }
                     }
                 }
@@ -111,13 +102,10 @@ public class FireHandler {
         for(BridgeUnit b : bridgeUnits){
             if(b.getIsBurnt()){
                 if(!burntBridgeUnits.contains(b)) {
-                    System.out.println(b.getBody().getJointList().size);
                     burntBridgeUnits.add(b);
                 }
-
             }
         }
-
         return burntBridgeUnits;
     }
 
@@ -126,21 +114,11 @@ public class FireHandler {
         for(BridgeUnitLink b : bridgeUnitLinks){
             if(b.getIsBurnt()){
                 if(!burntBridgeUnitLinks.contains(b)) {
-                    System.out.println(b.getBody().getJointList().size);
                     burntBridgeUnitLinks.add(b);
                 }
-
             }
         }
-
         return burntBridgeUnitLinks;
-    }
-    public void updateBridgeUnitArray(ArrayList<BridgeUnit> bridgeUnits){
-        this.bridgeUnits = bridgeUnits;
-
-    }
-    public void updateBridgeUnitLinkArray(ArrayList<BridgeUnitLink> bridgeUnitsLink){
-        this.bridgeUnitLinks = bridgeUnitsLink;
     }
 
     public void addBridgeUnit(BridgeUnit unit){
