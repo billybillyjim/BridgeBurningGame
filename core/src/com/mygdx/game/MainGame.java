@@ -184,7 +184,7 @@ public class MainGame extends Stage implements Screen{
         draw();
 
         camera.update(); // is generally a good practice to update the camera once per frame
-        box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
+         box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
         game.batch.setProjectionMatrix(camera.combined); //tells spriteBatch to use coordinate system set by camera
         fireGo();
         drawButtons();
@@ -204,6 +204,7 @@ public class MainGame extends Stage implements Screen{
             burntBridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(burntBridgeUnitLinks);
 
             burnWood();
+
 
         }
     }

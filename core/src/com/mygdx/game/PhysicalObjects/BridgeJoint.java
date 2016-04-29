@@ -30,10 +30,10 @@ public class BridgeJoint {
         rJointDef.localAnchorB.set(0,0);
 
 
-       // rJointDef.lowerAngle = -0.1f;
-        //rJointDef.upperAngle = 0.1f;
-        //rJointDef.enableLimit = true;
-
+        rJointDef.lowerAngle = 0f;
+        rJointDef.upperAngle = 0f;
+        rJointDef.enableLimit = true;
+        rJointDef.enableMotor = false;
 
 
     }

@@ -24,7 +24,7 @@ public class BridgeUnit extends Actor{
     private ParticleEffectPool particleEffectPool;
 
     public final static int WIDTH = 10;
-    public final static int HEIGHT = 20;
+    public final static int HEIGHT = 15;
 
     private int durability;
 

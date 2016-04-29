@@ -42,6 +42,7 @@ public class BuildHandler {
     public void makeBridgeUnitLink(float x, float y){
         BridgeUnitLink link = new BridgeUnitLink(img, world, x, y);
         link.setCreatedByPlayer(true);
+        link.getBody().setType(BodyDef.BodyType.DynamicBody);
         stage.addActor(link);
         //test();
         makeBridgeUnit(link, x, y);
@@ -66,7 +67,6 @@ public class BuildHandler {
                 float[] t = {};
                 BridgeUnitLink lastLink = it.next();
                 Float[] distanceVectorInfo = linksToConnect.get(lastLink);
-                //localBridgeUnitLinks.add(lastLink);
                 System.out.println("link x = " + lastLink.getBody().getPosition().x + " y = " + lastLink.getBody().getPosition().y);
                 System.out.println("x = " + x + " y = " + y);
                 float xTemp = unitX;
@@ -86,10 +86,11 @@ public class BuildHandler {
 
                     unitX = xTemp;
                     unitY = yTemp+2;
+                  //TODO check for exitsting bridge units in the location
                     System.out.println(" coo " + unitX + ", " + unitY);
                     BridgeUnit bridgeUnit = new BridgeUnit(material, world, unitX, unitY, particleEffectPool);
-                    bridgeUnit.getBody().setTransform(unitX, unitY, distanceVectorInfo[1]);
-                    bridgeUnit.getBody().setType(BodyDef.BodyType.StaticBody);
+                    //bridgeUnit.getBody().setTransform(unitX, unitY, distanceVectorInfo[1]);
+                    //bridgeUnit.getBody().setType(BodyDef.BodyType.StaticBody);
                     localBridgeUnits.add(bridgeUnit);
                     bridgeUnits.add(bridgeUnit);
                     stage.addActor(bridgeUnit);
@@ -121,6 +122,7 @@ public class BuildHandler {
             float x = (localBrigeUnits.get(i).getBody().getPosition().x + localBrigeUnits.get(i+1).getBody().getPosition().x)/2;
             float y = (localBrigeUnits.get(i).getBody().getPosition().y + localBrigeUnits.get(i+1).getBody().getPosition().y)/2;
             BridgeUnitLink link = new BridgeUnitLink(img, world, x, y);
+            //link.getBody().setType(BodyDef.BodyType.DynamicBody);
             localBridgeUnitLinks.add(link);
             bridgeUnitLinks.add(link);
            // stage.addActor(link);
@@ -136,10 +138,10 @@ public class BuildHandler {
             BridgeJoint joint2 = new BridgeJoint();
             BridgeJoint joint3 = new BridgeJoint();
             joint2.CreateJoint(localBridgeUnit.get(i).getBody(), localBridgeUnitLink.get(i).getBody());
-            joint2.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
+            joint2.getrJointDef().localAnchorA.set(localBridgeUnitLink.get(i).getBody().getPosition().x - localBridgeUnit.get(i).getBody().getPosition().x, localBridgeUnitLink.get(i).getBody().getPosition().y - localBridgeUnit.get(i).getBody().getPosition().y );
             world.createJoint(joint2.getrJointDef());
-            joint3.CreateJoint(localBridgeUnit.get(i).getBody(), localBridgeUnitLink.get(i+1).getBody());
-            joint3.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
+            joint3.CreateJoint(localBridgeUnit.get(i).getBody(),localBridgeUnitLink.get(i+1).getBody());
+            joint3.getrJointDef().localAnchorA.set(localBridgeUnitLink.get(i).getBody().getPosition().x - localBridgeUnit.get(i).getBody().getPosition().x, localBridgeUnitLink.get(i).getBody().getPosition().y - localBridgeUnit.get(i).getBody().getPosition().y );
             world.createJoint(joint3.getrJointDef());
 
         }
@@ -147,7 +149,7 @@ public class BuildHandler {
         if(localBridgeUnit.size() == localBridgeUnitLink.size()) {
             BridgeJoint joint = new BridgeJoint();
             joint.CreateJoint(localBridgeUnit.get(localBridgeUnit.size()-1).getBody(), localBridgeUnitLink.get(localBridgeUnitLink.size()-1).getBody());
-            joint.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
+            joint.getrJointDef().localAnchorA.set(localBridgeUnitLink.get(localBridgeUnit.size()-1).getBody().getPosition().x - localBridgeUnit.get(localBridgeUnit.size()-1).getBody().getPosition().x, localBridgeUnitLink.get(localBridgeUnit.size()-1).getBody().getPosition().y - localBridgeUnit.get(localBridgeUnit.size()-1).getBody().getPosition().y );
             world.createJoint(joint.getrJointDef());
         }
     }
