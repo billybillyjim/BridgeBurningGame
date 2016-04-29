@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
@@ -24,15 +25,15 @@ public class BuildHandler {
     private final Texture img = new Texture("Pivot.png");
     private ArrayList<BridgeUnitLink> bridgeUnitLinks;
     private ArrayList<BridgeUnit> bridgeUnits;
-    private ParticleEffectPool particleEffectPool;
+    private ParticleEffect fireEffect;
 
 
     Material material;
 
-    public BuildHandler(World world, Stage stage, ParticleEffectPool particleEffectPool){
+    public BuildHandler(World world, Stage stage, ParticleEffect fireEffect){
         this.world = world;
         this.stage = stage;
-        this.particleEffectPool = particleEffectPool;
+        this.fireEffect = fireEffect;
         material = new Material(1);
 
         bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
@@ -88,7 +89,7 @@ public class BuildHandler {
                     unitY = yTemp+2;
                   //TODO check for exitsting bridge units in the location, don't build over the refresh button
                     System.out.println(" coo " + unitX + ", " + unitY);
-                    BridgeUnit bridgeUnit = new BridgeUnit(material, world, unitX, unitY, particleEffectPool);
+                    BridgeUnit bridgeUnit = new BridgeUnit(material, world, unitX, unitY, fireEffect);
                     //bridgeUnit.getBody().setTransform(unitX, unitY, distanceVectorInfo[1]);
                     //bridgeUnit.getBody().setType(BodyDef.BodyType.StaticBody);
                     localBridgeUnits.add(bridgeUnit);
