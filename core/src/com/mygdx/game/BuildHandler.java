@@ -86,7 +86,7 @@ public class BuildHandler {
 
                     unitX = xTemp;
                     unitY = yTemp+2;
-                  //TODO check for exitsting bridge units in the location
+                  //TODO check for exitsting bridge units in the location, don't build over the refresh button
                     System.out.println(" coo " + unitX + ", " + unitY);
                     BridgeUnit bridgeUnit = new BridgeUnit(material, world, unitX, unitY, particleEffectPool);
                     //bridgeUnit.getBody().setTransform(unitX, unitY, distanceVectorInfo[1]);

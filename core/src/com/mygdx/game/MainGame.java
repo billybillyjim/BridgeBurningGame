@@ -4,7 +4,6 @@ package com.mygdx.game;
  * Created by Luke on 2/12/2016.
  */
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -17,9 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
@@ -119,11 +116,26 @@ public class MainGame extends Stage implements Screen{
         burntBridgeUnitLinks = new ArrayList<BridgeUnitLink>();
 
 
+        createButtons();
 
     }
 
     @Override
     public void render(float delta) {
+        //Draw background, buttons
+        game.batch.begin();
+        backgroundSprite.draw(game.batch);
+        game.batch.end();
+
+
+        //Update the camera,
+        camera.update();
+        box2DDebugRenderer.render(WORLD, camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);
+        fireGo();
+
+        box2DDebugRenderer.render(WORLD, camera.combined);
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)){
             if(constructionMode) constructionMode = false;
             else if(!constructionMode) constructionMode = true;
@@ -131,67 +143,56 @@ public class MainGame extends Stage implements Screen{
 
         }
 
-
-        if(!constructionMode) {
+        //if(!bridgeBurned()) {
             if (Gdx.input.justTouched()) {
                 Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+                System.out.println("you clicked at:" + pos);
                 camera.unproject(pos);
-
                 Actor actor = this.hit(pos.x, pos.y, true);
-                if (actor != null && actor.getName().equals("Bridge Unit Link")) {
-                    ((BridgeUnitLink) actor).setIsOnFire(true);
+                if (!constructionMode) {
+                    if (actor != null && actor.getName().equals("Bridge Unit Link")) {
+                        ((BridgeUnitLink) actor).setIsOnFire(true);
 
 
-                } else if (actor != null && actor.getName().equals("Bridge Unit")) {
+                    } else if (actor != null && actor.getName().equals("Bridge Unit")) {
 
-                    ((BridgeUnit) actor).setIsOnFire(true);
+                        ((BridgeUnit) actor).setIsOnFire(true);
 
+                    } else if (actor != null && actor.getName().equals("Refresh")) {
+                        System.out.println("refresh button clicked");
+                        reset();
+                    }
+                    fireHandler = new FireHandler(buildHandler.getBridgeUnits(), buildHandler.getBridgeUnitLinks());
+                    //Makes the box2d WORLD play at a given frame rate
+                    WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
                 }
-                fireHandler = new FireHandler(buildHandler.getBridgeUnits(), buildHandler.getBridgeUnitLinks());
-                //Makes the box2d WORLD play at a given frame rate
-
+                else {
+                    if (actor != null && actor.getName().equals("Refresh")) {
+                        System.out.println("refresh button clicked");
+                        reset();
+                    } else {
+                        System.out.println(pos.x);
+                        buildHandler.makeBridgeUnitLink(pos.x, pos.y);
+                    }
+                }
             }
-            WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
-        } else {
 
-            if (Gdx.input.justTouched()) {
-                Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-                camera.unproject(pos);
-                System.out.println(pos.x);
-                buildHandler.makeBridgeUnitLink(pos.x, pos.y);
-            }
-        }
+        //}
+        //else{
+        //    System.out.println("bridge completely burned");
+        //    // TODO: 4/29/16 add a restart game option
+        //}
 
         timeCycle -= Gdx.graphics.getDeltaTime();
 
-        box2DDebugRenderer.render(WORLD, camera.combined);
 
-        //sets the background color
-        Gdx.gl.glClearColor(1, 1, 1, .3f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //draws the actual frame
-        game.batch.begin();
-
-        backgroundSprite.draw(game.batch);
-
-        //game.font.draw(game.batch, percentageOfBridgeBurned(), this.getWidth() / 2, this.getHeight() - 40);
-
-
-        game.batch.end();
-
-        //The stage (this class) knows about all its actors.. the methods below are responsible to draw all actors in the stage
         act(delta);
         draw();
-
-        camera.update(); // is generally a good practice to update the camera once per frame
-         box2DDebugRenderer.render(WORLD, camera.combined);//let us sees the body's created my Box2D without beeing attached to a sprite.
-        game.batch.setProjectionMatrix(camera.combined); //tells spriteBatch to use coordinate system set by camera
-        fireGo();
-        drawButtons();
-
     }
+
     private void fireGo(){
         if(fireHandler == null) return;
+
         if(timeCycle < 0.0f){
 
             if(fireHandler.checkFires() && !fireSound.isPlaying()){
@@ -204,18 +205,16 @@ public class MainGame extends Stage implements Screen{
             burntBridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(burntBridgeUnitLinks);
 
             burnWood();
-
-
         }
     }
 
-    public String percentageOfBridgeBurned(){
+    public boolean bridgeBurned(){
         int sizeBurnBridge = burntBridgeUnits.size() + burntBridgeUnitLinks.size();
         int sizeBridge = bridge.getBridgeUnits().size() + bridge.getBridgeUnitLinks().size();
         int percentage = (sizeBurnBridge* 100) / sizeBridge;
-
-
-        return percentage + "%";
+        System.out.println(percentage);
+        if (percentage == 100) return true;
+        else return false;
     }
 
 
@@ -244,15 +243,12 @@ public class MainGame extends Stage implements Screen{
         for(BridgeUnitLink bridgeUnitLink : burntBridgeUnitLinks){
             bridgeUnitLink.changeBodyType();
         }
-
     }
 
     public void destroyJoints(Body body){
         Array<JointEdge> jointEdges = body.getJointList();
         for(JointEdge edge : jointEdges ) {
-
             WORLD.destroyJoint(edge.joint);
-
         }
     }
 
@@ -286,27 +282,26 @@ public class MainGame extends Stage implements Screen{
         buildHandler.getBridgeUnitLinks().clear();
         buildHandler.getBridgeUnits().clear();
 
+        fireSound.pause();
+
         drawCliffs();
         fireGo();
-        //TODO: stop fire first!! allow fire spreading
+        createButtons();
+
     }
 
-    private void drawButtons(){
+    private void createButtons(){
         img1 = new Texture("Refresh.png");
         refreshButton = new RefreshButton(img1, WORLD);
         this.addActor(refreshButton);
 
-        refreshButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                reset();
-            }
-        });
+        //TODO: make this work lol
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)){
 
             reset();
           }
+
+        System.out.println("location of refresh button: x" + refreshButton.getX() + ", y" + refreshButton.getY());
 
 
     }

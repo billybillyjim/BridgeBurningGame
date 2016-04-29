@@ -7,8 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.*;
 
-
-
 /**
  * Created by Eloise on 4/8/16.
  */
@@ -18,13 +16,10 @@ public class EndGameScreen implements com.badlogic.gdx.Screen {
     private OrthographicCamera camera;
     public Skin loserSkin;
 
-
     public EndGameScreen(final GameLauncher game){
         this.game = game;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
-
-
     }
 
     @Override
