@@ -4,7 +4,7 @@
 			<name>paper</name>
 			<level>1</level>
 			<image_src>paper.png</image_src>
-			<durability>10</durability>
+			<durability>50</durability>
 			<density>10</density>
 			<friction>0.3</friction>
        </material>

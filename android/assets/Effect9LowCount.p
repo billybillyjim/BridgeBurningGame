@@ -6,7 +6,7 @@ lowMin: 0.0
 lowMax: 0.0
 - Count - 
 min: 0
-max: 3000
+max: 2000
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
@@ -83,7 +83,7 @@ active: true
 lowMin: 0.0
 lowMax: 0.0
 highMin: 59.0
-highMax: 333.0
+highMax: 400.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -152,7 +152,7 @@ lowMin: 0.0
 lowMax: 0.0
 - Count - 
 min: 0
-max: 3000
+max: 2000
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
@@ -229,7 +229,7 @@ active: true
 lowMin: 0.0
 lowMax: 0.0
 highMin: 30.0
-highMax: 300.0
+highMax: 350.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -298,7 +298,7 @@ lowMin: 0.0
 lowMax: 0.0
 - Count - 
 min: 0
-max: 3000
+max: 2000
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
@@ -375,7 +375,7 @@ active: true
 lowMin: 0.0
 lowMax: 0.0
 highMin: 30.0
-highMax: 300.0
+highMax: 320.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -446,7 +446,7 @@ lowMin: 0.0
 lowMax: 0.0
 - Count - 
 min: 0
-max: 3000
+max: 2000
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
