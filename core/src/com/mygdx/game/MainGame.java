@@ -31,12 +31,8 @@ public class MainGame extends Stage implements Screen{
     private final int SCREEN_HEIGHT = 480;
 
     private ParticleEffect fireEffect;
-    private static ParticleEffectPool particleEffectPool;
-
-
 
     boolean constructionMode;
-
 
     private Music fireSound;
 
@@ -79,7 +75,6 @@ public class MainGame extends Stage implements Screen{
         level = 2;
         fireEffect = new ParticleEffect();
         fireEffect.load(Gdx.files.internal("Effect9.p"), Gdx.files.internal(""));
-        particleEffectPool = new ParticleEffectPool(fireEffect,50,150);
 
         img3 = new Texture("LeftCliff.png");
         img4 = new Texture("RightCliff.png");
@@ -89,7 +84,7 @@ public class MainGame extends Stage implements Screen{
 
         drawCliffs();
 
-        buildHandler = new BuildHandler(WORLD, this, particleEffectPool);
+        buildHandler = new BuildHandler(WORLD, this, fireEffect);
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
@@ -122,6 +117,8 @@ public class MainGame extends Stage implements Screen{
 
     @Override
     public void render(float delta) {
+        fireEffect.update(delta);
+
         //Draw background, buttons
         game.batch.begin();
         backgroundSprite.draw(game.batch);
@@ -185,9 +182,12 @@ public class MainGame extends Stage implements Screen{
 
         timeCycle -= Gdx.graphics.getDeltaTime();
 
-
         act(delta);
         draw();
+
+        game.batch.begin();
+        fireEffect.draw(game.batch);
+        game.batch.end();
     }
 
     private void fireGo(){
