@@ -36,9 +36,10 @@ public class MainGame extends Stage implements Screen{
     private ParticleEffect fireEffect;
     private static ParticleEffectPool particleEffectPool;
 
-    private final int maxTime = 60; //maximum time in seconds the player has to make the bridge burn
+
 
     boolean constructionMode;
+
 
     private Music fireSound;
 
@@ -271,6 +272,7 @@ public class MainGame extends Stage implements Screen{
 
     public void reset(){
         clear();
+        fireHandler = null;
         Array<Body> bodies = new Array<Body>();
         WORLD.getBodies(bodies);
         for(Body body: bodies){
@@ -279,7 +281,7 @@ public class MainGame extends Stage implements Screen{
         }
 
         //bridge = new Bridge(WORLD, this, cliffs, level);
-        fireHandler = null;
+
         buildHandler.getBridgeUnitLinks().clear();
         buildHandler.getBridgeUnits().clear();
 

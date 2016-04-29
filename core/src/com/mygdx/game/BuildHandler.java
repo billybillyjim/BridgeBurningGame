@@ -44,9 +44,7 @@ public class BuildHandler {
         link.setCreatedByPlayer(true);
         stage.addActor(link);
         //test();
-
         makeBridgeUnit(link, x, y);
-
         bridgeUnitLinks.add(link);
     }
 
@@ -66,10 +64,10 @@ public class BuildHandler {
                 float unitX = x;
                 float unitY = y;
                 float[] t = {};
-                BridgeUnitLink link = it.next();
-                Float[] distanceVectorInfo = linksToConnect.get(link);
-                localBridgeUnitLinks.add(link);
-                System.out.println("link x = " + link.getBody().getPosition().x + " y = " + link.getBody().getPosition().y);
+                BridgeUnitLink lastLink = it.next();
+                Float[] distanceVectorInfo = linksToConnect.get(lastLink);
+                //localBridgeUnitLinks.add(lastLink);
+                System.out.println("link x = " + lastLink.getBody().getPosition().x + " y = " + lastLink.getBody().getPosition().y);
                 System.out.println("x = " + x + " y = " + y);
                 float xTemp = unitX;
                 float yTemp = unitY;
@@ -79,14 +77,12 @@ public class BuildHandler {
                    
                     if(localBridgeUnits.isEmpty()) {
                         for(int i = 0; i < BridgeUnit.WIDTH/2; i++) {
-                            t = getNextLinePoint(xTemp, yTemp, (int) link.getBody().getPosition().x, (int) link.getBody().getPosition().y);
+                            t = getNextLinePoint(xTemp, yTemp, (int) lastLink.getBody().getPosition().x, (int) lastLink.getBody().getPosition().y);
                             xTemp = t[0];
                             yTemp = t[1];
 
                         }
                     }
-
-
 
                     unitX = xTemp;
                     unitY = yTemp+2;
@@ -100,32 +96,26 @@ public class BuildHandler {
 
 
                     for(int i = 0; i < BridgeUnit.WIDTH; i++) {
-                        t = getNextLinePoint(xTemp, yTemp, (int) link.getBody().getPosition().x, (int) link.getBody().getPosition().y);
+                        t = getNextLinePoint(xTemp, yTemp, (int) lastLink.getBody().getPosition().x, (int) lastLink.getBody().getPosition().y);
                         xTemp = t[0];
                         yTemp = t[1];
 
                     }
 
-
-
                 }
-
-                makeLinks(localBridgeUnits, localBridgeUnitLinks);
+                makeLinks(localBridgeUnits, localBridgeUnitLinks, lastLink);
+                makeJoints(localBridgeUnits, localBridgeUnitLinks);
                 localBridgeUnitLinks.clear();
                 localBridgeUnits.clear();
+
             }
-
-
-
-
-
         }
     }
 
 
 
 
-    private void makeLinks(ArrayList<BridgeUnit> localBrigeUnits, ArrayList<BridgeUnitLink> localBridgeUnitLinks ){
+    private void makeLinks(ArrayList<BridgeUnit> localBrigeUnits, ArrayList<BridgeUnitLink> localBridgeUnitLinks, BridgeUnitLink lastLink ){
 
         for(int i = 0; i < localBrigeUnits.size()-1; i++){
             float x = (localBrigeUnits.get(i).getBody().getPosition().x + localBrigeUnits.get(i+1).getBody().getPosition().x)/2;
@@ -133,23 +123,32 @@ public class BuildHandler {
             BridgeUnitLink link = new BridgeUnitLink(img, world, x, y);
             localBridgeUnitLinks.add(link);
             bridgeUnitLinks.add(link);
-            stage.addActor(link);
+           // stage.addActor(link);
         }
-        makeJoints(localBrigeUnits, localBridgeUnitLinks);
+        localBridgeUnitLinks.add(lastLink);
+
 
     }
 
     private void makeJoints(ArrayList<BridgeUnit> localBridgeUnit, ArrayList<BridgeUnitLink> localBridgeUnitLink){
-        for(int i = 0; i < localBridgeUnit.size() -1; i++){
-            BridgeJoint joint = new BridgeJoint();
+        if(localBridgeUnit.isEmpty() || localBridgeUnitLink.isEmpty()) return;
+        for(int i = 0; i < localBridgeUnitLink.size()-1; i++){
             BridgeJoint joint2 = new BridgeJoint();
-            joint.CreateJoint(localBridgeUnit.get(i).getBody(), localBridgeUnitLink.get(i).getBody());
-            joint.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
-            world.createJoint(joint.getrJointDef());
-            joint2.CreateJoint(localBridgeUnit.get(i + 1).getBody(), localBridgeUnitLink.get(i).getBody());
+            BridgeJoint joint3 = new BridgeJoint();
+            joint2.CreateJoint(localBridgeUnit.get(i).getBody(), localBridgeUnitLink.get(i).getBody());
             joint2.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
             world.createJoint(joint2.getrJointDef());
+            joint3.CreateJoint(localBridgeUnit.get(i).getBody(), localBridgeUnitLink.get(i+1).getBody());
+            joint3.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
+            world.createJoint(joint3.getrJointDef());
 
+        }
+        System.out.println("localbridgeUnitsize = " + localBridgeUnit.size() + " localUnitLinkSize = " + localBridgeUnitLink.size());
+        if(localBridgeUnit.size() == localBridgeUnitLink.size()) {
+            BridgeJoint joint = new BridgeJoint();
+            joint.CreateJoint(localBridgeUnit.get(localBridgeUnit.size()-1).getBody(), localBridgeUnitLink.get(localBridgeUnitLink.size()-1).getBody());
+            joint.getrJointDef().localAnchorA.set(BridgeUnit.WIDTH / 2, 0);
+            world.createJoint(joint.getrJointDef());
         }
     }
     private HashMap<BridgeUnitLink, Float[]> findLinksToConnect(float x, float y){
