@@ -6,7 +6,7 @@
 			<image_src>paper.png</image_src>
 			<durability>50</durability>
 			<density>10</density>
-			<friction>0.3</friction>
+			<friction>10</friction>
        </material>
 	    <material>
 			<name>wood</name>

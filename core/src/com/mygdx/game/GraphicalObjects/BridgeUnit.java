@@ -27,7 +27,7 @@ public class BridgeUnit extends Actor{
 
     private ParticleEffect fireEffect;
 
-    public final static int WIDTH = 10;
+    public final static int WIDTH = 15;
     public final static int HEIGHT = 15;
 
     private int durability;
@@ -110,6 +110,7 @@ public class BridgeUnit extends Actor{
     public void decrementDurability(){
         this.durability--;
     }
+
 
     public Body getBody(){
         return this.body;

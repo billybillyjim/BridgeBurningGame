@@ -10,7 +10,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -97,12 +96,6 @@ public class MainGame extends Stage implements Screen{
         box2DDebugRenderer = new Box2DDebugRenderer();
 
 
-
-       // bridge = new Bridge(WORLD, this, cliffs, level);
-
-        //Lets the fireHandler know all the actors in the bridge.
-        //fireHandler = new FireHandler(bridge.getBridgeUnits(), bridge.getBridgeUnitLinks());
-
         fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningLoop2.wav"));
 
 
@@ -160,8 +153,7 @@ public class MainGame extends Stage implements Screen{
                         reset();
                     }
                     fireHandler = new FireHandler(buildHandler.getBridgeUnits(), buildHandler.getBridgeUnitLinks());
-                    //Makes the box2d WORLD play at a given frame rate
-                    WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
+
                 }
                 else {
                     if (actor != null && actor.getName().equals("Refresh")) {
@@ -173,6 +165,10 @@ public class MainGame extends Stage implements Screen{
                     }
                 }
             }
+        if(!constructionMode){
+            //Makes the box2d WORLD play at a given frame rate
+            WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
+        }
 
         //}
         //else{
@@ -196,7 +192,7 @@ public class MainGame extends Stage implements Screen{
         if(timeCycle < 0.0f){
 
             if(fireHandler.checkFires() && !fireSound.isPlaying()){
-                fireSound.play();
+               // fireSound.play();
             }
 
             timeCycle = 1;
@@ -277,7 +273,6 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyBody(body);
         }
 
-        //bridge = new Bridge(WORLD, this, cliffs, level);
 
         buildHandler.getBridgeUnitLinks().clear();
         buildHandler.getBridgeUnits().clear();
