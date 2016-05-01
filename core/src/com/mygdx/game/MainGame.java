@@ -290,6 +290,7 @@ public class MainGame extends Stage implements Screen{
 
         drawCliffs();
         fireGo();
+        constructionMode = true;
         createButtons();
 
     }
@@ -299,7 +300,7 @@ public class MainGame extends Stage implements Screen{
         constructImg = new Texture("Construct.png");
         burnImg = new Texture("Burn.png");
 
-        toggleButton = new ToggleButton(burnImg);
+        toggleButton = new ToggleButton(constructImg);
         refreshButton = new RefreshButton();
         this.addActor(refreshButton);
         this.addActor(toggleButton);
