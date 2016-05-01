@@ -34,8 +34,8 @@ public class MainGame extends Stage implements Screen{
 
     private Music fireSound;
 
-    private Texture img3;
-    private Texture img4;
+    private Texture leftTex;
+    private Texture rightTex;
     private Texture burnImg;
     private Texture constructImg;
 
@@ -44,7 +44,8 @@ public class MainGame extends Stage implements Screen{
     //Makes a box2d physics environment that sets gravity
     public final static World WORLD = new World(new Vector2(0, -98.1f), true);
 
-    private BackgroundCliffs cliffs;
+    private BackgroundCliff leftCliff;
+    private BackgroundCliff rightCliff;
 
     private ToggleButton toggleButton;
     private RefreshButton refreshButton;
@@ -78,8 +79,8 @@ public class MainGame extends Stage implements Screen{
         fireEffect = new ParticleEffect();
         fireEffect.load(Gdx.files.internal("Effect9.p"), Gdx.files.internal(""));
 
-        img3 = new Texture("LeftCliff.png");
-        img4 = new Texture("RightCliff.png");
+        leftTex = new Texture("LeftCliff.png");
+        rightTex = new Texture("RightCliff.png");
         background = new Texture("BG1.png");
 
         backgroundSprite = new Sprite(background);
@@ -139,7 +140,6 @@ public class MainGame extends Stage implements Screen{
         //if(!bridgeBurned()) {
             if (Gdx.input.justTouched()) {
                 Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-                System.out.println("you clicked at:" + pos);
                 camera.unproject(pos);
                 Actor actor = this.hit(pos.x, pos.y, true);
                 if (!constructionMode) {
@@ -167,8 +167,7 @@ public class MainGame extends Stage implements Screen{
                         constructionMode = false;
                         toggleButton.changeTexture(burnImg);
                     }
-                    else {
-                        System.out.println(pos.x);
+                    else if (!(actor != null && actor.getName().equals("Cliff"))){
                         buildHandler.makeBridgeUnit(pos.x, pos.y);
                     }
                 }
@@ -206,7 +205,6 @@ public class MainGame extends Stage implements Screen{
             timeCycle = 1;
             fireHandler.burnAdjacents();
             burntBridgeUnits = fireHandler.burnUpBridgeUnits(burntBridgeUnits);
-            System.out.println(burntBridgeUnits.isEmpty());
             burntBridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(burntBridgeUnitLinks);
 
             burnWood();
@@ -258,10 +256,12 @@ public class MainGame extends Stage implements Screen{
     }
 
     public void drawCliffs(){
-        img3 = new Texture("LeftCliff.png");
-        img4 = new Texture("RightCliff.png");
-        cliffs = new BackgroundCliffs(img3, img4, WORLD);
-        this.addActor(cliffs);
+        leftTex = new Texture("LeftCliff.png");
+        rightTex = new Texture("RightCliff.png");
+        leftCliff = new BackgroundCliff(leftTex, 0, 0, WORLD, true);
+        rightCliff = new BackgroundCliff(rightTex,800-rightTex.getWidth(), 0, WORLD, false);
+        this.addActor(leftCliff);
+        this.addActor(rightCliff);
 
     }
 
