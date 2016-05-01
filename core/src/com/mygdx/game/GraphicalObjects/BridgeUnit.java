@@ -95,7 +95,10 @@ public class BridgeUnit extends Actor{
         sprite.draw(batch);
 
         if(isBurnt){
-            isOnFire = false;
+            if(durability < -3){
+                isOnFire = false;
+            }
+
 
             body.applyAngularImpulse((float) Math.random(), true);
         }
