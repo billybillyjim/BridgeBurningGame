@@ -68,7 +68,10 @@ public class FireHandler {
                         //Checks to see if any of them match
                         if(jointEdge.other.equals(bridgeUnit.getBody())){
                             //Sets the bridgeUnitLink on fire if they match
-                            bridgeUnit.setIsOnFire(true);
+                            if(bridgeUnits.get(i).getDurability() < 7){
+                                bridgeUnit.setIsOnFire(true);
+                            }
+
                         }
                     }
                 }
@@ -81,7 +84,6 @@ public class FireHandler {
 
         for(BridgeUnit b : bridgeUnits){
             if(b.getIsBurnt()){
-                System.out.println("b is bunrt!");
                 if(!burntBridgeUnits.contains(b)) {
                     burntBridgeUnits.add(b);
                 }

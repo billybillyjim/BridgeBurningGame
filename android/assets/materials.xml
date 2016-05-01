@@ -4,7 +4,7 @@
 			<name>paper</name>
 			<level>1</level>
 			<image_src>paper.png</image_src>
-			<durability>5</durability>
+			<durability>8</durability>
 			<density>10</density>
 			<friction>10</friction>
        </material>
@@ -12,7 +12,7 @@
 			<name>wood</name>
 			<level>2</level>
 			<image_src>Wood.png</image_src>
-			<durability>5</durability>
+			<durability>8</durability>
 			<density>10</density>
 			<friction>0.3</friction>
        </material>

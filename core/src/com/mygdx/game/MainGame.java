@@ -167,7 +167,7 @@ public class MainGame extends Stage implements Screen{
                         constructionMode = false;
                         toggleButton.changeTexture(burnImg);
                     }
-                    else if (!(actor != null && actor.getName().equals("Cliff"))){
+                    else if (!(actor != null && actor.getName().equals("Cliff") || actor != null && actor.getName().equals("Bridge Unit"))){
                         buildHandler.makeBridgeUnit(pos.x, pos.y);
                     }
                 }

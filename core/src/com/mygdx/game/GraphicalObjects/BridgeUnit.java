@@ -103,7 +103,7 @@ public class BridgeUnit extends Actor{
             body.applyAngularImpulse((float) Math.random(), true);
         }
 
-        if(isOnFire && random.nextFloat() < 0.3) {
+        if(isOnFire && random.nextFloat() < 0.7) {
             for(int j = 0; j < fireEffect.getEmitters().size; j++) {
                 ParticleEmitter emitter = fireEffect.getEmitters().get(j);
                 emitter.setPosition(body.getPosition().x, body.getPosition().y);
