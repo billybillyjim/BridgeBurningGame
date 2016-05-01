@@ -169,7 +169,7 @@ public class MainGame extends Stage implements Screen{
                     }
                     else {
                         System.out.println(pos.x);
-                        buildHandler.makeBridgeUnitLink(pos.x, pos.y);
+                        buildHandler.makeBridgeUnit(pos.x, pos.y);
                     }
                 }
             }
@@ -206,6 +206,7 @@ public class MainGame extends Stage implements Screen{
             timeCycle = 1;
             fireHandler.burnAdjacents();
             burntBridgeUnits = fireHandler.burnUpBridgeUnits(burntBridgeUnits);
+            System.out.println(burntBridgeUnits.isEmpty());
             burntBridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(burntBridgeUnitLinks);
 
             burnWood();

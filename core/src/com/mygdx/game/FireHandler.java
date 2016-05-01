@@ -62,38 +62,18 @@ public class FireHandler {
                 //Gets the list of JointEdges
                 Array<JointEdge> jointEdges = bridgeUnits.get(i).getBody().getJointList();
                 //Runs through the list of bridgeUnit links
-                for(BridgeUnitLink bridgeUnitLink : bridgeUnitLinks){
-                    //Runs through the list of Joint edges
-                    for(JointEdge jointEdge : jointEdges){
-                        //Checks to see if any of them match
-                        if(jointEdge.other.equals(bridgeUnitLink.getBody())){
-                            //Sets the bridgeUnitLink on fire if they match
-                            bridgeUnitLink.setIsOnFire(true);
-                        }
-                    }
-                }
-            }
-        }
-        for(int i = 0; i < bridgeUnitLinks.size(); i++){
-            if(bridgeUnitLinks.get(i).getIsOnFire()){
-                Array<JointEdge> jointEdges = bridgeUnitLinks.get(i).getBody().getJointList();
-                bridgeUnitLinks.get(i).setIsBurnt(true);
-                //Runs through the list of bridgeUnit links
                 for(BridgeUnit bridgeUnit : bridgeUnits){
                     //Runs through the list of Joint edges
                     for(JointEdge jointEdge : jointEdges){
                         //Checks to see if any of them match
                         if(jointEdge.other.equals(bridgeUnit.getBody())){
                             //Sets the bridgeUnitLink on fire if they match
-                            if(!bridgeUnit.getIsBurnt()) {
-                                bridgeUnit.setIsOnFire(true);
-                            }
+                            bridgeUnit.setIsOnFire(true);
                         }
                     }
                 }
             }
         }
-
 
         return false;
     }
@@ -101,6 +81,7 @@ public class FireHandler {
 
         for(BridgeUnit b : bridgeUnits){
             if(b.getIsBurnt()){
+                System.out.println("b is bunrt!");
                 if(!burntBridgeUnits.contains(b)) {
                     burntBridgeUnits.add(b);
                 }

@@ -38,29 +38,32 @@ public class BuildHandler {
 
         bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
         bridgeUnits = new ArrayList<BridgeUnit>();
+
+
     }
 
-    public BridgeUnitLink makeBridgeUnitLink(float x, float y){
-        BridgeUnitLink link = new BridgeUnitLink(img, world, x, y);
-        link.setCreatedByPlayer(true);
-        link.getBody().setType(BodyDef.BodyType.DynamicBody);
-        stage.addActor(link);
-        makeUnitLinkStructure(link);
-        bridgeUnitLinks.add(link);
-        return link;
+
+    public BridgeUnit makeBridgeUnit(float x, float y){
+        BridgeUnit unit = new BridgeUnit(material, world, x, y, fireEffect);
+        unit.setCreatedByPlayer(true);
+        unit.getBody().setType(BodyDef.BodyType.DynamicBody);
+        stage.addActor(unit);
+        makeUnitLinkStructure(unit);
+        bridgeUnits.add(unit);
+        return unit;
     }
 
-   private void makeUnitLinkStructure(BridgeUnitLink bridgeUnitLink) {
+   private void makeUnitLinkStructure(BridgeUnit bridgeUnit) {
 
-        HashMap<BridgeUnitLink, Integer> linksToConnect = findLinksToConnect(bridgeUnitLink);
-        Set keySet  =  linksToConnect.keySet();
+        HashMap<BridgeUnit, Integer> unitsToConnect = findUnitsToConnect(bridgeUnit);
+        Set keySet  =  unitsToConnect.keySet();
 
 
         if (!keySet.isEmpty()){
-            Iterator<BridgeUnitLink> it = keySet.iterator();
+            Iterator<BridgeUnit> it = keySet.iterator();
             while(it.hasNext()) {
-                BridgeUnitLink link = it.next();
-                addLinks(bridgeUnitLink, link, linksToConnect.get(link));
+                BridgeUnit unit = it.next();
+                addUnits(bridgeUnit, unit, unitsToConnect.get(unit));
                 }
 
 
@@ -68,17 +71,17 @@ public class BuildHandler {
 
     }
 
-    private HashMap<BridgeUnitLink, Integer> findLinksToConnect(BridgeUnitLink link){
-        float x = link.getBody().getPosition().x;
-        float y = link.getBody().getPosition().y;
-        HashMap<BridgeUnitLink, Integer> linksToConnect = new HashMap<BridgeUnitLink, Integer>();
-        for(BridgeUnitLink link2 : bridgeUnitLinks){
-            if(link2.isCreatedByPlayer()) {
-                double distance = Math.sqrt((Math.pow(link2.getBody().getPosition().x - x, 2) + (Math.pow(link2.getBody().getPosition().y - y, 2))));
+    private HashMap<BridgeUnit, Integer> findUnitsToConnect(BridgeUnit unit){
+        float x = unit.getBody().getPosition().x;
+        float y = unit.getBody().getPosition().y;
+        HashMap<BridgeUnit, Integer> linksToConnect = new HashMap<BridgeUnit, Integer>();
+        for(BridgeUnit unit2 : bridgeUnits){
+            if(unit2.isCreatedByPlayer()) {
+                double distance = Math.sqrt((Math.pow(unit2.getBody().getPosition().x - x, 2) + (Math.pow(unit2.getBody().getPosition().y - y, 2))));
                 if (distance <= 100) {
 
                     int numOfBridgeUnits = (int) distance / BridgeUnit.WIDTH;
-                    linksToConnect.put(link2, numOfBridgeUnits);
+                    linksToConnect.put(unit2, numOfBridgeUnits);
                 }
             }
         }
@@ -119,34 +122,37 @@ public class BuildHandler {
     }
 
 
-    private void addLinks(BridgeUnitLink link1, BridgeUnitLink link2, int numOfLinks){
-        ArrayList<BridgeUnitLink> links = new ArrayList<BridgeUnitLink>();
-        links.add(link1);
-        int x1 = (int) link1.getBody().getPosition().x;
-        int y1 = (int) link1.getBody().getPosition().y;
-        int x2 = (int) link2.getBody().getPosition().x;
-        int y2 = (int) link2.getBody().getPosition().y;
+
+
+    private void addUnits(BridgeUnit unit1, BridgeUnit unit2, int numOfLinks){
+        ArrayList<BridgeUnit> units = new ArrayList<BridgeUnit>();
+        units.add(unit1);
+        int x1 = (int) unit1.getBody().getPosition().x;
+        int y1 = (int) unit1.getBody().getPosition().y;
+        int x2 = (int) unit2.getBody().getPosition().x;
+        int y2 = (int) unit2.getBody().getPosition().y;
 
 
         for(int i = 0; i < numOfLinks; i++){
             int[] pos = findNextXYPos(x1, y1, x2, y2);
             x1 = pos[0];
             y1 = pos[1];
-            BridgeUnitLink link = new BridgeUnitLink(img, world, x1, y1);
-            link.getBody().setType(BodyDef.BodyType.DynamicBody);
-            links.add(link);
-            bridgeUnitLinks.add(link);
+            BridgeUnit unit3 = new BridgeUnit(material, world, x1, y1, fireEffect);
+            stage.addActor(unit3);
+            units.add(unit3);
+            bridgeUnits.add(unit3);
 
         }
-        links.add(link2);
-        addBridgeUnits(links);
+        units.add(unit2);
+        makeUnitJoint(units);
     }
-
-    private void addBridgeUnits(ArrayList<BridgeUnitLink> links){
-        for(int i = 0; i < links.size()-1; i++){
-            addBridgeUnit(links.get(i), links.get(i+1));
+    private void makeUnitJoint(ArrayList<BridgeUnit> units){
+        for(int i = 0; i < units.size()-1; i++){
+            makeJoint(units.get(i).getBody(), units.get(i+1).getBody());
         }
     }
+
+
 
     private int[] findNextXYPos(int x1, int y1, int x2, int y2){
         int[] nextXYPos = {};
@@ -158,24 +164,8 @@ public class BuildHandler {
         return nextXYPos;
     }
 
-    /**
-     * Must be correct distance apart
-     * @param link1
-     * @param link2
-     */
 
-    private void addBridgeUnit(BridgeUnitLink link1, BridgeUnitLink link2){
-        float x1 = link1.getBody().getPosition().x;
-        float y1 = link1.getBody().getPosition().y;
-        float x2 = link2.getBody().getPosition().x;
-        float y2 = link2.getBody().getPosition().y;
-        BridgeUnit newBUnit = new BridgeUnit(material, world, (x1+x2)/2, (y1+y2)/2, fireEffect);
-        stage.addActor(newBUnit);
-        bridgeUnits.add(newBUnit);
-        makeJoint(newBUnit.getBody(), link1.getBody());
-        makeJoint(newBUnit.getBody(), link2.getBody());
 
-    }
 
     private void makeJoint(Body unitBody, Body linkBody){
         BridgeJoint joint = new BridgeJoint();
@@ -183,6 +173,7 @@ public class BuildHandler {
         joint.getrJointDef().localAnchorA.set(
                 linkBody.getPosition().x - unitBody.getPosition().x,
                 linkBody.getPosition().y - unitBody.getPosition().y);
+
         world.createJoint(joint.getrJointDef());
     }
 

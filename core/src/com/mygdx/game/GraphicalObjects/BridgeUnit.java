@@ -34,6 +34,7 @@ public class BridgeUnit extends Actor{
 
     private boolean isOnFire;
     private boolean isBurnt;
+    boolean createdByPlayer;
 
     public BridgeUnit(Material material, World world, float xPosition, float yPosition, ParticleEffect fireEffect){
 
@@ -41,6 +42,7 @@ public class BridgeUnit extends Actor{
         img = new Texture(material.getImage_src());
         //Makes a sprite of that texture
         sprite = new Sprite(img);
+        createdByPlayer = false;
 
 
         this.setName("Bridge Unit");
@@ -129,5 +131,12 @@ public class BridgeUnit extends Actor{
 
     public void setIsOnFire(boolean b){this.isOnFire = b;}
     public void setIsBurnt(boolean b){this.isBurnt = b;}
+    public boolean isCreatedByPlayer() {
+        return createdByPlayer;
+    }
+
+    public void setCreatedByPlayer(boolean createdByPlayer) {
+        this.createdByPlayer = createdByPlayer;
+    }
 
 }
