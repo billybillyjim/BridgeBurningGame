@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
-
 import java.util.*;
 
 public class MainGame extends Stage implements Screen{
@@ -37,7 +36,8 @@ public class MainGame extends Stage implements Screen{
 
     private Texture img3;
     private Texture img4;
-    private Texture img1;
+    private Texture burnImg;
+    private Texture constructImg;
 
     private Texture background;
     private Sprite backgroundSprite;
@@ -45,6 +45,8 @@ public class MainGame extends Stage implements Screen{
     public final static World WORLD = new World(new Vector2(0, -98.1f), true);
 
     private BackgroundCliffs cliffs;
+
+    private ToggleButton toggleButton;
     private RefreshButton refreshButton;
 
     private Box2DDebugRenderer box2DDebugRenderer;
@@ -68,6 +70,7 @@ public class MainGame extends Stage implements Screen{
 
         this.game = game;
         constructionMode = true;
+
 
         game.font.setColor(Color.WHITE);
 
@@ -142,24 +145,29 @@ public class MainGame extends Stage implements Screen{
                 if (!constructionMode) {
                     if (actor != null && actor.getName().equals("Bridge Unit Link")) {
                         ((BridgeUnitLink) actor).setIsOnFire(true);
-
-
-                    } else if (actor != null && actor.getName().equals("Bridge Unit")) {
-
+                    }
+                    else if (actor != null && actor.getName().equals("Bridge Unit")) {
                         ((BridgeUnit) actor).setIsOnFire(true);
-
-                    } else if (actor != null && actor.getName().equals("Refresh")) {
-                        System.out.println("refresh button clicked");
+                    }
+                    else if (actor != null && actor.getName().equals("Refresh")) {
                         reset();
+                    }
+                    else if (actor != null && actor.getName().equals("Toggle")){
+                        constructionMode = true;
+                        toggleButton.changeTexture(constructImg);
                     }
                     fireHandler = new FireHandler(buildHandler.getBridgeUnits(), buildHandler.getBridgeUnitLinks());
 
                 }
                 else {
                     if (actor != null && actor.getName().equals("Refresh")) {
-                        System.out.println("refresh button clicked");
                         reset();
-                    } else {
+                    }
+                    else if (actor != null && actor.getName().equals("Toggle")){
+                        constructionMode = false;
+                        toggleButton.changeTexture(burnImg);
+                    }
+                    else {
                         System.out.println(pos.x);
                         buildHandler.makeBridgeUnitLink(pos.x, pos.y);
                     }
@@ -286,17 +294,14 @@ public class MainGame extends Stage implements Screen{
     }
 
     private void createButtons(){
-        img1 = new Texture("Refresh.png");
-        refreshButton = new RefreshButton(img1, WORLD);
+
+        constructImg = new Texture("Construct.png");
+        burnImg = new Texture("Burn.png");
+
+        toggleButton = new ToggleButton(burnImg);
+        refreshButton = new RefreshButton();
         this.addActor(refreshButton);
-
-        //TODO: make this work lol
-        if (Gdx.input.isKeyJustPressed(Input.Keys.R)){
-
-            reset();
-          }
-
-        System.out.println("location of refresh button: x" + refreshButton.getX() + ", y" + refreshButton.getY());
+        this.addActor(toggleButton);
 
 
     }

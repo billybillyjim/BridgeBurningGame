@@ -1,25 +1,24 @@
 package com.mygdx.game.GraphicalObjects;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 /**
- * Created by Eloise on 4/18/16.
+ * Created by Eloise on 4/29/16.
  */
-
-public class RefreshButton extends Actor{
+public class ToggleButton extends Actor {
+    private Texture buttonTex;
     private Sprite buttonSprite;
-    private Texture texture;
 
-    public RefreshButton() {
-        texture = new Texture("Refresh.png");
-        this.setName("Refresh");
+    public ToggleButton(Texture tex) {
+        this.setName("Toggle");
+        buttonTex = tex;
 
+        buttonSprite = new Sprite(buttonTex);
 
-        buttonSprite = new Sprite(texture);
-
-        setPosition(20, 460-buttonSprite.getWidth());
+        setPosition(780 - buttonSprite.getWidth(), 460 - buttonSprite.getHeight());
 
         setWidth(buttonSprite.getWidth());
         setHeight(buttonSprite.getHeight());
@@ -27,7 +26,7 @@ public class RefreshButton extends Actor{
     }
 
     @Override
-    public void draw(Batch batch, float ParentAlpha){
+    public void draw(Batch batch, float ParentAlpha) {
         batch.draw(buttonSprite, getX(), getY());
     }
 
@@ -35,4 +34,9 @@ public class RefreshButton extends Actor{
         return buttonSprite;
     }
 
+    public void changeTexture(Texture tex){
+        buttonSprite.setTexture(tex);
+    }
 }
+
+

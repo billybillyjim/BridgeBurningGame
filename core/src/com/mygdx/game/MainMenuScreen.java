@@ -2,23 +2,15 @@ package com.mygdx.game;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.sun.prism.shader.AlphaOne_Color_Loader;
+import com.mygdx.game.GraphicalObjects.StartButton;
 
 
 /**
@@ -29,6 +21,7 @@ public class MainMenuScreen implements Screen {
 
     final GameLauncher game;
     private OrthographicCamera camera;
+    private StartButton startButton;
     public Skin simpleSkin;
     public Skin aboutSkin;
     private Sprite splash;
@@ -50,101 +43,44 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
-        //Creates the background image
-        batch = new SpriteBatch();
-        Texture splashTexture = new Texture(Gdx.files.internal("assets/splash.jpg"));
-        splash = new Sprite(splashTexture);
-        splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
     }
 
     @Override
     public void render(float delta) {
-
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        Stage stage = new Stage();
-        Table menuTable = new Table();
-        Gdx.input.setInputProcessor(stage);// Make the stage consume events
-        createSkins();
-
-        //Create "START GAME" button
-        TextButton startGameButton = new TextButton("START GAME", simpleSkin);
-        menuTable.add(startGameButton).expand().bottom();
-        menuTable.row();
-        //Create "About" button
-        TextButton aboutGameButton = new TextButton("ABOUT", aboutSkin);
-        menuTable.add(aboutGameButton).width(100);
-
-
-        menuTable.setFillParent(true);
-        stage.addActor(menuTable);
-
-        Gdx.input.setInputProcessor(stage);
+        //Creates the background image
+        batch = new SpriteBatch();
+        Texture splashTexture = new Texture("splash.jpg");
+        splash = new Sprite(splashTexture);
+        splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         //Background image drawn
         batch.begin();
         splash.draw(batch);
         batch.end();
 
+        //Gdx.gl.glClearColor(0, 0, 0, 1);
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        Stage stage = new Stage();
+        Gdx.input.setInputProcessor(stage);// Make the stage consume events
+
+
+        startButton = new StartButton(game);
+        stage.addActor(startButton);
+
         stage.act();
         stage.draw();
 
-
-        startGameButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
+        if (Gdx.input.justTouched()) {
+            Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(pos);
+            Actor actor = stage.hit(pos.x, pos.y, true);
+            if (actor != null && actor.getName().equals("Start")) {
                 game.setScreen(new MainGame(game));
-                dispose();
+                this.dispose();
             }
-        });
-    }
-
-    private void createSkins(){
-        //Font of the simpleSkin
-        BitmapFont font = new BitmapFont();
-        simpleSkin = new Skin();
-        simpleSkin.add("default",font);
-
-        //Texture of the simpleSkin
-        Pixmap pixmap = new Pixmap((int)Gdx.graphics.getWidth()/6,(int)Gdx.graphics.getHeight()/10, Pixmap.Format.Alpha);
-        pixmap.setColor(Color.CYAN);
-        simpleSkin.add("background",new Texture(pixmap));
-
-        //Style of the simpleSkin
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.up = simpleSkin.newDrawable("background", Color.GRAY);
-        textButtonStyle.down = simpleSkin.newDrawable("background", Color.DARK_GRAY);
-        textButtonStyle.checked = simpleSkin.newDrawable("background", Color.DARK_GRAY);
-        textButtonStyle.over = simpleSkin.newDrawable("background", Color.LIGHT_GRAY);
-        textButtonStyle.font = simpleSkin.getFont("default");
-        textButtonStyle.fontColor = Color.BLACK;
-        simpleSkin.add("default", textButtonStyle);
-
-        //About button skin
-        BitmapFont font2 = new BitmapFont();
-        aboutSkin = new Skin();
-        aboutSkin.add("default",font);
-
-        //About texture
-        Pixmap pixmap2 = new Pixmap((int)Gdx.graphics.getWidth()/6,(int)Gdx.graphics.getHeight()/10, Pixmap.Format.Alpha);
-        pixmap2.setColor(Color.CYAN);
-        aboutSkin.add("background",new Texture(pixmap2));
-
-        //Style of aboutSkin
-        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
-        textButtonStyle2.up = aboutSkin.newDrawable("background", Color.BLUE);
-        textButtonStyle2.down = aboutSkin.newDrawable("background", Color.BROWN);
-        textButtonStyle2.checked = aboutSkin.newDrawable("background", Color.FIREBRICK);
-        textButtonStyle2.over = aboutSkin.newDrawable("background", Color.LIGHT_GRAY);
-        textButtonStyle2.font = aboutSkin.getFont("default");
-        textButtonStyle2.fontColor = Color.BLACK;
-        aboutSkin.add("default", textButtonStyle2);
-
-
-        pixmap.dispose();
-        pixmap2.dispose();
+        }
     }
 
     @Override
