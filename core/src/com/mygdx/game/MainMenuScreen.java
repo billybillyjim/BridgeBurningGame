@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -16,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.sun.prism.shader.AlphaOne_Color_Loader;
 
 
 /**
@@ -27,6 +30,9 @@ public class MainMenuScreen implements Screen {
     final GameLauncher game;
     private OrthographicCamera camera;
     public Skin simpleSkin;
+    public Skin aboutSkin;
+    private Sprite splash;
+    private SpriteBatch batch;
 
     /**
      *  The only parameter for the constructor necessary
@@ -44,11 +50,19 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
+        //Creates the background image
+        batch = new SpriteBatch();
+        Texture splashTexture = new Texture(Gdx.files.internal("img/splash.jpg"));
+        splash = new Sprite(splashTexture);
+        splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
     }
 
     @Override
     public void render(float delta) {
+
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         Stage stage = new Stage();
         Table menuTable = new Table();
@@ -57,15 +71,22 @@ public class MainMenuScreen implements Screen {
 
         //Create "START GAME" button
         TextButton startGameButton = new TextButton("START GAME", simpleSkin);
-        menuTable.add(startGameButton);
+        menuTable.add(startGameButton).expand().bottom();
         menuTable.row();
+        //Create "About" button
+        TextButton aboutGameButton = new TextButton("ABOUT", aboutSkin);
+        menuTable.add(aboutGameButton).width(100);
+
 
         menuTable.setFillParent(true);
         stage.addActor(menuTable);
 
-        Gdx.gl.glClearColor(1, 2, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.input.setInputProcessor(stage);
+
+        //Background image drawn
+        batch.begin();
+        splash.draw(batch);
+        batch.end();
 
         stage.act();
         stage.draw();
@@ -87,8 +108,8 @@ public class MainMenuScreen implements Screen {
         simpleSkin.add("default",font);
 
         //Texture of the simpleSkin
-        Pixmap pixmap = new Pixmap((int)Gdx.graphics.getWidth()/6,(int)Gdx.graphics.getHeight()/10, Pixmap.Format.RGB888);
-        pixmap.setColor(Color.BLUE);
+        Pixmap pixmap = new Pixmap((int)Gdx.graphics.getWidth()/6,(int)Gdx.graphics.getHeight()/10, Pixmap.Format.Alpha);
+        pixmap.setColor(Color.CYAN);
         simpleSkin.add("background",new Texture(pixmap));
 
         //Style of the simpleSkin
@@ -98,7 +119,32 @@ public class MainMenuScreen implements Screen {
         textButtonStyle.checked = simpleSkin.newDrawable("background", Color.DARK_GRAY);
         textButtonStyle.over = simpleSkin.newDrawable("background", Color.LIGHT_GRAY);
         textButtonStyle.font = simpleSkin.getFont("default");
+        textButtonStyle.fontColor = Color.BLACK;
         simpleSkin.add("default", textButtonStyle);
+
+        //About button skin
+        BitmapFont font2 = new BitmapFont();
+        aboutSkin = new Skin();
+        aboutSkin.add("default",font);
+
+        //About texture
+        Pixmap pixmap2 = new Pixmap((int)Gdx.graphics.getWidth()/6,(int)Gdx.graphics.getHeight()/10, Pixmap.Format.Alpha);
+        pixmap2.setColor(Color.CYAN);
+        aboutSkin.add("background",new Texture(pixmap2));
+
+        //Style of aboutSkin
+        TextButton.TextButtonStyle textButtonStyle2 = new TextButton.TextButtonStyle();
+        textButtonStyle2.up = aboutSkin.newDrawable("background", Color.BLUE);
+        textButtonStyle2.down = aboutSkin.newDrawable("background", Color.BROWN);
+        textButtonStyle2.checked = aboutSkin.newDrawable("background", Color.FIREBRICK);
+        textButtonStyle2.over = aboutSkin.newDrawable("background", Color.LIGHT_GRAY);
+        textButtonStyle2.font = aboutSkin.getFont("default");
+        textButtonStyle2.fontColor = Color.BLACK;
+        aboutSkin.add("default", textButtonStyle2);
+
+
+        pixmap.dispose();
+        pixmap2.dispose();
     }
 
     @Override
