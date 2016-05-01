@@ -52,7 +52,7 @@ public class MainMenuScreen implements Screen {
     public void show() {
         //Creates the background image
         batch = new SpriteBatch();
-        Texture splashTexture = new Texture(Gdx.files.internal("img/splash.jpg"));
+        Texture splashTexture = new Texture(Gdx.files.internal("assets/splash.jpg"));
         splash = new Sprite(splashTexture);
         splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
