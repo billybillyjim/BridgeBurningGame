@@ -11,7 +11,7 @@
 	    <material>
 			<name>wood</name>
 			<level>2</level>
-			<image_src>Wood.png</image_src>
+			<image_src>Wood2.png</image_src>
 			<durability>8</durability>
 			<density>10</density>
 			<friction>0.3</friction>
