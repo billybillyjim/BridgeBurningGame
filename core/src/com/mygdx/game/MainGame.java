@@ -127,7 +127,7 @@ public class MainGame extends Stage implements Screen{
 
         //Update the camera,
         camera.update();
-        box2DDebugRenderer.render(WORLD, camera.combined);
+
         game.batch.setProjectionMatrix(camera.combined);
         fireGo();
 
@@ -286,12 +286,14 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyBody(body);
         }
 
-        fireSound.pause();
 
+        fireSound.pause();
         drawCliffs();
         //fireGo();
         constructionMode = true;
         createButtons();
+        buildHandler.setLeftCliff(leftCliff);
+        buildHandler.setRightCliff(rightCliff);
 
     }
 

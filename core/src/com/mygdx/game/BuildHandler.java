@@ -76,8 +76,7 @@ public class BuildHandler {
         float leftYLimit = leftCliff.getY() + leftCliff.getHeight() + distanceFromCliff;
         float rightXLimit = rightCliff.getX()  - distanceFromCliff;
         float rightYLimit = rightCliff.getY() + rightCliff.getHeight() + distanceFromCliff;
-        System.out.println("xlim = " + leftXLimit + "ylim = " + leftYLimit);
-        System.out.println("b x = " + bridgeUnit.getBody().getPosition().x + "b y = " + bridgeUnit.getBody().getPosition().y);
+
         if(bridgeUnit.getBody().getPosition().x <= leftXLimit && bridgeUnit.getBody().getPosition().y <= leftYLimit) {
             makeUnitCliffJoint(leftCliff, bridgeUnit,
                     bridgeUnit.getBody().getPosition().x - leftCliff.getWidth(), bridgeUnit.getBody().getPosition().y - leftCliff.getHeight());
@@ -86,8 +85,7 @@ public class BuildHandler {
             makeUnitCliffJoint(rightCliff, bridgeUnit,
                     bridgeUnit.getBody().getPosition().x - rightCliff.getWidth(), bridgeUnit.getBody().getPosition().y - rightCliff.getHeight());
         }
-        System.out.println("xlim = " + rightXLimit + "ylim = " + rightYLimit);
-        System.out.println("b x = " + bridgeUnit.getBody().getPosition().x + "b y = " + bridgeUnit.getBody().getPosition().y);
+
     }
 
     private HashMap<BridgeUnit, Integer> findUnitsToConnect(BridgeUnit unit){
@@ -216,7 +214,15 @@ public class BuildHandler {
     }
 
 
+    public void setLeftCliff(BackgroundCliff leftCliff) {
+        this.leftCliff = leftCliff;
+    }
 
+    public void setRightCliff(BackgroundCliff rightCliff) {
+        this.rightCliff = rightCliff;
+    }
 
-
+    public void setFireEffect(ParticleEffect fireEffect) {
+        this.fireEffect = fireEffect;
+    }
 }
