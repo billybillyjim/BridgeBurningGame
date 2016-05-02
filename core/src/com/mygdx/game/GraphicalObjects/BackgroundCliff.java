@@ -16,11 +16,9 @@ public class BackgroundCliff extends Actor{
 
     public BackgroundCliff(Texture tex, float posX, float posY, World world, boolean left){
         texture = tex;
-
-        this.setName("Cliff");
-
         sprite = new Sprite(texture);
 
+        this.setName("Cliff");
         this.setPosition(posX,posY);
         this.setWidth(sprite.getWidth());
         this.setHeight(sprite.getHeight());
@@ -60,5 +58,7 @@ public class BackgroundCliff extends Actor{
         batch.draw(sprite, getX(), getY());
     }
 
-
+    public Body getBody() {
+        return body;
+    }
 }

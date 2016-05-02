@@ -6,8 +6,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.mygdx.game.GraphicalObjects.BackgroundCliff;
 import com.mygdx.game.GraphicalObjects.BridgeUnit;
-import com.mygdx.game.GraphicalObjects.BridgeUnitLink;
 import com.mygdx.game.PhysicalObjects.BridgeJoint;
 
 import java.util.ArrayList;
@@ -22,21 +22,21 @@ public class BuildHandler {
 
     private World world;
     private Stage stage;
-    private final Texture img = new Texture("Pivot.png");
-    private ArrayList<BridgeUnitLink> bridgeUnitLinks;
+
     private ArrayList<BridgeUnit> bridgeUnits;
     private ParticleEffect fireEffect;
+    private BackgroundCliff leftCliff, rightCliff;
 
 
     Material material;
 
-    public BuildHandler(World world, Stage stage, ParticleEffect fireEffect){
+    public BuildHandler(World world, Stage stage, ParticleEffect fireEffect, BackgroundCliff leftCliff, BackgroundCliff rightCliff){
         this.world = world;
         this.stage = stage;
         this.fireEffect = fireEffect;
         material = new Material(1);
-
-        bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
+        this.leftCliff = leftCliff;
+        this.rightCliff = rightCliff;
         bridgeUnits = new ArrayList<BridgeUnit>();
 
 
@@ -54,7 +54,7 @@ public class BuildHandler {
     }
 
    private void makeUnitLinkStructure(BridgeUnit bridgeUnit) {
-
+        checkDistanceFromCliff(bridgeUnit);
         HashMap<BridgeUnit, Integer> unitsToConnect = findUnitsToConnect(bridgeUnit);
         Set keySet  =  unitsToConnect.keySet();
 
@@ -69,6 +69,25 @@ public class BuildHandler {
 
             }
 
+    }
+    private void checkDistanceFromCliff(BridgeUnit bridgeUnit){
+        int distanceFromCliff = 10;
+        float leftXLimit = leftCliff.getX() + leftCliff.getWidth() + distanceFromCliff;
+        float leftYLimit = leftCliff.getY() + leftCliff.getHeight() + distanceFromCliff;
+        float rightXLimit = rightCliff.getX()  - distanceFromCliff;
+        float rightYLimit = rightCliff.getY() + rightCliff.getHeight() + distanceFromCliff;
+        System.out.println("xlim = " + leftXLimit + "ylim = " + leftYLimit);
+        System.out.println("b x = " + bridgeUnit.getBody().getPosition().x + "b y = " + bridgeUnit.getBody().getPosition().y);
+        if(bridgeUnit.getBody().getPosition().x <= leftXLimit && bridgeUnit.getBody().getPosition().y <= leftYLimit) {
+            makeUnitCliffJoint(leftCliff, bridgeUnit,
+                    bridgeUnit.getBody().getPosition().x - leftCliff.getWidth(), bridgeUnit.getBody().getPosition().y - leftCliff.getHeight());
+        }
+        if(bridgeUnit.getBody().getPosition().x >= rightXLimit && bridgeUnit.getBody().getPosition().y <= rightYLimit) {
+            makeUnitCliffJoint(rightCliff, bridgeUnit,
+                    bridgeUnit.getBody().getPosition().x - rightCliff.getWidth(), bridgeUnit.getBody().getPosition().y - rightCliff.getHeight());
+        }
+        System.out.println("xlim = " + rightXLimit + "ylim = " + rightYLimit);
+        System.out.println("b x = " + bridgeUnit.getBody().getPosition().x + "b y = " + bridgeUnit.getBody().getPosition().y);
     }
 
     private HashMap<BridgeUnit, Integer> findUnitsToConnect(BridgeUnit unit){
@@ -164,10 +183,16 @@ public class BuildHandler {
         return nextXYPos;
     }
 
+    public void makeUnitCliffJoint(BackgroundCliff cliff, BridgeUnit unit, float x, float y){
+        BridgeJoint joint = makeJoint(cliff.getBody(), unit.getBody());
+        joint.getrJointDef().localAnchorA.set(
+                unit.getX() - x,
+                unit.getY() - y);
+        joint.getrJointDef().localAnchorB.set(x, y);
+    }
 
 
-
-    private void makeJoint(Body unitBody, Body linkBody){
+    private BridgeJoint makeJoint(Body unitBody, Body linkBody){
         BridgeJoint joint = new BridgeJoint();
         joint.CreateJoint(unitBody, linkBody);
         joint.getrJointDef().localAnchorA.set(
@@ -175,6 +200,7 @@ public class BuildHandler {
                 linkBody.getPosition().y - unitBody.getPosition().y);
 
         world.createJoint(joint.getrJointDef());
+        return joint;
     }
 
     public World getWorld() {
@@ -190,9 +216,7 @@ public class BuildHandler {
     }
 
 
-    public ArrayList<BridgeUnitLink> getBridgeUnitLinks() {
-        return bridgeUnitLinks;
-    }
+
 
 
 }

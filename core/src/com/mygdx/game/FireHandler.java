@@ -14,20 +14,20 @@ import java.util.ArrayList;
 public class FireHandler {
 
     ArrayList<BridgeUnit> bridgeUnits;
-    ArrayList<BridgeUnitLink> bridgeUnitLinks;
+
     ArrayList<BridgeJoint> bridgeJoints;
 
 
     public FireHandler(){
         this.bridgeUnits = new ArrayList<BridgeUnit>();
-        this.bridgeUnitLinks = new ArrayList<BridgeUnitLink>();
+
         this.bridgeJoints = new ArrayList<BridgeJoint>();
     }
 
-    public FireHandler(ArrayList<BridgeUnit> bridgeUnits, ArrayList<BridgeUnitLink> bridgeUnitLinks){
+    public FireHandler(ArrayList<BridgeUnit> bridgeUnits){
 
         this.bridgeUnits = bridgeUnits;
-        this.bridgeUnitLinks = bridgeUnitLinks;
+
         this.bridgeJoints = new ArrayList<BridgeJoint>();
 
     }
@@ -39,11 +39,7 @@ public class FireHandler {
                 return true;
             }
         }
-        for(int i = 0; i < bridgeUnitLinks.size(); i++){
-            if(bridgeUnitLinks.get(i).getIsOnFire()){
-                return true;
-            }
-        }
+
         return false;
     }
 
@@ -92,25 +88,12 @@ public class FireHandler {
         return burntBridgeUnits;
     }
 
-    public ArrayList<BridgeUnitLink> burnUpBridgeUnitLinks(ArrayList<BridgeUnitLink> burntBridgeUnitLinks  ){
 
-        for(BridgeUnitLink b : bridgeUnitLinks){
-            if(b.getIsBurnt()){
-                if(!burntBridgeUnitLinks.contains(b)) {
-                    burntBridgeUnitLinks.add(b);
-                }
-            }
-        }
-        return burntBridgeUnitLinks;
-    }
 
     public void addBridgeUnit(BridgeUnit unit){
         this.bridgeUnits.add(unit);
     }
 
-    public void addBridgeUnitLink(BridgeUnitLink link){
-        this.bridgeUnitLinks.add(link);
-    }
 
     public void addBridgeJoint(BridgeJoint joint){
         this.bridgeJoints.add(joint);

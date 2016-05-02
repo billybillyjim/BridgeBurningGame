@@ -19,6 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mygdx.game.GraphicalObjects.*;
+
+
 import java.util.*;
 
 public class MainGame extends Stage implements Screen{
@@ -54,7 +56,7 @@ public class MainGame extends Stage implements Screen{
 
     private Bridge bridge;
     //array with bridge units links
-    ArrayList<BridgeUnitLink> burntBridgeUnitLinks = new ArrayList<BridgeUnitLink>();
+
     ArrayList<BridgeUnit> burntBridgeUnits = new ArrayList<BridgeUnit>();
 
     private FireHandler fireHandler;
@@ -85,9 +87,10 @@ public class MainGame extends Stage implements Screen{
 
         backgroundSprite = new Sprite(background);
 
+
         drawCliffs();
 
-        buildHandler = new BuildHandler(WORLD, this, fireEffect);
+        buildHandler = new BuildHandler(WORLD, this, fireEffect, leftCliff, rightCliff);
 
         //create camera -- ensure that we can use target resolution (800x480) no matter actual screen size
         // it creates a WORLD that is 800 x 480 units wide. it is the camera that controls the coordinate system that positions stuff on the screen
@@ -98,14 +101,14 @@ public class MainGame extends Stage implements Screen{
         setViewport(viewport);
 
         box2DDebugRenderer = new Box2DDebugRenderer();
-
-
         fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningLoop2.wav"));
+
+
 
 
         timeCycle = 1;
 
-        burntBridgeUnitLinks = new ArrayList<BridgeUnitLink>();
+
 
 
         createButtons();
@@ -143,10 +146,8 @@ public class MainGame extends Stage implements Screen{
                 camera.unproject(pos);
                 Actor actor = this.hit(pos.x, pos.y, true);
                 if (!constructionMode) {
-                    if (actor != null && actor.getName().equals("Bridge Unit Link")) {
-                        ((BridgeUnitLink) actor).setIsOnFire(true);
-                    }
-                    else if (actor != null && actor.getName().equals("Bridge Unit")) {
+
+                    if (actor != null && actor.getName().equals("Bridge Unit")) {
                         ((BridgeUnit) actor).setIsOnFire(true);
                     }
                     else if (actor != null && actor.getName().equals("Refresh")) {
@@ -156,7 +157,7 @@ public class MainGame extends Stage implements Screen{
                         constructionMode = true;
                         toggleButton.changeTexture(constructImg);
                     }
-                    fireHandler = new FireHandler(buildHandler.getBridgeUnits(), buildHandler.getBridgeUnitLinks());
+                    fireHandler = new FireHandler(buildHandler.getBridgeUnits());
 
                 }
                 else {
@@ -168,8 +169,11 @@ public class MainGame extends Stage implements Screen{
                         toggleButton.changeTexture(burnImg);
                     }
                     else if (!(actor != null && actor.getName().equals("Cliff") || actor != null && actor.getName().equals("Bridge Unit"))){
+
                         buildHandler.makeBridgeUnit(pos.x, pos.y);
+
                     }
+
                 }
             }
         if(!constructionMode){
@@ -199,25 +203,25 @@ public class MainGame extends Stage implements Screen{
         if(timeCycle < 0.0f){
 
             if(fireHandler.checkFires() && !fireSound.isPlaying()){
-               // fireSound.play();
+               //fireSound.play();
             }
 
             timeCycle = 1;
             fireHandler.burnAdjacents();
             burntBridgeUnits = fireHandler.burnUpBridgeUnits(burntBridgeUnits);
-            burntBridgeUnitLinks = fireHandler.burnUpBridgeUnitLinks(burntBridgeUnitLinks);
 
             burnWood();
         }
     }
 
     public boolean bridgeBurned(){
-        int sizeBurnBridge = burntBridgeUnits.size() + burntBridgeUnitLinks.size();
+      /*  int sizeBurnBridge = burntBridgeUnits.size() + burntBridgeUnitLinks.size();
         int sizeBridge = bridge.getBridgeUnits().size() + bridge.getBridgeUnitLinks().size();
         int percentage = (sizeBurnBridge* 100) / sizeBridge;
         System.out.println(percentage);
         if (percentage == 100) return true;
-        else return false;
+        else return false;*/
+        return false;
     }
 
 
@@ -243,9 +247,7 @@ public class MainGame extends Stage implements Screen{
             //particleEffects.remove(particleEffects.get(burntBridgeUnits.indexOf(bridgeUnit)));
         }
 
-        for(BridgeUnitLink bridgeUnitLink : burntBridgeUnitLinks){
-            bridgeUnitLink.changeBodyType();
-        }
+
     }
 
     public void destroyJoints(Body body){
@@ -275,6 +277,8 @@ public class MainGame extends Stage implements Screen{
     public void reset(){
         clear();
         fireHandler = null;
+        buildHandler.getBridgeUnits().clear();
+        System.out.println(buildHandler.getBridgeUnits().isEmpty());
         Array<Body> bodies = new Array<Body>();
         WORLD.getBodies(bodies);
         for(Body body: bodies){
@@ -282,14 +286,10 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyBody(body);
         }
 
-
-        buildHandler.getBridgeUnitLinks().clear();
-        buildHandler.getBridgeUnits().clear();
-
         fireSound.pause();
 
         drawCliffs();
-        fireGo();
+        //fireGo();
         constructionMode = true;
         createButtons();
 
