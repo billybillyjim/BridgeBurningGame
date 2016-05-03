@@ -3,7 +3,7 @@
        <material>
 			<name>paper</name>
 			<level>1</level>
-			<image_src>paper.png</image_src>
+			<image_src>Paper.png</image_src>
 			<durability>8</durability>
 			<density>10</density>
 			<friction>10</friction>

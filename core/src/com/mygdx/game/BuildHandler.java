@@ -222,7 +222,5 @@ public class BuildHandler {
         this.rightCliff = rightCliff;
     }
 
-    public void setFireEffect(ParticleEffect fireEffect) {
-        this.fireEffect = fireEffect;
-    }
+
 }

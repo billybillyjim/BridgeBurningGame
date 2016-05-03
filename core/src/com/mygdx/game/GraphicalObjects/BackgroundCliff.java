@@ -41,7 +41,7 @@ public class BackgroundCliff extends Actor{
 
         //Makes a shape for the body, Sets the shape to a box
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(sprite.getWidth(), sprite.getHeight());
+        shape.setAsBox(getWidth(), getHeight());
 
         //Describes the properties of the fixture
         FixtureDef fixtureDef = new FixtureDef();

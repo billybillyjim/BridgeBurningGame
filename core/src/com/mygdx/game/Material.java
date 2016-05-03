@@ -5,8 +5,11 @@ package com.mygdx.game;
  */
 
 import java.io.File;
+import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import com.badlogic.gdx.Gdx;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -25,7 +28,7 @@ public class Material {
     public Material(int level){
         try {
 
-            File paper = new File("materials.xml");
+            InputStream paper = Gdx.files.internal("materials.xml").read();
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(paper);
