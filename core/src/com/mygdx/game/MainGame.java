@@ -48,16 +48,17 @@ public class MainGame extends Stage implements Screen{
 
     private BackgroundCliff leftCliff;
     private BackgroundCliff rightCliff;
+    private BackgroundCliff bottom;
 
     private ToggleButton toggleButton;
     private RefreshButton refreshButton;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
-    private Bridge bridge;
     //array with bridge units links
 
     ArrayList<BridgeUnit> burntBridgeUnits = new ArrayList<BridgeUnit>();
+    ArrayList<Body> bodiesToDestroy = new ArrayList<Body>();
 
     private FireHandler fireHandler;
     private BuildHandler buildHandler;
@@ -87,7 +88,6 @@ public class MainGame extends Stage implements Screen{
 
         backgroundSprite = new Sprite(background);
 
-
         drawCliffs();
 
         buildHandler = new BuildHandler(WORLD, this, fireEffect, leftCliff, rightCliff);
@@ -101,9 +101,9 @@ public class MainGame extends Stage implements Screen{
         setViewport(viewport);
 
         box2DDebugRenderer = new Box2DDebugRenderer();
-        fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningLoop2.wav"));
 
 
+        fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningTrueLoop.wav"));
 
 
         timeCycle = 1;
@@ -138,6 +138,28 @@ public class MainGame extends Stage implements Screen{
             else if(!constructionMode) constructionMode = true;
             System.out.println("construction mode = " + constructionMode);
 
+        }
+        int numContacts = WORLD.getContactCount();
+
+        if (numContacts > 0) {
+
+            ArrayList<Body> bodyArrayList = new ArrayList<Body>();
+
+            for (Contact contact : WORLD.getContactList()) {
+                Fixture fixtureA = contact.getFixtureA();
+                Fixture fixtureB = contact.getFixtureB();
+
+                if(fixtureB.getBody().getPosition().y < -40 && fixtureA.getBody().getType() == BodyDef.BodyType.StaticBody){
+                    destroyJoints(fixtureB.getBody());
+                    for(BridgeUnit bridgeUnit : buildHandler.getBridgeUnits()){
+                        if(bridgeUnit.getBody().equals(fixtureB.getBody())){
+                            burntBridgeUnits.add(bridgeUnit);
+                            bodyArrayList.add(bridgeUnit.getBody());
+                        }
+                    }
+                }
+            }
+            bodiesToDestroy.addAll(bodyArrayList);
         }
 
         //if(!bridgeBurned()) {
@@ -195,6 +217,12 @@ public class MainGame extends Stage implements Screen{
         game.batch.begin();
         fireEffect.draw(game.batch);
         game.batch.end();
+
+        if(!WORLD.isLocked()){
+           // destroyBodies();
+        }
+
+
     }
 
     private void fireGo(){
@@ -242,9 +270,8 @@ public class MainGame extends Stage implements Screen{
         for(BridgeUnit bridgeUnit : burntBridgeUnits){
             bridgeUnit.getBody().setType(BodyDef.BodyType.DynamicBody);
             destroyJoints(bridgeUnit.getBody());
+            //bodiesToDestroy.add(bridgeUnit.getBody());
 
-
-            //particleEffects.remove(particleEffects.get(burntBridgeUnits.indexOf(bridgeUnit)));
         }
 
 
@@ -256,14 +283,25 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyJoint(edge.joint);
         }
     }
+    public void destroyBodies(){
+        System.out.println("RUNNIG");
+        for(Body body : bodiesToDestroy){
+            WORLD.destroyBody(body);
+
+        }
+        
+        bodiesToDestroy.clear();
+    }
 
     public void drawCliffs(){
         leftTex = new Texture("LeftCliff.png");
         rightTex = new Texture("RightCliff.png");
         leftCliff = new BackgroundCliff(leftTex, 0, 0, WORLD, true);
         rightCliff = new BackgroundCliff(rightTex,800-rightTex.getWidth(), 0, WORLD, false);
+        bottom = new BackgroundCliff(leftTex, leftCliff.getWidth(), -leftCliff.getHeight() - 100, WORLD, true);
         this.addActor(leftCliff);
         this.addActor(rightCliff);
+        this.addActor(bottom);
 
     }
 
