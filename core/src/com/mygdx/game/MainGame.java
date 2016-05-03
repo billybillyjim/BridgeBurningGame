@@ -106,6 +106,7 @@ public class MainGame extends Stage implements Screen{
         fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningTrueLoop.wav"));
 
 
+
         timeCycle = 1;
 
 
@@ -219,7 +220,7 @@ public class MainGame extends Stage implements Screen{
         game.batch.end();
 
         if(!WORLD.isLocked()){
-           // destroyBodies();
+           //destroyBodies();
         }
 
 
@@ -231,7 +232,8 @@ public class MainGame extends Stage implements Screen{
         if(timeCycle < 0.0f){
 
             if(fireHandler.checkFires() && !fireSound.isPlaying()){
-               //fireSound.play();
+               fireSound.setLooping(true);
+                fireSound.play();
             }
 
             timeCycle = 1;
@@ -284,7 +286,6 @@ public class MainGame extends Stage implements Screen{
         }
     }
     public void destroyBodies(){
-        System.out.println("RUNNIG");
         for(Body body : bodiesToDestroy){
             WORLD.destroyBody(body);
 
@@ -328,7 +329,6 @@ public class MainGame extends Stage implements Screen{
 
         fireSound.pause();
         drawCliffs();
-        //fireGo();
         constructionMode = true;
         createButtons();
         buildHandler.setLeftCliff(leftCliff);
