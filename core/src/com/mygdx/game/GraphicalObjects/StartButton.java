@@ -13,7 +13,7 @@ public class StartButton extends Actor{
     private Texture buttonTex;
     private Sprite buttonSprite;
 
-    public StartButton(final GameLauncher game) {
+    public StartButton() {
         this.setName("Start");
         buttonTex = new Texture("StartButton.png");
 

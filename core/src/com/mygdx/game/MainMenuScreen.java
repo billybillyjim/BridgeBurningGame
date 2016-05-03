@@ -26,6 +26,7 @@ public class MainMenuScreen implements Screen {
     public Skin aboutSkin;
     private Sprite splash;
     private SpriteBatch batch;
+    private Stage stage;
 
     /**
      *  The only parameter for the constructor necessary
@@ -39,20 +40,29 @@ public class MainMenuScreen implements Screen {
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
+        batch = new SpriteBatch();
+        Texture splashTexture = new Texture("splash.jpg");
+        splash = new Sprite(splashTexture);
+        splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        stage = new Stage();
+
+
+
+        startButton = new StartButton();
+        startButton.setPosition((stage.getWidth()/2) - startButton.getWidth()/2, (stage.getHeight()/4)-startButton.getHeight());
+
+        stage.addActor(startButton);
+
     }
 
     @Override
     public void show() {
-
+        Gdx.input.setInputProcessor(stage);// Make the stage consume events
     }
 
     @Override
     public void render(float delta) {
         //Creates the background image
-        batch = new SpriteBatch();
-        Texture splashTexture = new Texture("splash.jpg");
-        splash = new Sprite(splashTexture);
-        splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         //Background image drawn
         batch.begin();
@@ -62,12 +72,7 @@ public class MainMenuScreen implements Screen {
         //Gdx.gl.glClearColor(0, 0, 0, 1);
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        Stage stage = new Stage();
-        Gdx.input.setInputProcessor(stage);// Make the stage consume events
 
-
-        startButton = new StartButton(game);
-        stage.addActor(startButton);
 
         stage.act();
         stage.draw();

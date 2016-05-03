@@ -18,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.GraphicalObjects.*;
 
 
@@ -66,9 +68,9 @@ public class MainGame extends Stage implements Screen{
     private float timeCycle;
 
     private OrthographicCamera camera;
-    private FitViewport viewport;
+    private Viewport viewport;
 
-    private int level;
+
 
     public MainGame(GameLauncher game){
 
@@ -78,7 +80,7 @@ public class MainGame extends Stage implements Screen{
 
         game.font.setColor(Color.WHITE);
 
-        level = 2;
+
         fireEffect = new ParticleEffect();
         fireEffect.load(Gdx.files.internal("Effect9.p"), Gdx.files.internal(""));
 
@@ -97,7 +99,7 @@ public class MainGame extends Stage implements Screen{
         //the origin (0, 0) of this coordinate system is in the lower left corner by default. It is possible to change
         camera = new OrthographicCamera();
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
-        viewport = new FitViewport(SCREEN_WIDTH,SCREEN_HEIGHT,camera);
+        viewport = new StretchViewport(SCREEN_WIDTH,SCREEN_HEIGHT,camera);
         setViewport(viewport);
 
         box2DDebugRenderer = new Box2DDebugRenderer();
@@ -264,6 +266,7 @@ public class MainGame extends Stage implements Screen{
     
     @Override
     public void resize(int width, int height){
+
         getViewport().update(width, height, true);
     }
 
