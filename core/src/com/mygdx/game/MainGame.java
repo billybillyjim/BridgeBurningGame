@@ -316,6 +316,7 @@ public class MainGame extends Stage implements Screen{
         clear();
         fireHandler = null;
         buildHandler.getBridgeUnits().clear();
+        burntBridgeUnits.clear();
         System.out.println(buildHandler.getBridgeUnits().isEmpty());
         Array<Body> bodies = new Array<Body>();
         WORLD.getBodies(bodies);
