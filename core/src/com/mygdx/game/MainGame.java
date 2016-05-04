@@ -37,7 +37,7 @@ public class MainGame extends Stage implements Screen{
     boolean constructionMode;
 
     private Music fireSound;
-    
+
     private Texture leftTex;
     private Texture rightTex;
     private Texture burnImg;
@@ -46,7 +46,7 @@ public class MainGame extends Stage implements Screen{
     private Texture background;
     private Sprite backgroundSprite;
     //Makes a box2d physics environment that sets gravity
-    public final static World WORLD = new World(new Vector2(0, -98.1f), true);
+    public final World WORLD = new World(new Vector2(0, -98.1f), true);
 
     private BackgroundCliff leftCliff;
     private BackgroundCliff rightCliff;
@@ -216,7 +216,7 @@ public class MainGame extends Stage implements Screen{
 
 
     }
-/**This method checks for a fireHandler to deal with fire spread. If one exists, 
+/**This method checks for a fireHandler to deal with fire spread. If one exists,
  * and the timecycle has completed, it plays the fire sound if no sound is playing
  * and resets the time cycle. Then it burns the adjacent BridgeUnits and makes a list
  * of BridgeUnits that are burnt. Lastly it calls burnWood()
@@ -253,7 +253,7 @@ public class MainGame extends Stage implements Screen{
         return false;
     }
 
-   
+
     @Override
     public void show() {
         //Allows user input
@@ -267,7 +267,7 @@ public class MainGame extends Stage implements Screen{
         getViewport().update(width, height, true);
     }
 
-    /**Iterates through the burntBridgeUnits ArrayList, 
+    /**Iterates through the burntBridgeUnits ArrayList,
      * sets them to dynamic and destroys their joints
     **/
     public void burnWood(){
@@ -297,7 +297,7 @@ public class MainGame extends Stage implements Screen{
     /**Draws the cliffs
      * This method makes textures and creates three new cliffs,
      * the one on each side of the screen and the bottom on which
-     * is not seen on screen. This is called on startup and every time 
+     * is not seen on screen. This is called on startup and every time
      * the game is reset.
      **/
     public void drawCliffs(){
@@ -318,7 +318,7 @@ public class MainGame extends Stage implements Screen{
 
     }
     /** This method is run when the reset button is clicked.
-    * First it clears the Screen, then it empties all the 
+    * First it clears the Screen, then it empties all the
     * ArrayLists that contain bodies. This prevents memory
     * management crashes. It also pauses and destroys all the bodies
     * in the world. After everything is cleared it rebuilds the cliffs and

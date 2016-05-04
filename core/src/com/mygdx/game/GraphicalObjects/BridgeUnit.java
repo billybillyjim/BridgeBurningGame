@@ -1,10 +1,8 @@
 package com.mygdx.game.GraphicalObjects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -24,6 +22,7 @@ public class BridgeUnit extends Actor{
     private Body body;
     private Texture img;
     private Sprite sprite;
+    private Texture ash = new Texture("ash.png");
 
     private ParticleEffect fireEffect;
 
@@ -66,7 +65,7 @@ public class BridgeUnit extends Actor{
         //Makes a shape for the body
         PolygonShape shape = new PolygonShape();
         //Sets the shape to a box
-        shape.setAsBox(WIDTH/2, HEIGHT/2); //it has to be divided by 2 because setAsBo method takes half width and half height as input for some reason.
+        shape.setAsBox(WIDTH/2, HEIGHT/2); //it has to be divided by 2 because setAsBox method takes half width and half height as input for some reason.
 
         //Describes the properties of the fixture
         FixtureDef fixtureDef = new FixtureDef();
@@ -94,14 +93,20 @@ public class BridgeUnit extends Actor{
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
 
-        if(isBurnt){
-            if(durability < -3){
-                isOnFire = false;
-            }
+        if (durability == 2){
+            body.setActive(false);
+            body.setActive(true);
+            //remove();
+            //body.getWorld().destroyBody(this.getBody());
+            //body = null;
 
-
-            body.applyAngularImpulse((float) Math.random(), true);
         }
+        if(durability == 0) {
+
+            isOnFire = false;
+        }
+
+        body.applyAngularImpulse((float) Math.random(), true);
 
         if(isOnFire && random.nextFloat() < 0.7) {
             for(int j = 0; j < fireEffect.getEmitters().size; j++) {

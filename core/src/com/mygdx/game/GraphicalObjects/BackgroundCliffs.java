@@ -27,6 +27,8 @@ public class BackgroundCliffs extends Actor {
         img1 = texture1;
         img2 = texture2;
 
+        this.setName("Cliffs");
+
 
         //Creates two Sprites with this image
         spriteLeft = new Sprite(img1, cliffWidth, cliffHeight);
@@ -36,8 +38,6 @@ public class BackgroundCliffs extends Actor {
         //Places the cliffs on either end of the screen
         spriteLeft.setPosition(0, 0);
         spriteRight.setPosition(800 - spriteRight.getWidth(), 0);
-
-
 
 
         //Defines the body to be able to have physics applied to it
@@ -61,8 +61,6 @@ public class BackgroundCliffs extends Actor {
         PolygonShape shape2 = new PolygonShape();
         shape2.setAsBox(spriteRight.getWidth(), spriteRight.getHeight());
 
-
-
         //Describes the properties of the fixture
         FixtureDef fixtureDef1 = new FixtureDef();
         fixtureDef1.shape = shape1;
@@ -76,9 +74,6 @@ public class BackgroundCliffs extends Actor {
         Fixture fixture1 = bodyLeft.createFixture(fixtureDef1);
         Fixture fixture2 = bodyRight.createFixture(fixtureDef2);
 
-
-
-
         shape1.dispose();
         shape2.dispose();
 
@@ -87,8 +82,8 @@ public class BackgroundCliffs extends Actor {
 
     @Override
     public void draw(Batch batch, float ParentAlpha){
-        batch.draw(spriteLeft, spriteLeft.getX(), spriteLeft.getY());
-        batch.draw(spriteRight, spriteRight.getX(), spriteRight.getY());
+        batch.draw(spriteLeft, getX(), getY());
+        batch.draw(spriteRight, getX(), getY());
     }
 
     public Body getBodyLeft(){return this.bodyLeft;}
