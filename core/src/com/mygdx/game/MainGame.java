@@ -37,7 +37,7 @@ public class MainGame extends Stage implements Screen{
     boolean constructionMode;
 
     private Music fireSound;
-
+    
     private Texture leftTex;
     private Texture rightTex;
     private Texture burnImg;
@@ -70,16 +70,12 @@ public class MainGame extends Stage implements Screen{
     private OrthographicCamera camera;
     private Viewport viewport;
 
-
-
     public MainGame(GameLauncher game){
 
         this.game = game;
         constructionMode = true;
 
-
         game.font.setColor(Color.WHITE);
-
 
         fireEffect = new ParticleEffect();
         fireEffect.load(Gdx.files.internal("Effect9.p"), Gdx.files.internal(""));
@@ -104,16 +100,9 @@ public class MainGame extends Stage implements Screen{
 
         box2DDebugRenderer = new Box2DDebugRenderer();
 
-
         fireSound = Gdx.audio.newMusic(Gdx.files.internal("BurningTrueLoop.wav"));
 
-
-
         timeCycle = 1;
-
-
-
-
         createButtons();
 
     }
@@ -227,7 +216,11 @@ public class MainGame extends Stage implements Screen{
 
 
     }
-
+/**This method checks for a fireHandler to deal with fire spread. If one exists, 
+ * and the timecycle has completed, it plays the fire sound if no sound is playing
+ * and resets the time cycle. Then it burns the adjacent BridgeUnits and makes a list
+ * of BridgeUnits that are burnt. Lastly it calls burnWood()
+ */
     private void fireGo(){
         if(fireHandler == null) return;
 
@@ -245,6 +238,10 @@ public class MainGame extends Stage implements Screen{
             burnWood();
         }
     }
+    /**This method checks to see how much of the bridge is burned.
+     * It currently is made to work with prebuilt bridges and needs modification
+     * to work properly with user made bridges.
+     **/
 
     public boolean bridgeBurned(){
       /*  int sizeBurnBridge = burntBridgeUnits.size() + burntBridgeUnitLinks.size();
@@ -256,47 +253,53 @@ public class MainGame extends Stage implements Screen{
         return false;
     }
 
-
+   
     @Override
     public void show() {
-
+        //Allows user input
         Gdx.input.setInputProcessor(this);
 
     }
     
     @Override
     public void resize(int width, int height){
-
+        //Stretches the screen to needed size.
         getViewport().update(width, height, true);
     }
 
-    //Currently used for both click burning and the burning of each bridgeUnit and bridgeUnitLink
+    /**Iterates through the burntBridgeUnits ArrayList, 
+     * sets them to dynamic and destroys their joints
+    **/
     public void burnWood(){
         for(BridgeUnit bridgeUnit : burntBridgeUnits){
             bridgeUnit.getBody().setType(BodyDef.BodyType.DynamicBody);
             destroyJoints(bridgeUnit.getBody());
             //bodiesToDestroy.add(bridgeUnit.getBody());
-
         }
-
-
     }
-
+    /**Takes a given body and destros all their joints
+     **/
     public void destroyJoints(Body body){
         Array<JointEdge> jointEdges = body.getJointList();
         for(JointEdge edge : jointEdges ) {
             WORLD.destroyJoint(edge.joint);
         }
     }
+    /**Iterates through the bodiesToDestroy ArrayList
+    * and destroys them
+    **/
     public void destroyBodies(){
         for(Body body : bodiesToDestroy){
             WORLD.destroyBody(body);
-
         }
-        
         bodiesToDestroy.clear();
     }
-
+    /**Draws the cliffs
+     * This method makes textures and creates three new cliffs,
+     * the one on each side of the screen and the bottom on which
+     * is not seen on screen. This is called on startup and every time 
+     * the game is reset.
+     **/
     public void drawCliffs(){
         leftTex = new Texture("LeftCliff.png");
         rightTex = new Texture("RightCliff.png");
@@ -306,7 +309,6 @@ public class MainGame extends Stage implements Screen{
         this.addActor(leftCliff);
         this.addActor(rightCliff);
         this.addActor(bottom);
-
     }
 
     @Override
@@ -315,7 +317,13 @@ public class MainGame extends Stage implements Screen{
         box2DDebugRenderer.dispose();
 
     }
-
+    /** This method is run when the reset button is clicked.
+    * First it clears the Screen, then it empties all the 
+    * ArrayLists that contain bodies. This prevents memory
+    * management crashes. It also pauses and destroys all the bodies
+    * in the world. After everything is cleared it rebuilds the cliffs and
+    * buttons and returns to construction mode.
+    **/
     public void reset(){
         clear();
         fireHandler = null;
@@ -329,7 +337,6 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyBody(body);
         }
 
-
         fireSound.pause();
         drawCliffs();
         constructionMode = true;
@@ -338,7 +345,7 @@ public class MainGame extends Stage implements Screen{
         buildHandler.setRightCliff(rightCliff);
 
     }
-
+    //This method creates the refresh and Burn/Build button.
     private void createButtons(){
 
         constructImg = new Texture("Construct.png");
@@ -348,8 +355,6 @@ public class MainGame extends Stage implements Screen{
         refreshButton = new RefreshButton();
         this.addActor(refreshButton);
         this.addActor(toggleButton);
-
-
     }
 
     @Override
