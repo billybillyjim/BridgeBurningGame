@@ -14,22 +14,16 @@ import java.util.ArrayList;
 public class FireHandler {
 
     ArrayList<BridgeUnit> bridgeUnits;
-
     ArrayList<BridgeJoint> bridgeJoints;
-
 
     public FireHandler(){
         this.bridgeUnits = new ArrayList<BridgeUnit>();
-
         this.bridgeJoints = new ArrayList<BridgeJoint>();
     }
 
     public FireHandler(ArrayList<BridgeUnit> bridgeUnits){
-
         this.bridgeUnits = bridgeUnits;
-
         this.bridgeJoints = new ArrayList<BridgeJoint>();
-
     }
 
     //Checks to see if any bridgeUnit or bridgeUnitLink is on fire
@@ -43,9 +37,10 @@ public class FireHandler {
         return false;
     }
 
-    //Burns all BridgeUnitLinks adjacent to BridgeUnits. Currently it has to iterate through all the Bridge Units, check if they are on fire,
-    //get their JointEdges and compare each BridgeUnitLink to each JointEdge. I'm not sure if there is a less wasteful method but it doesn't
-    //seem to matter to the performance at least on the desktop version
+    /**Burns all BridgeUnits adjacent to other BridgeUnits. It iterates through all the BridgeUnits, 
+     * checks if they are on fire, gets their JointEdges and compares each BridgeUnit to each JointEdge. 
+     * It doesn't seem to matter to the performance at least on the desktop version
+    **/
     public boolean burnAdjacents(){
         //Iterates through the ArrayList of BridgeUnits
         for(int i = 0; i < bridgeUnits.size(); i++){
@@ -76,6 +71,10 @@ public class FireHandler {
 
         return false;
     }
+    /** This method takes an array of BridgeUnits from the main game
+     * and checks to see if any of them are burnt. If they are, it
+     * returns an ArrayList of the burnt units.
+     **/
     public ArrayList<BridgeUnit> burnUpBridgeUnits( ArrayList<BridgeUnit> burntBridgeUnits){
 
         for(BridgeUnit b : bridgeUnits){
@@ -87,14 +86,11 @@ public class FireHandler {
         }
         return burntBridgeUnits;
     }
-
-
-
+    //Adds a bridgeUnit to the fireHandler's ArrayList of BridgeUnits.
     public void addBridgeUnit(BridgeUnit unit){
         this.bridgeUnits.add(unit);
     }
-
-
+    //Adds a bridgeJoint to the fireHandler's ArrayList of BridgeJoints
     public void addBridgeJoint(BridgeJoint joint){
         this.bridgeJoints.add(joint);
     }
