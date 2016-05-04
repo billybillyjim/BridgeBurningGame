@@ -2,9 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.game.GraphicalObjects.BackgroundCliff;
 import com.mygdx.game.GraphicalObjects.BridgeUnit;
@@ -52,7 +50,7 @@ public class BuildHandler {
     public BridgeUnit makeBridgeUnit(float x, float y){
         BridgeUnit unit = new BridgeUnit(material, world, x, y, fireEffect);
         unit.setCreatedByPlayer(true);
-        unit.getBody().setType(BodyDef.BodyType.DynamicBody);
+
         stage.addActor(unit);
         makeUnitLinkStructure(unit);
         bridgeUnits.add(unit);
@@ -98,9 +96,10 @@ public class BuildHandler {
         }
 
     }
-    /**This method finds the distance between two bridgeUnits and returns a HashMap
-     * that contains the number of BridgeUnits that should be made based on the
-     * distance between the two BridgeUnits.
+    /**This method finds the the bridge units that have been created  by the user that are within 100 units from the input unit
+     *  and returns a HashMap that contains all the bridge units that the input one should be connected with and the number of units that
+     *  should be created between them.
+     * @param unit BridgeUnit the user has just created
      **/
     private HashMap<BridgeUnit, Integer> findUnitsToConnect(BridgeUnit unit){
         float x = unit.getBody().getPosition().x;
@@ -117,8 +116,8 @@ public class BuildHandler {
         }
         return linksToConnect;
     }
-    //Magic code that takes two coordinates and tells where to put bridgeUnits between them.
-    //code got from stack overflow "http://stackoverflow.com/questions/10825174/calculate-next-point-on-2d-linear-vector"
+    //Magic code that takes xy-coordinates of two points in a plane and calculate the next point in the line between them.
+    //code from stack overflow "http://stackoverflow.com/questions/10825174/calculate-next-point-on-2d-linear-vector"
     public int[] getNextLinePoint(int x,int y,int x2, int y2) {
         int w = x2 - x;
         int h = y2 - y;
@@ -147,8 +146,16 @@ public class BuildHandler {
         int[] res = {x, y};
         return res;
     }
-    
-    private void addUnits(BridgeUnit unit1, BridgeUnit unit2, int numOfLinks){
+
+    /**
+     *This methods takes two bridge units that should be connected and the number of units between them.
+     * It call helper methods to determine the xy-postition of the new units and creates them. It also calls a helper
+     * method to create joint between the recently create units.
+     * @param unit1
+     * @param unit2
+     * @param numOfUnits
+     */
+    private void addUnits(BridgeUnit unit1, BridgeUnit unit2, int numOfUnits){
         ArrayList<BridgeUnit> units = new ArrayList<BridgeUnit>();
         units.add(unit1);
         int x1 = (int) unit1.getBody().getPosition().x;
@@ -157,7 +164,7 @@ public class BuildHandler {
         int y2 = (int) unit2.getBody().getPosition().y;
 
 
-        for(int i = 0; i < numOfLinks; i++){
+        for(int i = 0; i < numOfUnits; i++){
             int[] pos = findNextXYPos(x1, y1, x2, y2);
             x1 = pos[0];
             y1 = pos[1];
@@ -170,14 +177,28 @@ public class BuildHandler {
         units.add(unit2);
         makeUnitJoint(units);
     }
+
+    /**
+     * goes through an array of BridgeUnits and creates joint between them
+     * @param units
+     */
     private void makeUnitJoint(ArrayList<BridgeUnit> units){
         for(int i = 0; i < units.size()-1; i++){
             makeJoint(units.get(i).getBody(), units.get(i+1).getBody());
         }
     }
 
+   // private ArrayList<Integer[]>
 
 
+    /**
+     * This method is responsible to find the location of the next bridge unit in a line.
+     * @param x1 x location of first bridge unit in the line
+     * @param y1 y location of first bridge unit in the line
+     * @param x2 x location of the last bridge unit in the line
+     * @param y2 y location of the last bridge unit in the line
+     * @return xy location of the next bridge unit in the line
+     */
     private int[] findNextXYPos(int x1, int y1, int x2, int y2){
         int[] nextXYPos = {};
         for(int i = 0; i < BridgeUnit.WIDTH; i++) {
@@ -188,6 +209,14 @@ public class BuildHandler {
         return nextXYPos;
     }
 
+    /**
+     * Creates a joint between a bridge unit and the cliff
+     * @param cliff
+     * @param unit
+     * @param x local x coordinate of where in the cliff the unit is attached to
+     * @param y local y coordinate of where in the cliff the unit is attached to
+     */
+
     public void makeUnitCliffJoint(BackgroundCliff cliff, BridgeUnit unit, float x, float y){
         BridgeJoint joint = makeJoint(cliff.getBody(), unit.getBody());
         joint.getrJointDef().localAnchorA.set(
@@ -197,12 +226,19 @@ public class BuildHandler {
     }
 
 
-    private BridgeJoint makeJoint(Body unitBody, Body linkBody){
+    /**
+     * takes 2 bodies and creates a joint between them.
+     * @param unitBody
+     * @param unitBody2
+     * @return
+     */
+
+    private BridgeJoint makeJoint(Body unitBody, Body unitBody2){
         BridgeJoint joint = new BridgeJoint();
-        joint.CreateJoint(unitBody, linkBody);
+        joint.CreateJoint(unitBody, unitBody2);
         joint.getrJointDef().localAnchorA.set(
-                linkBody.getPosition().x - unitBody.getPosition().x,
-                linkBody.getPosition().y - unitBody.getPosition().y);
+                unitBody2.getPosition().x - unitBody.getPosition().x,
+                unitBody2.getPosition().y - unitBody.getPosition().y);
 
         world.createJoint(joint.getrJointDef());
         return joint;
