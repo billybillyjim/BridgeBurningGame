@@ -42,7 +42,13 @@ public class BuildHandler {
 
     }
 
-
+    /**Makes a new bridgeUnit at a given x,y.
+     * These units are flagged as createdByPlayer, making them nodes
+     * that other BridgeUnits can build from. After the unit is made
+     * this method called makeUnitLinkStructure, which creates
+     * the line of bridgeUnits between the newly created one and any
+     * other createdByPlayer units nearby.
+     **/
     public BridgeUnit makeBridgeUnit(float x, float y){
         BridgeUnit unit = new BridgeUnit(material, world, x, y, fireEffect);
         unit.setCreatedByPlayer(true);
@@ -52,24 +58,29 @@ public class BuildHandler {
         bridgeUnits.add(unit);
         return unit;
     }
-
+    /**This method takes a bridgeUnit, checks to see if it should attach
+     * directly to the cliff, and then finds any nearby BridgeUnits to 
+     * attach to. Then it runs addUnits to create new BridgeUnits in between them.
+     * The bridgeUnits only connect to other bridgeUnits that
+     * have the createdByPlayer set to true. 
+     **/
    private void makeUnitLinkStructure(BridgeUnit bridgeUnit) {
         checkDistanceFromCliff(bridgeUnit);
         HashMap<BridgeUnit, Integer> unitsToConnect = findUnitsToConnect(bridgeUnit);
         Set keySet  =  unitsToConnect.keySet();
-
 
         if (!keySet.isEmpty()){
             Iterator<BridgeUnit> it = keySet.iterator();
             while(it.hasNext()) {
                 BridgeUnit unit = it.next();
                 addUnits(bridgeUnit, unit, unitsToConnect.get(unit));
-                }
-
-
             }
-
+        }
     }
+    /** This method checks to see if the bridgeUnit should create a joint
+     * between itself and the cliff. This allows the user to build BridgeUnits
+     * that attach to the cliff if they are close enough.
+     **/
     private void checkDistanceFromCliff(BridgeUnit bridgeUnit){
         int distanceFromCliff = 10;
         float leftXLimit = leftCliff.getX() + leftCliff.getWidth() + distanceFromCliff;
@@ -87,7 +98,10 @@ public class BuildHandler {
         }
 
     }
-
+    /**This method finds the distance between two bridgeUnits and returns a HashMap
+     * that contains the number of BridgeUnits that should be made based on the
+     * distance between the two BridgeUnits.
+     **/
     private HashMap<BridgeUnit, Integer> findUnitsToConnect(BridgeUnit unit){
         float x = unit.getBody().getPosition().x;
         float y = unit.getBody().getPosition().y;
@@ -96,18 +110,14 @@ public class BuildHandler {
             if(unit2.isCreatedByPlayer()) {
                 double distance = Math.sqrt((Math.pow(unit2.getBody().getPosition().x - x, 2) + (Math.pow(unit2.getBody().getPosition().y - y, 2))));
                 if (distance <= 100) {
-
                     int numOfBridgeUnits = (int) distance / BridgeUnit.WIDTH;
                     linksToConnect.put(unit2, numOfBridgeUnits);
                 }
             }
         }
-
-
-
         return linksToConnect;
     }
-
+    //Magic code that takes two coordinates and tells where to put bridgeUnits between them.
     //code got from stack overflow "http://stackoverflow.com/questions/10825174/calculate-next-point-on-2d-linear-vector"
     public int[] getNextLinePoint(int x,int y,int x2, int y2) {
         int w = x2 - x;
@@ -137,10 +147,7 @@ public class BuildHandler {
         int[] res = {x, y};
         return res;
     }
-
-
-
-
+    
     private void addUnits(BridgeUnit unit1, BridgeUnit unit2, int numOfLinks){
         ArrayList<BridgeUnit> units = new ArrayList<BridgeUnit>();
         units.add(unit1);
