@@ -22,7 +22,7 @@ public class BridgeUnit extends Actor{
     private Body body;
     private Texture img;
     private Sprite sprite;
-    private Texture ash = new Texture("ash.png");
+    //private Texture ash = new Texture("ash.png");
 
     private ParticleEffect fireEffect;
 
@@ -34,6 +34,7 @@ public class BridgeUnit extends Actor{
     private boolean isOnFire;
     private boolean isBurnt;
     boolean createdByPlayer;
+    private Texture alternative = new Texture("PaperUser.png");
 
     public BridgeUnit(Material material, World world, float xPosition, float yPosition, ParticleEffect fireEffect){
 
@@ -88,6 +89,7 @@ public class BridgeUnit extends Actor{
 
     @Override
     public void draw(Batch batch, float ParentAlpha){
+
         sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2); //sets position of sprite to the same as the body
         sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
@@ -145,6 +147,7 @@ public class BridgeUnit extends Actor{
 
     public void setCreatedByPlayer(boolean createdByPlayer) {
         this.createdByPlayer = createdByPlayer;
+        if(createdByPlayer)sprite.setTexture(alternative);
     }
 
 }

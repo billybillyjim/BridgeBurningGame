@@ -208,6 +208,9 @@ public class MainGame extends Stage implements Screen{
 
         timeCycle -= Gdx.graphics.getDeltaTime();
 
+
+        buildHandler.bringUserMadeToFron();
+        helpButton.toFront();
         act(delta);
         draw();
 

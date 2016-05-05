@@ -40,7 +40,7 @@ public class HelpButton extends Actor{
             helpSprite.setSize(383, 244);
             helpSprite.setPosition(getX(), getY() - helpSprite.getHeight()/1.3f);
             helpSprite.draw(batch);
-            toFront();
+
 
         }
     }
