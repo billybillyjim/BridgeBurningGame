@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.GraphicalObjects.*;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 
 
 import java.util.*;
@@ -135,6 +136,78 @@ public class MainGame extends Stage implements Screen{
             System.out.println("construction mode = " + constructionMode);
 
         }
+
+        checkContacts();
+
+        if (Gdx.input.justTouched()) {
+            Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(pos);
+            Actor actor = this.hit(pos.x, pos.y, true);
+            click(actor, pos);
+        }
+        
+       if(!constructionMode){
+           //Makes the box2d WORLD play at a given frame rate
+           WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
+
+       }
+
+        timeCycle -= Gdx.graphics.getDeltaTime();
+
+        buildHandler.bringUserMadeToFron();
+        helpButton.toFront();
+        act(delta);
+        draw();
+
+        game.batch.begin();
+        fireEffect.draw(game.batch);
+        game.batch.end();
+
+        if(!WORLD.isLocked()){
+           //destroyBodies();
+        }
+
+
+
+    }
+
+    private void click(Actor actor, Vector3 pos) {
+
+        if (!constructionMode) {
+
+
+            if (actor != null && actor.getName().equals("Bridge Unit")) {
+                ((BridgeUnit) actor).setIsOnFire(true);
+            } else if (actor != null && actor.getName().equals("Refresh")) {
+                reset();
+            } else if (actor != null && actor.getName().equals("Toggle")) {
+                constructionMode = true;
+                toggleButton.changeTexture(constructImg);
+            } else if (actor != null && actor.getName().equals("Help")) {
+                if (helpButton.isClicked()) helpButton.setClicked(false);
+                else helpButton.setClicked(true);
+                System.out.println("help  " + helpButton.isClicked());
+            }
+            if (fireHandler == null) fireHandler = new FireHandler(buildHandler.getBridgeUnits());
+
+        } else {
+            if (actor != null && actor.getName().equals("Refresh")) {
+                reset();
+            } else if (actor != null && actor.getName().equals("Toggle")) {
+                constructionMode = false;
+                toggleButton.changeTexture(burnImg);
+            } else if (actor != null && actor.getName().equals("Help")) {
+                if (helpButton.isClicked()) helpButton.setClicked(false);
+                else helpButton.setClicked(true);
+                System.out.println("help  " + helpButton.isClicked());
+            } else if (!(actor != null && actor.getName().equals("Cliff") || actor != null && actor.getName().equals("Bridge Unit"))) {
+
+                buildHandler.makeBridgeUnit(pos.x, pos.y);
+
+            }
+        }
+    }
+    private void checkContacts(){
         int numContacts = WORLD.getContactCount();
 
         if (numContacts > 0) {
@@ -156,74 +229,8 @@ public class MainGame extends Stage implements Screen{
                 }
             }
             bodiesToDestroy.addAll(bodyArrayList);
+
         }
-
-
-
-
-        if (Gdx.input.justTouched()) {
-            Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(pos);
-            Actor actor = this.hit(pos.x, pos.y, true);
-            if (!constructionMode) {
-
-
-                if (actor != null && actor.getName().equals("Bridge Unit")) {
-                    ((BridgeUnit) actor).setIsOnFire(true);
-                } else if (actor != null && actor.getName().equals("Refresh")) {
-                    reset();
-                } else if (actor != null && actor.getName().equals("Toggle")) {
-                    constructionMode = true;
-                    toggleButton.changeTexture(constructImg);
-                } else if (actor != null && actor.getName().equals("Help")) {
-                    if (helpButton.isClicked()) helpButton.setClicked(false);
-                    else helpButton.setClicked(true);
-                    System.out.println("help  " + helpButton.isClicked());
-                }
-                if (fireHandler == null) fireHandler = new FireHandler(buildHandler.getBridgeUnits());
-
-            } else {
-                if (actor != null && actor.getName().equals("Refresh")) {
-                    reset();
-                } else if (actor != null && actor.getName().equals("Toggle")) {
-                    constructionMode = false;
-                    toggleButton.changeTexture(burnImg);
-                } else if (actor != null && actor.getName().equals("Help")) {
-                    if (helpButton.isClicked()) helpButton.setClicked(false);
-                    else helpButton.setClicked(true);
-                    System.out.println("help  " + helpButton.isClicked());
-                } else if (!(actor != null && actor.getName().equals("Cliff") || actor != null && actor.getName().equals("Bridge Unit"))) {
-
-                    buildHandler.makeBridgeUnit(pos.x, pos.y);
-
-                }
-            }
-        }
-        
-       if(!constructionMode){
-           //Makes the box2d WORLD play at a given frame rate
-           WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
-
-       }
-
-        timeCycle -= Gdx.graphics.getDeltaTime();
-
-
-        buildHandler.bringUserMadeToFron();
-        helpButton.toFront();
-        act(delta);
-        draw();
-
-        game.batch.begin();
-        fireEffect.draw(game.batch);
-        game.batch.end();
-
-        if(!WORLD.isLocked()){
-           //destroyBodies();
-        }
-
-
-
     }
 /**This method checks for a fireHandler to deal with fire spread. If one exists,
  * and the timecycle has completed, it plays the fire sound if no sound is playing
@@ -323,10 +330,12 @@ public class MainGame extends Stage implements Screen{
     **/
     public void reset(){
         clear();
+       
         fireHandler = null;
         buildHandler.getBridgeUnits().clear();
         burntBridgeUnits.clear();
-        System.out.println(buildHandler.getBridgeUnits().isEmpty());
+        bodiesToDestroy.clear();
+
         Array<Body> bodies = new Array<Body>();
         WORLD.getBodies(bodies);
         for(Body body: bodies){
@@ -341,6 +350,7 @@ public class MainGame extends Stage implements Screen{
         createButtons();
         buildHandler.setLeftCliff(leftCliff);
         buildHandler.setRightCliff(rightCliff);
+
 
     }
     
