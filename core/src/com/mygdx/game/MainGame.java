@@ -311,10 +311,11 @@ public class MainGame extends Stage implements Screen{
         rightTex = new Texture("RightCliff.png");
         leftCliff = new BackgroundCliff(leftTex, 0, 0, WORLD, true);
         rightCliff = new BackgroundCliff(rightTex,800-rightTex.getWidth(), 0, WORLD, false);
-        bottom = new BackgroundCliff(leftTex, leftCliff.getWidth(), -leftCliff.getHeight() - 100, WORLD, true);
+        //This is for future use. The bottom would play a sound when things make contact with it, making it seem like a real valley.
+        //bottom = new BackgroundCliff(leftTex, leftCliff.getWidth(), -leftCliff.getHeight() - 100, WORLD, true);
         this.addActor(leftCliff);
         this.addActor(rightCliff);
-        this.addActor(bottom);
+        //this.addActor(bottom);
     }
 
     @Override
