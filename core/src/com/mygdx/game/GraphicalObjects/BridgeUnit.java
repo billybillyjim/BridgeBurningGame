@@ -35,6 +35,7 @@ public class BridgeUnit extends Actor{
     private boolean isBurnt;
     boolean createdByPlayer;
     private Texture alternative = new Texture("PaperUser.png");
+    private Texture ash = new Texture("ash.png");
 
     public BridgeUnit(Material material, World world, float xPosition, float yPosition, ParticleEffect fireEffect){
 
@@ -95,17 +96,12 @@ public class BridgeUnit extends Actor{
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
 
-        if (durability == 2){
+        if (durability <= 2){
             body.setActive(false);
             body.setActive(true);
-            //remove();
-            //body.getWorld().destroyBody(this.getBody());
-            //body = null;
-
-        }
-        if(durability == 0) {
-
             isOnFire = false;
+            changeTexture(ash);
+
         }
 
         body.applyAngularImpulse((float) Math.random(), true);
@@ -136,7 +132,7 @@ public class BridgeUnit extends Actor{
     public boolean getIsBurnt(){return this.isBurnt;}
 
     public void changeTexture(Texture newTexture){
-        sprite.set(new Sprite(newTexture));
+        sprite.setTexture(newTexture);
     }
 
     public void setIsOnFire(boolean b){this.isOnFire = b;}

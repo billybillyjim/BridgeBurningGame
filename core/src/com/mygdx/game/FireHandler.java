@@ -3,7 +3,6 @@ package com.mygdx.game;
 import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.GraphicalObjects.BridgeUnit;
-import com.mygdx.game.GraphicalObjects.BridgeUnitLink;
 import com.mygdx.game.PhysicalObjects.BridgeJoint;
 import java.util.ArrayList;
 
@@ -79,6 +78,7 @@ public class FireHandler {
 
         for(BridgeUnit b : bridgeUnits){
             if(b.getIsBurnt()){
+                //System.out.println("b is burnt!");
                 if(!burntBridgeUnits.contains(b)) {
                     burntBridgeUnits.add(b);
                 }
