@@ -36,7 +36,7 @@ public class BridgeUnit extends Actor{
     boolean createdByPlayer;
     private Texture alternative = new Texture("PaperUser.png");
     private Texture ash = new Texture("ash.png");
-
+    
     public BridgeUnit(Material material, World world, float xPosition, float yPosition, ParticleEffect fireEffect){
 
         //Sets texture to image in assets folder
@@ -49,6 +49,7 @@ public class BridgeUnit extends Actor{
         this.setName("Bridge Unit");
 
         this.durability = material.getDurability();
+        this.alternative = new Texture(material.getAlternative());
         this.fireEffect = fireEffect;
 
         //sets the sprite position based on screen size

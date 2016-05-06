@@ -34,7 +34,7 @@ public class BuildHandler {
         this.world = world;
         this.stage = stage;
         this.fireEffect = fireEffect;
-        material = new Material(1);
+        material = new Material(2);
         this.leftCliff = leftCliff;
         this.rightCliff = rightCliff;
         bridgeUnits = new ArrayList<BridgeUnit>();
@@ -337,7 +337,7 @@ public class BuildHandler {
     public ArrayList<BridgeUnit> getUserMadeBridgeUnits() {
         return userMadeBridgeUnits;
     }
-    public void bringUserMadeToFron(){
+    public void bringUserMadeToFront(){
         for (BridgeUnit b : userMadeBridgeUnits){
             b.toFront();
         }

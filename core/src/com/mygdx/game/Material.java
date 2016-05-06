@@ -24,6 +24,7 @@ public class Material {
     private float density;
     private float friction;
     private int level;
+    private String alternative;
 
     public Material(int level){
         try {
@@ -49,6 +50,7 @@ public class Material {
                         density = Float.valueOf(getValue("density", element));
                         friction = Float.valueOf(getValue("friction", element));
                         this.level = Integer.parseInt(getValue("level", element));
+                        alternative = getValue("alternative", element);
 
                     }
                 }
@@ -91,8 +93,8 @@ public class Material {
         return friction;
     }
 
-    public int getLevel() {
-        return level;
+    public String getAlternative() {
+        return alternative;
     }
 }
 

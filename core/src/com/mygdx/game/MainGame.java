@@ -20,7 +20,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.GraphicalObjects.*;
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 
 
 import java.util.*;
@@ -128,7 +127,7 @@ public class MainGame extends Stage implements Screen{
         game.batch.setProjectionMatrix(camera.combined);
         fireGo();
 
-        box2DDebugRenderer.render(WORLD, camera.combined);
+
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)){
             if(constructionMode) constructionMode = false;
@@ -154,10 +153,13 @@ public class MainGame extends Stage implements Screen{
 
         timeCycle -= Gdx.graphics.getDeltaTime();
 
-        buildHandler.bringUserMadeToFron();
+       
+
+        buildHandler.bringUserMadeToFront();
         helpButton.toFront();
         act(delta);
         draw();
+        //box2DDebugRenderer.render(WORLD, camera.combined);
 
         game.batch.begin();
         fireEffect.draw(game.batch);
@@ -244,7 +246,7 @@ public class MainGame extends Stage implements Screen{
 
             if(fireHandler.checkFires() && !fireSound.isPlaying()){
                fireSound.setLooping(true);
-                fireSound.play();
+                //fireSound.play();
             }
 
             timeCycle = 1;
@@ -330,7 +332,6 @@ public class MainGame extends Stage implements Screen{
     **/
     public void reset(){
         clear();
-       
         fireHandler = null;
         buildHandler.getBridgeUnits().clear();
         burntBridgeUnits.clear();
