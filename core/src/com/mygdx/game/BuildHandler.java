@@ -2,9 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.game.GraphicalObjects.BackgroundCliff;
 import com.mygdx.game.GraphicalObjects.BridgeUnit;
@@ -24,6 +22,8 @@ public class BuildHandler {
     private Stage stage;
 
     private ArrayList<BridgeUnit> bridgeUnits;
+    private ArrayList<BridgeUnit> userMadeBridgeUnits;
+
     private ParticleEffect fireEffect;
     private BackgroundCliff leftCliff, rightCliff;
 
@@ -38,7 +38,7 @@ public class BuildHandler {
         this.leftCliff = leftCliff;
         this.rightCliff = rightCliff;
         bridgeUnits = new ArrayList<BridgeUnit>();
-
+        userMadeBridgeUnits = new ArrayList<BridgeUnit>();
 
     }
 
@@ -52,10 +52,10 @@ public class BuildHandler {
     public BridgeUnit makeBridgeUnit(float x, float y){
         BridgeUnit unit = new BridgeUnit(material, world, x, y, fireEffect);
         unit.setCreatedByPlayer(true);
-        unit.getBody().setType(BodyDef.BodyType.DynamicBody);
         stage.addActor(unit);
         makeUnitLinkStructure(unit);
         bridgeUnits.add(unit);
+        userMadeBridgeUnits.add(unit);
         return unit;
     }
     /**This method takes a bridgeUnit, checks to see if it should attach
@@ -73,7 +73,8 @@ public class BuildHandler {
             Iterator<BridgeUnit> it = keySet.iterator();
             while(it.hasNext()) {
                 BridgeUnit unit = it.next();
-                addUnits(bridgeUnit, unit, unitsToConnect.get(unit));
+                ArrayList<Integer[]> posOfUnits = findPositionsOfAllNewBridgeUnits(bridgeUnit, unit, unitsToConnect.get(unit));
+
             }
         }
     }
@@ -98,9 +99,10 @@ public class BuildHandler {
         }
 
     }
-    /**This method finds the distance between two bridgeUnits and returns a HashMap
-     * that contains the number of BridgeUnits that should be made based on the
-     * distance between the two BridgeUnits.
+    /**This method finds the the bridge units that have been created  by the user that are within 100 units from the input unit
+     *  and returns a HashMap that contains all the bridge units that the input one should be connected with and the number of units that
+     *  should be created between them.
+     * @param unit BridgeUnit the user has just created
      **/
     private HashMap<BridgeUnit, Integer> findUnitsToConnect(BridgeUnit unit){
         float x = unit.getBody().getPosition().x;
@@ -117,8 +119,8 @@ public class BuildHandler {
         }
         return linksToConnect;
     }
-    //Magic code that takes two coordinates and tells where to put bridgeUnits between them.
-    //code got from stack overflow "http://stackoverflow.com/questions/10825174/calculate-next-point-on-2d-linear-vector"
+    //Magic code that takes xy-coordinates of two points in a plane and calculate the next point in the line between them.
+    //code from stack overflow "http://stackoverflow.com/questions/10825174/calculate-next-point-on-2d-linear-vector"
     public int[] getNextLinePoint(int x,int y,int x2, int y2) {
         int w = x2 - x;
         int h = y2 - y;
@@ -147,37 +149,125 @@ public class BuildHandler {
         int[] res = {x, y};
         return res;
     }
-    
-    private void addUnits(BridgeUnit unit1, BridgeUnit unit2, int numOfLinks){
+
+    /**
+     *This methods takes two bridge units that should be connected and the number of units between them.
+     * It call helper methods to determine the xy-postition of the new units and creates them. It also calls a helper
+     * method to create joint between the recently create units.
+     * @param unit1
+     * @param unit2
+     * @param
+     */
+    private ArrayList<BridgeUnit> addUnits(ArrayList<Integer[]> posOfUnits, BridgeUnit unit1, BridgeUnit unit2){
         ArrayList<BridgeUnit> units = new ArrayList<BridgeUnit>();
+
+
         units.add(unit1);
-        int x1 = (int) unit1.getBody().getPosition().x;
-        int y1 = (int) unit1.getBody().getPosition().y;
-        int x2 = (int) unit2.getBody().getPosition().x;
-        int y2 = (int) unit2.getBody().getPosition().y;
 
 
-        for(int i = 0; i < numOfLinks; i++){
-            int[] pos = findNextXYPos(x1, y1, x2, y2);
-            x1 = pos[0];
-            y1 = pos[1];
-            BridgeUnit unit3 = new BridgeUnit(material, world, x1, y1, fireEffect);
-            stage.addActor(unit3);
-            units.add(unit3);
-            bridgeUnits.add(unit3);
+        if(!posOfUnits.isEmpty()) {
+            for (int i = 0; i < posOfUnits.size(); i++) {
+                Integer[] pos = posOfUnits.get(i);
+                Integer x = pos[0];
+                Integer y = pos[1];
+                BridgeUnit unit3 = new BridgeUnit(material, world, x, y, fireEffect);
+                stage.addActor(unit3);
+                units.add(unit3);
+                bridgeUnits.add(unit3);
 
+            }
         }
         units.add(unit2);
-        makeUnitJoint(units);
+        return units;
     }
+
+    /**
+     * goes through an array of BridgeUnits and creates joint between them
+     * @param units
+     */
     private void makeUnitJoint(ArrayList<BridgeUnit> units){
+        if(units.isEmpty()) return;
         for(int i = 0; i < units.size()-1; i++){
             makeJoint(units.get(i).getBody(), units.get(i+1).getBody());
         }
     }
 
+   private ArrayList<Integer[]> findPositionsOfAllNewBridgeUnits(BridgeUnit unit1, BridgeUnit unit2, int numOfUnits){
+        ArrayList<Integer[]> unitsPositions = new ArrayList<Integer[]>();
+       int x1 = (int) unit1.getBody().getPosition().x;
+       int y1 = (int) unit1.getBody().getPosition().y;
+       int x2 = (int) unit2.getBody().getPosition().x;
+       int y2 = (int) unit2.getBody().getPosition().y;
+       for(int i = 0; i < numOfUnits; i++){
+           int[] pos = findNextXYPos(x1, y1, x2, y2);
+           if(checkIfBuildingOverBridgeUnit(x1, y1) != null) {
+               unit2 = checkIfBuildingOverBridgeUnit(x1, y1);
+               break;
+           }
+           x1 = pos[0];
+           y1 = pos[1];
+           Integer[] temp = {x1, y1};
+           unitsPositions.add(temp);
+
+       }
 
 
+       ArrayList<BridgeUnit> units = addUnits(unitsPositions, unit1, unit2);
+       makeUnitJoint(units);
+
+       return unitsPositions;
+   }
+
+    private BridgeUnit checkIfBuildingOverBridgeUnit(int x, int y){
+
+        Integer[] unitArea = getAreaOfBridgeUnit(x, y);
+        for(BridgeUnit b : bridgeUnits){
+            Integer [] toCompare = getAreaOfBridgeUnit((int)b.getBody().getPosition().x, (int)b.getBody().getPosition().y);
+            if(unitsOverlap(unitArea, toCompare)) return b;
+        }
+        return null;
+    }
+
+    private Integer[] getAreaOfBridgeUnit(int x, int y){
+        int minX = x - BridgeUnit.WIDTH/2;
+        int maxX = x + BridgeUnit.WIDTH/2;
+        int minY = y - BridgeUnit.HEIGHT/2;
+        int maxY = y + BridgeUnit.HEIGHT/2;
+        Integer[] area = {minX, maxX, minY, maxY};
+
+        return area;
+    }
+
+    private boolean unitsOverlap(Integer[] unitArea1, Integer[] unitArea2){
+        int minX1  = unitArea1[0];
+        int maxX1  = unitArea1[1];
+        int minY1 = unitArea1[2];
+        int maxY1 = unitArea1[3];
+
+
+
+        int minX2  = unitArea2[0];
+        int maxX2  = unitArea2[1];
+        int minY2 = unitArea2[2];
+        int maxY2 = unitArea2[3];
+
+
+        if( ((minX1 >= minX2 && minX1 <= maxX2) || (maxX1 <= maxX2 && maxX1 >= minX2)) &&
+                ((minY1 >= minY2 && minY1 <= maxY2) || (maxY1 <= maxY2 && maxY1 >= minY2)) ) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * This method is responsible to find the location of the next bridge unit in a line.
+     * @param x1 x location of first bridge unit in the line
+     * @param y1 y location of first bridge unit in the line
+     * @param x2 x location of the last bridge unit in the line
+     * @param y2 y location of the last bridge unit in the line
+     * @return xy location of the next bridge unit in the line
+     */
     private int[] findNextXYPos(int x1, int y1, int x2, int y2){
         int[] nextXYPos = {};
         for(int i = 0; i < BridgeUnit.WIDTH; i++) {
@@ -188,6 +278,14 @@ public class BuildHandler {
         return nextXYPos;
     }
 
+    /**
+     * Creates a joint between a bridge unit and the cliff
+     * @param cliff
+     * @param unit
+     * @param x local x coordinate of where in the cliff the unit is attached to
+     * @param y local y coordinate of where in the cliff the unit is attached to
+     */
+
     public void makeUnitCliffJoint(BackgroundCliff cliff, BridgeUnit unit, float x, float y){
         BridgeJoint joint = makeJoint(cliff.getBody(), unit.getBody());
         joint.getrJointDef().localAnchorA.set(
@@ -197,12 +295,19 @@ public class BuildHandler {
     }
 
 
-    private BridgeJoint makeJoint(Body unitBody, Body linkBody){
+    /**
+     * takes 2 bodies and creates a joint between them.
+     * @param unitBody
+     * @param unitBody2
+     * @return
+     */
+
+    private BridgeJoint makeJoint(Body unitBody, Body unitBody2){
         BridgeJoint joint = new BridgeJoint();
-        joint.CreateJoint(unitBody, linkBody);
+        joint.CreateJoint(unitBody, unitBody2);
         joint.getrJointDef().localAnchorA.set(
-                linkBody.getPosition().x - unitBody.getPosition().x,
-                linkBody.getPosition().y - unitBody.getPosition().y);
+                unitBody2.getPosition().x - unitBody.getPosition().x,
+                unitBody2.getPosition().y - unitBody.getPosition().y);
 
         world.createJoint(joint.getrJointDef());
         return joint;
@@ -229,5 +334,12 @@ public class BuildHandler {
         this.rightCliff = rightCliff;
     }
 
-
+    public ArrayList<BridgeUnit> getUserMadeBridgeUnits() {
+        return userMadeBridgeUnits;
+    }
+    public void bringUserMadeToFron(){
+        for (BridgeUnit b : userMadeBridgeUnits){
+            b.toFront();
+        }
+    }
 }

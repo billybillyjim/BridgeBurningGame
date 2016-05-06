@@ -17,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.GraphicalObjects.*;
@@ -54,6 +53,7 @@ public class MainGame extends Stage implements Screen{
 
     private ToggleButton toggleButton;
     private RefreshButton refreshButton;
+    private HelpButton helpButton;
 
     private Box2DDebugRenderer box2DDebugRenderer;
 
@@ -70,12 +70,16 @@ public class MainGame extends Stage implements Screen{
     private OrthographicCamera camera;
     private Viewport viewport;
 
+
+
     public MainGame(GameLauncher game){
 
         this.game = game;
         constructionMode = true;
 
+
         game.font.setColor(Color.WHITE);
+
 
         fireEffect = new ParticleEffect();
         fireEffect.load(Gdx.files.internal("Effect9.p"), Gdx.files.internal(""));
@@ -154,55 +158,59 @@ public class MainGame extends Stage implements Screen{
             bodiesToDestroy.addAll(bodyArrayList);
         }
 
-        //if(!bridgeBurned()) {
-            if (Gdx.input.justTouched()) {
-                Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-                camera.unproject(pos);
-                Actor actor = this.hit(pos.x, pos.y, true);
-                if (!constructionMode) {
 
-                    if (actor != null && actor.getName().equals("Bridge Unit")) {
-                        ((BridgeUnit) actor).setIsOnFire(true);
-                    }
-                    else if (actor != null && actor.getName().equals("Refresh")) {
-                        reset();
-                    }
-                    else if (actor != null && actor.getName().equals("Toggle")){
-                        constructionMode = true;
-                        toggleButton.changeTexture(constructImg);
-                    }
-                    fireHandler = new FireHandler(buildHandler.getBridgeUnits());
 
+
+        if (Gdx.input.justTouched()) {
+            Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(pos);
+            Actor actor = this.hit(pos.x, pos.y, true);
+            if (!constructionMode) {
+
+
+                if (actor != null && actor.getName().equals("Bridge Unit")) {
+                    ((BridgeUnit) actor).setIsOnFire(true);
+                } else if (actor != null && actor.getName().equals("Refresh")) {
+                    reset();
+                } else if (actor != null && actor.getName().equals("Toggle")) {
+                    constructionMode = true;
+                    toggleButton.changeTexture(constructImg);
+                } else if (actor != null && actor.getName().equals("Help")) {
+                    if (helpButton.isClicked()) helpButton.setClicked(false);
+                    else helpButton.setClicked(true);
+                    System.out.println("help  " + helpButton.isClicked());
                 }
-                else {
-                    if (actor != null && actor.getName().equals("Refresh")) {
-                        reset();
-                    }
-                    else if (actor != null && actor.getName().equals("Toggle")){
-                        constructionMode = false;
-                        toggleButton.changeTexture(burnImg);
-                    }
-                    else if (!(actor != null && actor.getName().equals("Cliff") || actor != null && actor.getName().equals("Bridge Unit"))){
+                if (fireHandler == null) fireHandler = new FireHandler(buildHandler.getBridgeUnits());
 
-                        buildHandler.makeBridgeUnit(pos.x, pos.y);
+            } else {
+                if (actor != null && actor.getName().equals("Refresh")) {
+                    reset();
+                } else if (actor != null && actor.getName().equals("Toggle")) {
+                    constructionMode = false;
+                    toggleButton.changeTexture(burnImg);
+                } else if (actor != null && actor.getName().equals("Help")) {
+                    if (helpButton.isClicked()) helpButton.setClicked(false);
+                    else helpButton.setClicked(true);
+                    System.out.println("help  " + helpButton.isClicked());
+                } else if (!(actor != null && actor.getName().equals("Cliff") || actor != null && actor.getName().equals("Bridge Unit"))) {
 
-                    }
+                    buildHandler.makeBridgeUnit(pos.x, pos.y);
 
                 }
             }
-        if(!constructionMode){
-            //Makes the box2d WORLD play at a given frame rate
-            WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
         }
+        
+       if(!constructionMode){
+           //Makes the box2d WORLD play at a given frame rate
+           WORLD.step(Gdx.graphics.getDeltaTime(), 6, 2);
 
-        //}
-        //else{
-        //    System.out.println("bridge completely burned");
-        //    // TODO: 4/29/16 add a restart game option
-        //}
+       }
 
         timeCycle -= Gdx.graphics.getDeltaTime();
 
+
+        buildHandler.bringUserMadeToFron();
+        helpButton.toFront();
         act(delta);
         draw();
 
@@ -213,6 +221,7 @@ public class MainGame extends Stage implements Screen{
         if(!WORLD.isLocked()){
            //destroyBodies();
         }
+
 
 
     }
@@ -238,20 +247,7 @@ public class MainGame extends Stage implements Screen{
             burnWood();
         }
     }
-    /**This method checks to see how much of the bridge is burned.
-     * It currently is made to work with prebuilt bridges and needs modification
-     * to work properly with user made bridges.
-     **/
 
-    public boolean bridgeBurned(){
-      /*  int sizeBurnBridge = burntBridgeUnits.size() + burntBridgeUnitLinks.size();
-        int sizeBridge = bridge.getBridgeUnits().size() + bridge.getBridgeUnitLinks().size();
-        int percentage = (sizeBurnBridge* 100) / sizeBridge;
-        System.out.println(percentage);
-        if (percentage == 100) return true;
-        else return false;*/
-        return false;
-    }
 
 
     @Override
@@ -277,6 +273,7 @@ public class MainGame extends Stage implements Screen{
             //bodiesToDestroy.add(bridgeUnit.getBody());
         }
     }
+    
     /**Takes a given body and destros all their joints
      **/
     public void destroyJoints(Body body){
@@ -337,6 +334,7 @@ public class MainGame extends Stage implements Screen{
             WORLD.destroyBody(body);
         }
 
+
         fireSound.pause();
         drawCliffs();
         constructionMode = true;
@@ -345,6 +343,7 @@ public class MainGame extends Stage implements Screen{
         buildHandler.setRightCliff(rightCliff);
 
     }
+    
     //This method creates the refresh and Burn/Build button.
     private void createButtons(){
 
@@ -353,8 +352,13 @@ public class MainGame extends Stage implements Screen{
 
         toggleButton = new ToggleButton(constructImg);
         refreshButton = new RefreshButton();
-        this.addActor(refreshButton);
-        this.addActor(toggleButton);
+        helpButton = new HelpButton();
+        helpButton.setPosition(refreshButton.getX() + 1.5f * helpButton.getWidth(), refreshButton.getY());
+        addActor(helpButton);
+        addActor(refreshButton);
+        addActor(toggleButton);
+
+
     }
 
     @Override
