@@ -3,7 +3,7 @@
 ### Description
 
 This is a game created for the Software Design and Developemt class at Macalester College, Spring semester 2016. <br>
-It is a sandbox kind of game. You can build your own bridge and then burn it down for your own enjoyment!
+It is a sandbox kind of game. You can build your own bridge and then burn it down! Enjoy it!
 
 ### How to download, build and run the project
 
