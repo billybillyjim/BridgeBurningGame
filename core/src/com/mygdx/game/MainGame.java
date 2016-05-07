@@ -159,15 +159,11 @@ public class MainGame extends Stage implements Screen{
         helpButton.toFront();
         act(delta);
         draw();
-        //box2DDebugRenderer.render(WORLD, camera.combined);
+        //box2DDebugRenderer.render(WORLD, camera.combined); // when this is uncommented allows you to see the bodies
 
         game.batch.begin();
         fireEffect.draw(game.batch);
         game.batch.end();
-
-        if(!WORLD.isLocked()){
-           //destroyBodies();
-        }
 
 
 
@@ -191,6 +187,7 @@ public class MainGame extends Stage implements Screen{
                 System.out.println("help  " + helpButton.isClicked());
             }
             if (fireHandler == null) fireHandler = new FireHandler(buildHandler.getBridgeUnits());
+            fireHandler.setBridgeUnits(buildHandler.getBridgeUnits());
 
         } else {
             if (actor != null && actor.getName().equals("Refresh")) {
@@ -246,7 +243,7 @@ public class MainGame extends Stage implements Screen{
 
             if(fireHandler.checkFires() && !fireSound.isPlaying()){
                fireSound.setLooping(true);
-                //fireSound.play();
+                fireSound.play();
             }
 
             timeCycle = 1;
@@ -255,6 +252,12 @@ public class MainGame extends Stage implements Screen{
 
             burnWood();
         }
+
+        if(fireHandler.checkFires() == false){
+            fireSound.stop();
+        }
+
+
     }
 
 
@@ -277,9 +280,8 @@ public class MainGame extends Stage implements Screen{
     **/
     public void burnWood(){
         for(BridgeUnit bridgeUnit : burntBridgeUnits){
-            bridgeUnit.getBody().setType(BodyDef.BodyType.DynamicBody);
             destroyJoints(bridgeUnit.getBody());
-            //bodiesToDestroy.add(bridgeUnit.getBody());
+
         }
     }
     

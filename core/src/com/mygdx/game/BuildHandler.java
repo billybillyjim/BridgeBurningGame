@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.graphics.Texture;
+
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -60,7 +60,7 @@ public class BuildHandler {
     }
     /**This method takes a bridgeUnit, checks to see if it should attach
      * directly to the cliff, and then finds any nearby BridgeUnits to 
-     * attach to. Then it runs addUnits to create new BridgeUnits in between them.
+     * attach to. Then it runs posOfUnits to create new BridgeUnits in between them.
      * The bridgeUnits only connect to other bridgeUnits that
      * have the createdByPlayer set to true. 
      **/
@@ -73,7 +73,7 @@ public class BuildHandler {
             Iterator<BridgeUnit> it = keySet.iterator();
             while(it.hasNext()) {
                 BridgeUnit unit = it.next();
-                ArrayList<Integer[]> posOfUnits = findPositionsOfAllNewBridgeUnits(bridgeUnit, unit, unitsToConnect.get(unit));
+                findPositionsOfAllNewBridgeUnits(bridgeUnit, unit, unitsToConnect.get(unit));
 
             }
         }
@@ -151,12 +151,14 @@ public class BuildHandler {
     }
 
     /**
-     *This methods takes two bridge units that should be connected and the number of units between them.
+     *This method takes an array list of Integer arrays and two bridge units that are going to be connected. 
+     * The arrayList has the xy - positions of the bridge units that will be created between the two input units.
      * It call helper methods to determine the xy-postition of the new units and creates them. It also calls a helper
      * method to create joint between the recently create units.
      * @param unit1
      * @param unit2
-     * @param
+     * @param posOfUnits
+     * @return ArrayList of the recently made bridge units + the units given in the input
      */
     private ArrayList<BridgeUnit> addUnits(ArrayList<Integer[]> posOfUnits, BridgeUnit unit1, BridgeUnit unit2){
         ArrayList<BridgeUnit> units = new ArrayList<BridgeUnit>();
@@ -191,6 +193,13 @@ public class BuildHandler {
             makeJoint(units.get(i).getBody(), units.get(i+1).getBody());
         }
     }
+    
+    /**
+     *  Use helper methods to find the position of the  new bridge units, uses other other methods to check if those positions
+     * will overlap with already existing bridge units. If the postitions don't overlap it adds them to an arrayList.
+     * It calls the addUnist method and gives it the array list with xy postions it just created.
+     * Calls help method to create the joints between the BridgeUnits created by the addUnits method
+     */
 
    private ArrayList<Integer[]> findPositionsOfAllNewBridgeUnits(BridgeUnit unit1, BridgeUnit unit2, int numOfUnits){
         ArrayList<Integer[]> unitsPositions = new ArrayList<Integer[]>();
@@ -218,6 +227,9 @@ public class BuildHandler {
        return unitsPositions;
    }
 
+/**
+ * checks if creating a bridge unit on position x, y would overlap with an already existing bridge unit
+ * */
     private BridgeUnit checkIfBuildingOverBridgeUnit(int x, int y){
 
         Integer[] unitArea = getAreaOfBridgeUnit(x, y);
@@ -313,13 +325,6 @@ public class BuildHandler {
         return joint;
     }
 
-    public World getWorld() {
-        return world;
-    }
-
-    public void setWorld(World world) {
-        this.world = world;
-    }
 
     public ArrayList<BridgeUnit> getBridgeUnits() {
         return bridgeUnits;
@@ -334,9 +339,7 @@ public class BuildHandler {
         this.rightCliff = rightCliff;
     }
 
-    public ArrayList<BridgeUnit> getUserMadeBridgeUnits() {
-        return userMadeBridgeUnits;
-    }
+
     public void bringUserMadeToFront(){
         for (BridgeUnit b : userMadeBridgeUnits){
             b.toFront();

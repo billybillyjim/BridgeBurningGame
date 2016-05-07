@@ -22,8 +22,6 @@ public class MainMenuScreen implements Screen {
     final GameLauncher game;
     private OrthographicCamera camera;
     private StartButton startButton;
-    public Skin simpleSkin;
-    public Skin aboutSkin;
     private Sprite splash;
     private SpriteBatch batch;
     private Stage stage;
