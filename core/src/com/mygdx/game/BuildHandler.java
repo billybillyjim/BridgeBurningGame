@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.graphics.Texture;
+
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -325,13 +325,6 @@ public class BuildHandler {
         return joint;
     }
 
-    public World getWorld() {
-        return world;
-    }
-
-    public void setWorld(World world) {
-        this.world = world;
-    }
 
     public ArrayList<BridgeUnit> getBridgeUnits() {
         return bridgeUnits;
@@ -346,9 +339,7 @@ public class BuildHandler {
         this.rightCliff = rightCliff;
     }
 
-    public ArrayList<BridgeUnit> getUserMadeBridgeUnits() {
-        return userMadeBridgeUnits;
-    }
+
     public void bringUserMadeToFront(){
         for (BridgeUnit b : userMadeBridgeUnits){
             b.toFront();

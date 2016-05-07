@@ -44,9 +44,7 @@ public class FireHandler {
         //Iterates through the ArrayList of BridgeUnits
         for(int i = 0; i < bridgeUnits.size(); i++){
             //Checks to see if they are on fire
-            if(bridgeUnits.get(i).getDurability() <= 0){
-                bridgeUnits.get(i).setIsBurnt(true);
-            }
+
             if(bridgeUnits.get(i).getIsOnFire()){
                 bridgeUnits.get(i).decrementDurability();
                 //Gets the list of JointEdges
@@ -93,5 +91,9 @@ public class FireHandler {
     //Adds a bridgeJoint to the fireHandler's ArrayList of BridgeJoints
     public void addBridgeJoint(BridgeJoint joint){
         this.bridgeJoints.add(joint);
+    }
+
+    public void setBridgeUnits(ArrayList<BridgeUnit> bridgeUnits) {
+        this.bridgeUnits = bridgeUnits;
     }
 }

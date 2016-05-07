@@ -84,7 +84,7 @@ public class BridgeUnit extends Actor{
         sprite.setSize(WIDTH, HEIGHT); //set sprite size to the same size of the body
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); //set the origin over which the sprites rotates to the center of the sprite
 
-        //shape.dispose();
+        shape.dispose();
     }
 
 
@@ -101,6 +101,7 @@ public class BridgeUnit extends Actor{
                 body.setActive(true);
                 changeTexture(ash);
                 isOnFire = false;
+                isBurnt = true;
             }
         }
 
