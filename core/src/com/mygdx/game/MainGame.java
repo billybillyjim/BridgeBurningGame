@@ -252,6 +252,12 @@ public class MainGame extends Stage implements Screen{
 
             burnWood();
         }
+
+        if(fireHandler.checkFires() == false){
+            fireSound.stop();
+        }
+
+
     }
 
 
