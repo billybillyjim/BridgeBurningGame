@@ -41,7 +41,7 @@ public class MainMenuScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
         batch = new SpriteBatch();
-        Texture splashTexture = new Texture("newSplash.jpg");
+        Texture splashTexture = new Texture("newSplashFixed.jpg");
         splash = new Sprite(splashTexture);
         splash.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stage = new Stage();
