@@ -22,7 +22,6 @@ public class BridgeUnit extends Actor{
     private Body body;
     private Texture img;
     private Sprite sprite;
-    //private Texture ash = new Texture("ash.png");
 
     private ParticleEffect fireEffect;
 
@@ -96,13 +95,13 @@ public class BridgeUnit extends Actor{
         sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees); //set rotation of the sprite to the same as the body
         setBounds(sprite.getX(), sprite.getY(), getWidth(), getHeight());
         sprite.draw(batch);
-
-        if (durability <= 2){
-            body.setActive(false);
-            body.setActive(true);
-            isOnFire = false;
-            changeTexture(ash);
-
+        if (isOnFire){
+            if (durability <= 2){
+                body.setActive(false);
+                body.setActive(true);
+                changeTexture(ash);
+                isOnFire = false;
+            }
         }
 
         body.applyAngularImpulse((float) Math.random(), true);
